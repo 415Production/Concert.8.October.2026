@@ -4,80 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ผังที่นั่งคอนเสิร์ต</title>
-    <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        body { background: #0f1115; color: white; font-family: sans-serif; margin: 0; overflow: hidden; touch-action: none; }
+        body { background: #0f1115; color: white; font-family: sans-serif; margin: 0; padding-top: 60px; padding-bottom: 60px; touch-action: manipulation; }
         
         /* Header */
-        .header { padding: 10px 15px; background: #1a1c23; display: flex; justify-content: space-between; align-items: center; z-index: 20; position: fixed; top: 0; left: 0; width: 100%; box-sizing: border-box; border-bottom: 1px solid #333; height: 60px;}
-        .btn-back { background: #4b5563; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold;}
-        .btn-capture { background: #e50914; color: white; padding: 6px 12px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; font-size: 14px;}
+        .header { padding: 0 15px; background: #1a1c23; display: flex; justify-content: space-between; align-items: center; z-index: 20; position: fixed; top: 0; left: 0; width: 100%; box-sizing: border-box; border-bottom: 1px solid #333; height: 60px;}
+        .btn-back { background: #4b5563; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; border: none; cursor: pointer;}
+        .btn-capture { background: #e50914; color: white; padding: 8px 12px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; font-size: 14px;}
         
         /* Footer แถบสถานะ */
-        .footer { padding: 10px; background: #1a1c23; display: flex; justify-content: center; align-items: center; z-index: 20; position: fixed; bottom: 0; left: 0; width: 100%; box-sizing: border-box; border-top: 1px solid #333; height: 50px;}
+        .footer { background: #1a1c23; display: flex; justify-content: center; align-items: center; z-index: 20; position: fixed; bottom: 0; left: 0; width: 100%; box-sizing: border-box; border-top: 1px solid #333; height: 50px;}
         .legend { display: flex; align-items: center; font-size: 12px; font-weight: bold;}
         .legend span { display: inline-block; width: 12px; height: 12px; margin: 0 5px 0 12px; border-radius: 3px; }
         
-        /* ปุ่มลอยควบคุมซูม */
-        .floating-controls { 
-            position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%);
-            display: flex; flex-direction: row; gap: 10px; z-index: 30; align-items: center;
-        }
-        .fab-btn { 
-            width: 38px; height: 38px; border-radius: 50%; 
-            background: #374151; color: white; border: 1px solid #4b5563; 
-            font-size: 20px; font-weight: bold; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.6);
-        }
-        .fab-btn-reset { 
-            width: auto; height: 35px; border-radius: 18px; 
-            font-size: 12px; padding: 0 15px; 
-            background: #e50914; border: none; font-weight: bold; color: white;
-            white-space: nowrap; box-shadow: 0 4px 8px rgba(0,0,0,0.6); cursor: pointer;
-        }
-
-        /* พื้นที่แสดงผังซูมได้ */
-        .map-container { 
-            position: fixed; top: 60px; left: 0; width: 100vw; height: calc(100vh - 110px); 
-            cursor: grab; display: flex; justify-content: center; align-items: flex-start; 
-            overflow: hidden; touch-action: none;
-        }
-        
-        #seatingArea { 
-            display: grid; 
-            grid-template-columns: repeat(5, auto); 
-            grid-template-rows: repeat(6, auto);
-            gap: 15px; padding: 30px; background: #0f1115; 
-            transform-origin: center center;
-        }
-        
+        /* Loading Overlay */
         #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #0f1115; z-index: 50; }
 
+        /* ---------------------------------
+           หน้า 1: ภาพรวมทุกโซน (Overview)
+        --------------------------------- */
+        #view-overview { padding: 15px; max-width: 900px; margin: 0 auto; display: block;}
+        
+        .overview-layout { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; justify-content: center; margin-top: 10px;}
+        
         /* เวที */
-        .stage-container { grid-area: 1 / 3; display: flex; flex-direction: column; align-items: center; height: 100%;}
-        .stage-main { width: 100%; height: 45px; background: #ffb74d; border-radius: 6px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 16px;}
-        .stage-catwalk { width: 40%; height: 50px; background: #ffb74d; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;}
+        .stage-container { grid-area: 1 / 3; display: flex; flex-direction: column; align-items: center; margin-bottom: 10px;}
+        .stage-main { width: 100%; height: 45px; background: #ffb74d; border-radius: 6px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 14px;}
+        .stage-catwalk { width: 40%; height: 40px; background: #ffb74d; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;}
 
-        /* โซนต่างๆ */
-        .zone { border: 1px solid #333; padding: 8px; border-radius: 8px; background: #1a1c23; }
+        /* กล่องโซนในหน้าภาพรวม (คลิกเพื่อเข้าหน้าเฉพาะโซน) */
+        .zone-box { background: #1a1c23; border: 1px solid #333; border-radius: 8px; padding: 8px; cursor: pointer; transition: 0.1s;}
+        .zone-box:active { background: #2d3748; transform: scale(0.98); }
+        .zone-box.vip { border: 1px solid #941724; background: #221013; }
         
-        /* หัวข้อโซน: ทำให้กดได้ เพื่อซูมโฟกัส */
-        .zone-title { 
-            text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 4px; border-radius: 4px;
-            cursor: pointer; transition: 0.1s;
-        }
-        .zone-title:active { transform: scale(0.95); opacity: 0.8; }
-        .zone-title.normal { background: #263238; }
+        .zone-box-title { text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 3px; border-radius: 4px;}
+        .zone-box-title.normal { background: #263238; }
         
-        .seats-grid { display: grid; gap: 3px; justify-content: center; }
+        /* ตารางเก้าอี้จิ๋วในหน้าภาพรวม (โชว์สีครบทุกตัว) */
+        .mini-seats-grid { display: grid; gap: 2px; justify-content: center; }
+        .mini-seat { width: 10px; height: 10px; border-radius: 1px; }
+
+        /* ---------------------------------
+           หน้า 2: เจาะจงโซน (Zone Detail)
+        --------------------------------- */
+        #view-zone { display: none; padding: 15px; max-width: 800px; margin: 0 auto;}
         
-        /* เก้าอี้ขนาดกะทัดรัด เห็นภาพรวมชัด */
+        .zone-header-bar { display: flex; justify-content: space-between; align-items: center; background: #1a1c23; padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;}
+        .zone-header-bar h2 { margin: 0; font-size: 16px; color: #ffb74d;}
+        
+        .seats-grid { display: grid; gap: 6px; justify-content: center; margin: 0 auto;}
+        .grid-15 { grid-template-columns: repeat(15, 1fr); }
+        .grid-10 { grid-template-columns: repeat(10, 1fr); }
+        
+        /* เก้าอี้ขนาดใหญ่เต็มตาในหน้าโซนย่อย จิ้มง่ายไม่พลาด */
         .seat { 
-            width: 18px; height: 18px; border-radius: 3px; cursor: pointer; 
-            font-size: 9px; font-weight: bold; display: flex; justify-content: center; align-items: center; 
+            aspect-ratio: 1; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; 
+            font-size: 12px; font-weight: bold; display: flex; justify-content: center; align-items: center; 
         }
-        .seat:hover { opacity: 0.7; transform: scale(1.2); }
+        .seat:active { transform: scale(0.9); }
         
+        /* สีสถานะเก้าอี้ */
         .status-Available { background: #374151; color: #9ca3af; }
         .status-Pending { background: #f59e0b; color: #000; }
         .status-Booked { background: #dc2626; color: #fff; }
@@ -90,26 +77,39 @@
         .input-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #4b5563; background: #111827; color: white; box-sizing: border-box; font-size: 15px;}
         .action-btns { display: flex; flex-direction: column; gap: 8px; }
         .modal button { padding: 10px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; font-size: 14px;}
+        .backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 90;}
     </style>
 </head>
 <body>
 
     <div class="header">
-        <a href="index.html" class="btn-back">← กลับ</a>
+        <a href="index.html" class="btn-back">← ออกระบบ</a>
         <span id="currentUser" style="color:#ffb74d; font-weight: bold; font-size: 13px;"></span>
-        <button class="btn-capture" onclick="captureMap()">แคปผัง</button>
+        <button class="btn-capture" onclick="captureOverviewMap()">แคปผังรวม</button>
     </div>
 
-    <!-- ปุ่มควบคุมซูมลอยด้านล่าง -->
-    <div class="floating-controls">
-        <button class="fab-btn" onclick="panzoom.zoomOut()">-</button>
-        <button class="fab-btn-reset" onclick="fitToScreen()">กึ่งกลางจอ</button>
-        <button class="fab-btn" onclick="panzoom.zoomIn()">+</button>
+    <!-- หน้าจอโหลด -->
+    <div id="loadingOverlay">
+        <h2 style="color: #888;">กำลังโหลดข้อมูล...</h2>
     </div>
 
-    <div class="map-container" id="mapContainer">
-        <div id="loadingOverlay"><h2 style="color: #888;">กำลังโหลดผังที่นั่ง...</h2></div>
-        <div id="seatingArea"></div>
+    <!-- หน้า 1: ภาพรวมทุกโซน (แสดงสีทุกที่นั่งครบ) -->
+    <div id="view-overview">
+        <div class="overview-layout" id="overviewLayout">
+            <div class="stage-container">
+                <div class="stage-main">STAGE</div>
+                <div class="stage-catwalk"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้า 2: หน้าจอเฉพาะโซน (เลือกที่นั่งเต็มตา) -->
+    <div id="view-zone">
+        <div class="zone-header-bar">
+            <button class="btn-back" onclick="showOverview()">← กลับภาพรวม</button>
+            <h2 id="currentZoneTitle">ZONE Name</h2>
+        </div>
+        <div class="seats-grid" id="zoneSeatsGrid"></div>
     </div>
 
     <div class="footer">
@@ -120,6 +120,8 @@
         </div>
     </div>
 
+    <!-- Modal จัดการที่นั่ง -->
+    <div class="backdrop" id="modalBackdrop" onclick="closeModal()"></div>
     <div class="modal" id="actionModal">
         <h3 id="modalSeatId"></h3>
         <div class="input-group"><label>ชื่อลูกค้า</label><input type="text" id="custName" placeholder="กรอกชื่อลูกค้า"></div>
@@ -128,7 +130,7 @@
             <button style="background: #dc2626; color: white;" onclick="updateStatus('Booked')">ยืนยันจอง (Booked)</button>
             <button style="background: #f59e0b; color: black;" onclick="updateStatus('Pending')">รอโอน (Pending)</button>
             <button style="background: #374151; color: white;" onclick="updateStatus('Available')">ยกเลิกจอง (ตั้งเป็นว่าง)</button>
-            <button style="background: transparent; color: #9ca3af; border: 1px solid #4b5563;" onclick="document.getElementById('actionModal').style.display='none'">ปิด</button>
+            <button style="background: transparent; color: #9ca3af; border: 1px solid #4b5563;" onclick="closeModal()">ปิด</button>
         </div>
     </div>
 
@@ -138,9 +140,10 @@
         const adminName = sessionStorage.getItem('adminName');
         document.getElementById('currentUser').innerText = adminName && adminName !== "Guest" ? `Admin: ${adminName}` : "ผู้ชมทั่วไป";
         
+        let seatDataMap = {}; 
+        let zoneData = {}; 
         let currentSelectedSeat = "";
-        window.seatDataMap = {}; 
-        let zoneElements = {}; // เก็บ element ของแต่ละโซนไว้ใช้อ้างอิงตอนกดซูม
+        let currentViewedZone = "";
 
         const layoutGrid = {
             "ZONE A": "1 / 1", "VIP 1": "1 / 2", "VIP 2": "1 / 4", "ZONE B": "1 / 5",
@@ -150,10 +153,6 @@
             "ZONE L": "5 / 1", "ZONE M": "5 / 2", "ZONE N": "5 / 3", "ZONE O": "5 / 4", "ZONE P": "5 / 5",
             "ZONE Q": "6 / 1", "ZONE R": "6 / 2", "ZONE S": "6 / 3", "ZONE T": "6 / 4", "ZONE U": "6 / 5"
         };
-
-        const elem = document.getElementById('seatingArea');
-        const panzoom = Panzoom(elem, { maxScale: 5, minScale: 0.1, contain: false, step: 0.15 });
-        elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
         async function loadSeats() {
             try {
@@ -166,8 +165,8 @@
                 
                 if (result.status === "success") {
                     document.getElementById('loadingOverlay').style.display = 'none';
-                    renderSeats(result.data);
-                    setTimeout(fitToScreen, 200);
+                    processData(result.data);
+                    renderOverview();
                 } else {
                     document.getElementById('loadingOverlay').innerHTML = `<h2 style="color:red;">ข้อผิดพลาด: ${result.message}</h2>`;
                 }
@@ -176,116 +175,103 @@
             }
         }
 
-        // ซูมออกดูภาพรวมทั้งผัง
-        function fitToScreen() {
-            const area = document.getElementById('seatingArea');
-            const screenW = window.innerWidth;
-            const screenH = window.innerHeight - 110; 
-            const areaW = area.offsetWidth;
-            const areaH = area.offsetHeight;
+        function processData(data) {
+            seatDataMap = {};
+            zoneData = {};
             
-            const scaleX = (screenW * 0.95) / areaW;
-            const scaleY = (screenH * 0.95) / areaH;
-            const targetScale = Math.min(scaleX, scaleY);
-            
-            panzoom.pan(0, 0);
-            panzoom.zoom(targetScale, { animate: true });
-        }
-
-        // ฟังก์ชันคลิกที่ชื่อโซน เพื่อซูมโฟกัสไปที่โซนนั้นๆ
-        function focusOnZone(zoneName) {
-            const zoneDiv = zoneElements[zoneName];
-            if (!zoneDiv) return;
-
-            const container = document.getElementById('mapContainer');
-            const cWidth = container.clientWidth;
-            const cHeight = container.clientHeight;
-
-            // คำนวณตำแหน่งกึ่งกลางของโซนเทียบกับผังหลัก
-            const zRect = zoneDiv.getBoundingClientRect();
-            const eRect = elem.getBoundingClientRect();
-
-            // คำนวณพิกัดเพื่อดึงโซนมาไว้กลางจอด้วยสเกลขยาย 2.5 เท่า
-            const targetScale = 2.5;
-            const currentScale = panzoom.getScale();
-            
-            // หาจุดกึ่งกลางของโซนในสเกลปัจจุบัน
-            const zoneCenterX = (zRect.left + zRect.width / 2) - eRect.left;
-            const zoneCenterY = (zRect.top + zRect.height / 2) - eRect.top;
-
-            const panX = (cWidth / 2) - (zoneCenterX * targetScale);
-            const panY = (cHeight / 2) - (zoneCenterY * targetScale);
-
-            panzoom.zoom(targetScale, { animate: true });
-            panzoom.pan(panX / targetScale, panY / targetScale, { animate: true });
-        }
-
-        function renderSeats(data) {
-            const area = document.getElementById('seatingArea');
-            area.innerHTML = "";
-            zoneElements = {};
-            
-            const stageContainer = document.createElement('div');
-            stageContainer.className = 'stage-container';
-            stageContainer.innerHTML = `<div class="stage-main">STAGE</div><div class="stage-catwalk"></div>`;
-            area.appendChild(stageContainer);
-
-            const zones = {};
-
             data.forEach(row => {
                 const id = row[0].toString().trim(); 
                 if(!id) return;
                 
-                window.seatDataMap[id] = {
+                seatDataMap[id] = {
                     status: row[3] ? row[3].toString().trim() : "Available",
                     customerName: row[4] ? row[4].toString().trim() : "",
                     phone: row[7] ? row[7].toString().trim() : ""
                 };
 
                 const prefix = id.split('-')[0]; 
-                if (!zones[prefix]) zones[prefix] = [];
-                zones[prefix].push(id);
+                if (!zoneData[prefix]) zoneData[prefix] = [];
+                zoneData[prefix].push(id);
             });
+        }
 
-            Object.keys(zones).forEach(zoneName => {
-                const zoneDiv = document.createElement('div');
-                zoneDiv.className = 'zone';
-                if (layoutGrid[zoneName]) zoneDiv.style.gridArea = layoutGrid[zoneName];
-                
-                zoneElements[zoneName] = zoneDiv; // บันทึกเก็บไว้ใช้อ้างอิงตอนกดซูม
+        // สร้างหน้าภาพรวม: แสดงทุกโซนและจุดสีของเก้าอี้ทุกตัว
+        function renderOverview() {
+            const overviewLayout = document.getElementById('overviewLayout');
+            const oldBoxes = overviewLayout.querySelectorAll('.zone-box');
+            oldBoxes.forEach(b => b.remove());
 
+            Object.keys(zoneData).forEach(zoneName => {
                 const isVip = zoneName.includes('VIP');
                 
-                // หัวข้อโซน: พ่วง Event คลิกเพื่อซูมโฟกัส
+                const box = document.createElement('div');
+                box.className = `zone-box ${isVip ? 'vip' : ''}`;
+                if (layoutGrid[zoneName]) box.style.gridArea = layoutGrid[zoneName];
+                
                 const titleDiv = document.createElement('div');
-                titleDiv.className = `zone-title ${isVip ? '' : 'normal'}`;
-                titleDiv.innerText = zoneName + " (แตะเพื่อซูม)";
-                titleDiv.onclick = () => focusOnZone(zoneName);
-                zoneDiv.appendChild(titleDiv);
-                
-                const gridDiv = document.createElement('div');
-                gridDiv.className = 'seats-grid';
-                
-                const seatCount = zones[zoneName].length;
-                gridDiv.style.gridTemplateColumns = seatCount > 50 ? 'repeat(15, 1fr)' : 'repeat(10, 1fr)';
-                
-                zones[zoneName].forEach(seatId => {
-                    const btn = document.createElement('div');
-                    const seatInfo = window.seatDataMap[seatId];
-                    const seatNumber = parseInt(seatId.split('-')[1], 10);
-                    
-                    btn.className = `seat status-${seatInfo.status}`; 
-                    btn.id = `seat-${seatId}`;
-                    btn.innerText = seatNumber; 
-                    
-                    if (adminName && adminName !== "Guest") {
-                        btn.onclick = () => openModal(seatId);
-                    }
-                    gridDiv.appendChild(btn);
+                titleDiv.className = `zone-box-title ${isVip ? '' : 'normal'}`;
+                titleDiv.innerText = zoneName;
+                box.appendChild(titleDiv);
+
+                const miniGrid = document.createElement('div');
+                miniGrid.className = 'mini-seats-grid';
+                const seatCount = zoneData[zoneName].length;
+                miniGrid.style.gridTemplateColumns = seatCount > 50 ? 'repeat(15, 1fr)' : 'repeat(10, 1fr)';
+
+                zoneData[zoneName].forEach(seatId => {
+                    const info = seatDataMap[seatId];
+                    const miniSeat = document.createElement('div');
+                    miniSeat.className = `mini-seat status-${info.status}`;
+                    miniGrid.appendChild(miniSeat);
                 });
+
+                box.appendChild(miniGrid);
                 
-                zoneDiv.appendChild(gridDiv);
-                area.appendChild(zoneDiv);
+                // คลิกที่โซนเพื่อเปิดหน้าเฉพาะโซน
+                box.onclick = () => openZoneDetail(zoneName);
+                overviewLayout.appendChild(box);
+            });
+        }
+
+        // เปิดหน้าเฉพาะโซน
+        function openZoneDetail(zoneName) {
+            currentViewedZone = zoneName;
+            document.getElementById('view-overview').style.display = 'none';
+            document.getElementById('view-zone').style.display = 'block';
+            document.getElementById('currentZoneTitle').innerText = zoneName;
+            
+            renderZoneSeats(zoneName);
+            window.scrollTo(0, 0);
+        }
+
+        // กลับหน้าภาพรวม
+        function showOverview() {
+            document.getElementById('view-zone').style.display = 'none';
+            document.getElementById('view-overview').style.display = 'block';
+            renderOverview(); // อัปเดตสีภาพรวมทันที
+        }
+
+        // วาดเก้าอี้ขนาดใหญ่ในหน้าโซนย่อย
+        function renderZoneSeats(zoneName) {
+            const grid = document.getElementById('zoneSeatsGrid');
+            grid.innerHTML = "";
+            
+            const seatCount = zoneData[zoneName].length;
+            grid.className = `seats-grid ${seatCount > 50 ? 'grid-15' : 'grid-10'}`;
+            
+            zoneData[zoneName].forEach(seatId => {
+                const info = seatDataMap[seatId];
+                const seatNumber = parseInt(seatId.split('-')[1], 10);
+                
+                const btn = document.createElement('div');
+                btn.className = `seat status-${info.status}`; 
+                btn.id = `seat-${seatId}`;
+                btn.innerText = seatNumber; 
+                
+                if (adminName && adminName !== "Guest") {
+                    btn.onclick = () => openModal(seatId);
+                }
+                grid.appendChild(btn);
             });
         }
 
@@ -293,25 +279,33 @@
             currentSelectedSeat = seatId;
             document.getElementById('modalSeatId').innerText = "ที่นั่ง: " + seatId;
             
-            const seatInfo = window.seatDataMap[seatId];
-            document.getElementById('custName').value = seatInfo.customerName || "";
-            document.getElementById('custPhone').value = seatInfo.phone || "";
+            const info = seatDataMap[seatId];
+            document.getElementById('custName').value = info.customerName || "";
+            document.getElementById('custPhone').value = info.phone || "";
             
+            document.getElementById('modalBackdrop').style.display = "block";
             document.getElementById('actionModal').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('modalBackdrop').style.display = "none";
+            document.getElementById('actionModal').style.display = "none";
         }
 
         async function updateStatus(newStatus) {
             const cName = document.getElementById('custName').value;
             const cPhone = document.getElementById('custPhone').value;
 
-            document.getElementById('actionModal').style.display = "none";
+            closeModal();
             
+            // อัปเดต UI หน้าโซนทันที
             const seatElem = document.getElementById(`seat-${currentSelectedSeat}`);
-            seatElem.className = `seat status-${newStatus}`;
+            if (seatElem) seatElem.className = `seat status-${newStatus}`;
             
-            window.seatDataMap[currentSelectedSeat].status = newStatus;
-            window.seatDataMap[currentSelectedSeat].customerName = newStatus === 'Available' ? "" : cName;
-            window.seatDataMap[currentSelectedSeat].phone = newStatus === 'Available' ? "" : cPhone;
+            // อัปเดตข้อมูลในระบบ
+            seatDataMap[currentSelectedSeat].status = newStatus;
+            seatDataMap[currentSelectedSeat].customerName = newStatus === 'Available' ? "" : cName;
+            seatDataMap[currentSelectedSeat].phone = newStatus === 'Available' ? "" : cPhone;
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
@@ -327,36 +321,34 @@
             });
         }
 
-        function captureMap() {
+        // ระบบแคปภาพหน้าภาพรวม (จำลองจอ Desktop เพื่อให้ได้ภาพครบถ้วนไม่ขาดหาย)
+        function captureOverviewMap() {
             const btn = document.querySelector('.btn-capture');
             const originalText = btn.innerText;
             btn.innerText = "กำลังแคป...";
             
-            const area = document.getElementById('seatingArea');
+            const layout = document.getElementById('overviewLayout');
             
             const cloneWrapper = document.createElement('div');
             cloneWrapper.style.position = 'absolute';
             cloneWrapper.style.top = '0';
             cloneWrapper.style.left = '-9999px'; 
-            cloneWrapper.style.width = '1800px'; 
+            cloneWrapper.style.width = '1200px'; 
             cloneWrapper.style.background = '#0f1115';
-            cloneWrapper.style.padding = '40px';
+            cloneWrapper.style.padding = '30px';
             cloneWrapper.style.zIndex = '-1';
             
-            const clone = area.cloneNode(true);
-            clone.style.transform = 'none'; 
-            clone.style.margin = '0';
-            
+            const clone = layout.cloneNode(true);
             cloneWrapper.appendChild(clone);
             document.body.appendChild(cloneWrapper);
 
             html2canvas(cloneWrapper, { 
                 backgroundColor: "#0f1115",
                 scale: 2,
-                windowWidth: 1800 
+                windowWidth: 1200 
             }).then(canvas => {
                 let link = document.createElement('a');
-                link.download = 'Seating_Map.png';
+                link.download = 'Overview_Seating_Map.png';
                 link.href = canvas.toDataURL("image/png");
                 link.click();
                 
