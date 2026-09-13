@@ -36,7 +36,6 @@
         
         .seats-grid { display: grid; gap: 4px; justify-content: center; }
         
-        /* สไตล์เก้าอี้และตัวเลข */
         .seat { 
             width: 24px; 
             height: 24px; 
@@ -105,8 +104,7 @@
     </div>
 
     <script>
-        // อัปเดต URL ใหม่ล่าสุดที่นี่
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHwc37Mt0KdP2dyzXWI1gLR0JZsWW4smsfJs9Lf3gITE4mznULUorUrWsRF72gUYF2/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxnh9eh_SQBpkuEVlb42onEWnUNmMtGtujz1yStLz70OSUnDVWKFRvG_sztDXcKhU81/exec"; 
         
         const adminName = sessionStorage.getItem('adminName');
         document.getElementById('currentUser').innerText = adminName && adminName !== "Guest" ? `Admin (${adminName})` : "ผู้ชมทั่วไป (ดูได้อย่างเดียว)";
@@ -124,7 +122,6 @@
         };
 
         const elem = document.getElementById('seatingArea');
-        // จำกัดการเลื่อนจอด้วย contain: 'outside'
         const panzoom = Panzoom(elem, { maxScale: 4, minScale: 0.3, contain: 'outside' });
         elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
@@ -143,7 +140,7 @@
                     document.getElementById('seatingArea').innerHTML = `<h2 style="color:red; grid-column: span 5;">ข้อผิดพลาด: ${result.message}</h2>`;
                 }
             } catch (e) {
-                document.getElementById('seatingArea').innerHTML = `<h2 style="color:red; grid-column: span 5;">ไม่สามารถเชื่อมต่อฐานข้อมูลได้</h2>`;
+                document.getElementById('seatingArea').innerHTML = `<h2 style="color:red; grid-column: span 5;">ไม่สามารถเชื่อมต่อฐานข้อมูลได้ เช็คว่า Deploy เป็น 'ทุกคน (Anyone)' หรือยัง</h2>`;
             }
         }
 
@@ -194,7 +191,7 @@
                     
                     btn.className = `seat status-${seatInfo.status}`; 
                     btn.id = `seat-${seatId}`;
-                    btn.innerText = seatNumber; // รันเลขที่นั่ง 1, 2, 3...
+                    btn.innerText = seatNumber; 
                     
                     if (adminName && adminName !== "Guest") {
                         btn.onclick = () => openModal(seatId);
