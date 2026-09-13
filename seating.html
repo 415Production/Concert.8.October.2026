@@ -7,61 +7,119 @@
     <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        body { background: #111; color: white; font-family: sans-serif; margin: 0; overflow: hidden; }
-        .toolbar { padding: 10px; background: #222; display: flex; justify-content: space-between; align-items: center; z-index: 10; position: relative; }
+        body { background: #0f1115; color: white; font-family: sans-serif; margin: 0; overflow: hidden; }
+        .toolbar { padding: 15px; background: #1a1c23; display: flex; justify-content: space-between; align-items: center; z-index: 10; position: relative; border-bottom: 1px solid #333;}
         .btn { padding: 8px 15px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold;}
         .btn-capture { background: #e50914; color: white; }
         .legend span { display: inline-block; width: 15px; height: 15px; margin: 0 10px; border-radius: 3px; vertical-align: middle; }
-        .map-container { width: 100vw; height: calc(100vh - 50px); cursor: grab; display: flex; justify-content: center; align-items: center; }
-        #seatingArea { display: flex; flex-wrap: wrap; gap: 20px; padding: 50px; background: #1a1a1a; border-radius: 10px; max-width: 1400px; justify-content: center;}
-        .zone { border: 1px solid #333; padding: 15px; border-radius: 8px; background: #222; min-width: 150px; }
-        .zone-title { text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 10px; color: #fff; background: #333; padding: 5px; border-radius: 4px;}
-        .seats-grid { display: grid; gap: 4px; justify-content: center; }
-        .seat { width: 20px; height: 20px; background: #555; border-radius: 3px; cursor: pointer; font-size: 0px;}
-        .seat:hover { opacity: 0.7; transform: scale(1.1); transition: 0.1s;}
-        .status-Available { background: #555; }
-        .status-Pending { background: #ffcc00; }
-        .status-Booked { background: #e50914; }
         
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; padding: 25px; border-radius: 10px; z-index: 100; text-align: center; border: 1px solid #444; box-shadow: 0 5px 15px rgba(0,0,0,0.5);}
-        .modal button { margin: 5px; padding: 10px 15px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; font-size: 14px;}
+        .map-container { width: 100vw; height: calc(100vh - 60px); cursor: grab; display: flex; justify-content: center; align-items: center; }
+        
+        /* Grid พื้นที่จัดวางโซนแบบเป๊ะตามรูป */
+        #seatingArea { 
+            display: grid; 
+            grid-template-columns: repeat(5, auto); 
+            grid-template-rows: repeat(6, auto);
+            gap: 20px; 
+            padding: 50px; 
+            background: #0f1115; 
+        }
+        
+        /* สไตล์เวที */
+        .stage {
+            grid-area: 1 / 3; /* อยู่ตรงกลางแถวบนสุด */
+            background: #ffb74d;
+            color: #000;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            min-height: 120px;
+            margin-bottom: 20px;
+        }
+
+        .zone { border: 1px solid #333; padding: 10px; border-radius: 8px; background: #1a1c23; }
+        .zone-title { text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: #fff; background: #941724; padding: 4px; border-radius: 4px;}
+        .zone-title.normal { background: #263238; }
+        
+        .seats-grid { display: grid; gap: 3px; justify-content: center; }
+        .seat { width: 16px; height: 16px; background: #374151; border-radius: 3px; cursor: pointer; font-size: 0px;}
+        .seat:hover { opacity: 0.7; transform: scale(1.2); transition: 0.1s;}
+        
+        .status-Available { background: #374151; }
+        .status-Pending { background: #f59e0b; }
+        .status-Booked { background: #dc2626; }
+        
+        /* Modal Style */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1f2937; padding: 25px; border-radius: 10px; z-index: 100; width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); border: 1px solid #374151;}
+        .modal h3 { margin-top: 0; color: #f3f4f6; text-align: center;}
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 13px; color: #9ca3af; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #4b5563; background: #111827; color: white; box-sizing: border-box;}
+        .action-btns { display: flex; flex-direction: column; gap: 8px; }
+        .modal button { padding: 10px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; font-size: 14px;}
     </style>
 </head>
 <body>
 
     <div class="toolbar">
-        <div>สถานะ: <span id="currentUser" style="color:yellow; font-weight: bold;"></span></div>
+        <div>สถานะ: <span id="currentUser" style="color:#ffb74d; font-weight: bold;"></span></div>
         <div class="legend">
-            <span style="background:#555;"></span> ว่าง
-            <span style="background:#ffcc00;"></span> รอโอน
-            <span style="background:#e50914;"></span> จองแล้ว
+            <span style="background:#374151;"></span> ว่าง
+            <span style="background:#f59e0b;"></span> รอโอน
+            <span style="background:#dc2626;"></span> จองแล้ว
         </div>
         <button class="btn btn-capture" onclick="captureMap()">แคปรูปภาพผัง</button>
     </div>
 
     <div class="map-container" id="mapContainer">
         <div id="seatingArea">
-            <h2 style="width: 100%; text-align: center; color: #888;">กำลังโหลดข้อมูลผังที่นั่ง...</h2>
+            <h2 style="grid-column: span 5; text-align: center; color: #888;">กำลังโหลดข้อมูลผังที่นั่ง...</h2>
         </div>
     </div>
 
+    <!-- Modal สำหรับจัดการที่นั่ง -->
     <div class="modal" id="actionModal">
-        <h3 id="modalSeatId" style="margin-top: 0;"></h3>
-        <p style="color: #aaa; font-size: 14px;">เลือกสถานะที่ต้องการเปลี่ยน</p>
-        <button style="background: #555; color: white;" onclick="updateStatus('Available')">ว่าง (Available)</button>
-        <button style="background: #ffcc00; color: black;" onclick="updateStatus('Pending')">รอโอน (Pending)</button>
-        <button style="background: #e50914; color: white;" onclick="updateStatus('Booked')">ยืนยันจอง (Booked)</button>
-        <br><br>
-        <button style="background: transparent; color: #888; border: 1px solid #555;" onclick="document.getElementById('actionModal').style.display='none'">ยกเลิก</button>
+        <h3 id="modalSeatId"></h3>
+        
+        <div class="input-group">
+            <label>ชื่อลูกค้า (คนจอง)</label>
+            <input type="text" id="custName" placeholder="กรอกชื่อลูกค้า">
+        </div>
+        <div class="input-group">
+            <label>เบอร์โทรศัพท์</label>
+            <input type="text" id="custPhone" placeholder="กรอกเบอร์โทร">
+        </div>
+
+        <div class="action-btns">
+            <button style="background: #dc2626; color: white;" onclick="updateStatus('Booked')">ยืนยันจอง (Booked)</button>
+            <button style="background: #f59e0b; color: black;" onclick="updateStatus('Pending')">รอโอน (Pending)</button>
+            <button style="background: #374151; color: white;" onclick="updateStatus('Available')">ยกเลิกจอง (ตั้งเป็นที่ว่าง)</button>
+            <button style="background: transparent; color: #9ca3af; border: 1px solid #4b5563;" onclick="document.getElementById('actionModal').style.display='none'">ปิดหน้าต่าง</button>
+        </div>
     </div>
 
     <script>
+        // เปลี่ยน URL เป็นของตัวเองที่เพิ่ง Deploy ใหม่
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw05tykCr4TM9HLCsjCc_33tYfUjGnVDWEkyB_q6JzF-2TDjgt1cmlAwVwLBBWfLDgQ/exec"; 
         
         const adminName = sessionStorage.getItem('adminName');
         document.getElementById('currentUser').innerText = adminName ? `Admin (${adminName})` : "ผู้ชมทั่วไป (ดูได้อย่างเดียว)";
         
         let currentSelectedSeat = "";
+        window.seatDataMap = {}; // เก็บข้อมูลลูกค้าไว้ในเครื่อง
+
+        // ตำแหน่งของแต่ละโซนใน Grid (อิงตามรูปเป๊ะๆ) Row / Col
+        const layoutGrid = {
+            "ZONEA": "1 / 1", "VIP1": "1 / 2", "VIP2": "1 / 4", "ZONEB": "1 / 5",
+            "ZONEC": "2 / 1", "VIP3": "2 / 2", "VIP4": "2 / 3", "VIP5": "2 / 4", "ZONED": "2 / 5",
+            "ZONEE": "3 / 1", "VIP6": "3 / 2", "VIP7": "3 / 3", "VIP8": "3 / 4", "ZONEF": "3 / 5",
+            "ZONEG": "4 / 1", "ZONEH": "4 / 2", "ZONEI": "4 / 3", "ZONEJ": "4 / 4", "ZONEK": "4 / 5",
+            "ZONEL": "5 / 1", "ZONEM": "5 / 2", "ZONEN": "5 / 3", "ZONEO": "5 / 4", "ZONEP": "5 / 5",
+            "ZONEQ": "6 / 1", "ZONER": "6 / 2", "ZONES": "6 / 3", "ZONET": "6 / 4", "ZONEU": "6 / 5"
+        };
 
         const elem = document.getElementById('seatingArea');
         const panzoom = Panzoom(elem, { maxScale: 4, minScale: 0.3 });
@@ -79,54 +137,68 @@
                 if (result.status === "success") {
                     renderSeats(result.data);
                 } else {
-                    document.getElementById('seatingArea').innerHTML = `<h2 style="color:red;">ข้อผิดพลาด: ${result.message}</h2>`;
+                    document.getElementById('seatingArea').innerHTML = `<h2 style="color:red; grid-column: span 5;">ข้อผิดพลาด: ${result.message}</h2>`;
                 }
             } catch (e) {
-                document.getElementById('seatingArea').innerHTML = `<h2 style="color:red;">ไม่สามารถเชื่อมต่อฐานข้อมูลได้ กรุณารีเฟรช</h2>`;
+                document.getElementById('seatingArea').innerHTML = `<h2 style="color:red; grid-column: span 5;">ไม่สามารถเชื่อมต่อฐานข้อมูลได้</h2>`;
             }
         }
 
         function renderSeats(data) {
             const area = document.getElementById('seatingArea');
             area.innerHTML = "";
+            
+            // วาดเวที
+            const stage = document.createElement('div');
+            stage.className = 'stage';
+            stage.innerText = 'STAGE';
+            area.appendChild(stage);
+
             const zones = {};
 
             data.forEach(row => {
                 const id = row[0].toString().trim(); 
                 if(!id) return;
                 
-                const parts = id.split('-');
-                const prefix = parts.length > 1 ? parts[0] : "Zone"; 
-                
+                // เก็บข้อมูลลง Object เพื่อให้ดึงไปโชว์ใน Modal ได้
+                window.seatDataMap[id] = {
+                    status: row[3] ? row[3].toString().trim() : "Available",
+                    customerName: row[4] ? row[4].toString().trim() : "",
+                    phone: row[7] ? row[7].toString().trim() : ""
+                };
+
+                const prefix = id.split('-')[0]; 
                 if (!zones[prefix]) zones[prefix] = [];
-                zones[prefix].push(row);
+                zones[prefix].push(id);
             });
 
+            // วาดโซนตาม Layout 
             Object.keys(zones).forEach(zoneName => {
                 const zoneDiv = document.createElement('div');
                 zoneDiv.className = 'zone';
-                zoneDiv.innerHTML = `<div class="zone-title">${zoneName}</div>`;
+                
+                // เช็คว่ามีใน layoutGrid ไหม ถ้ามีให้วางตามตำแหน่ง
+                if (layoutGrid[zoneName]) {
+                    zoneDiv.style.gridArea = layoutGrid[zoneName];
+                }
+
+                const isVip = zoneName.includes('VIP');
+                zoneDiv.innerHTML = `<div class="zone-title ${isVip ? '' : 'normal'}">${zoneName}</div>`;
                 
                 const gridDiv = document.createElement('div');
                 gridDiv.className = 'seats-grid';
                 
-                // กำหนดจำนวนคอลัมน์อัตโนมัติตามจำนวนที่นั่งในโซน
                 const seatCount = zones[zoneName].length;
-                if (seatCount > 50) {
-                    gridDiv.style.gridTemplateColumns = 'repeat(15, 1fr)';
-                } else {
-                    gridDiv.style.gridTemplateColumns = 'repeat(10, 1fr)';
-                }
+                gridDiv.style.gridTemplateColumns = seatCount > 50 ? 'repeat(15, 1fr)' : 'repeat(10, 1fr)';
                 
-                zones[zoneName].forEach(seat => {
+                zones[zoneName].forEach(seatId => {
                     const btn = document.createElement('div');
-                    const status = seat[3] ? seat[3].toString().trim() : "Available";
-                    btn.className = `seat status-${status}`; 
-                    btn.id = `seat-${seat[0]}`;
-                    btn.title = `ที่นั่ง: ${seat[0]}`;
+                    const seatInfo = window.seatDataMap[seatId];
+                    btn.className = `seat status-${seatInfo.status}`; 
+                    btn.id = `seat-${seatId}`;
                     
                     if (adminName && adminName !== "Guest") {
-                        btn.onclick = () => openModal(seat[0]);
+                        btn.onclick = () => openModal(seatId);
                     }
                     gridDiv.appendChild(btn);
                 });
@@ -138,15 +210,32 @@
 
         function openModal(seatId) {
             currentSelectedSeat = seatId;
-            document.getElementById('modalSeatId').innerText = "รหัสที่นั่ง: " + seatId;
+            document.getElementById('modalSeatId').innerText = "ที่นั่ง: " + seatId;
+            
+            // ดึงชื่อและเบอร์มาแสดงถ้าเคยจองไว้แล้ว
+            const seatInfo = window.seatDataMap[seatId];
+            document.getElementById('custName').value = seatInfo.customerName || "";
+            document.getElementById('custPhone').value = seatInfo.phone || "";
+            
             document.getElementById('actionModal').style.display = "block";
         }
 
         async function updateStatus(newStatus) {
+            const cName = document.getElementById('custName').value;
+            const cPhone = document.getElementById('custPhone').value;
+
+            // ปิด Modal
             document.getElementById('actionModal').style.display = "none";
+            
+            // เปลี่ยนสีหน้าจอทันที & อัปเดตข้อมูลในเครื่อง
             const seatElem = document.getElementById(`seat-${currentSelectedSeat}`);
             seatElem.className = `seat status-${newStatus}`;
+            
+            window.seatDataMap[currentSelectedSeat].status = newStatus;
+            window.seatDataMap[currentSelectedSeat].customerName = newStatus === 'Available' ? "" : cName;
+            window.seatDataMap[currentSelectedSeat].phone = newStatus === 'Available' ? "" : cPhone;
 
+            // ส่งข้อมูลไปบันทึก
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -154,7 +243,9 @@
                     action: "updateSeat", 
                     seatId: currentSelectedSeat, 
                     newStatus: newStatus,
-                    adminName: adminName
+                    adminName: adminName,
+                    customerName: newStatus === 'Available' ? "" : cName,
+                    customerPhone: newStatus === 'Available' ? "" : cPhone
                 })
             });
         }
@@ -164,7 +255,7 @@
             const oldTransform = area.style.transform;
             area.style.transform = 'scale(1)'; 
             
-            html2canvas(area, { backgroundColor: "#1a1a1a" }).then(canvas => {
+            html2canvas(area, { backgroundColor: "#0f1115" }).then(canvas => {
                 let link = document.createElement('a');
                 link.download = 'Seating_Map.png';
                 link.href = canvas.toDataURL("image/png");
