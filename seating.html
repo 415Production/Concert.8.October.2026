@@ -2,18 +2,21 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- บังคับไม่ให้เบราว์เซอร์มือถือซูมเองเด็ดขาด -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ผังที่นั่งคอนเสิร์ต</title>
     <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body { background: #0f1115; color: white; font-family: sans-serif; margin: 0; overflow: hidden; }
-        .toolbar { padding: 15px; background: #1a1c23; display: flex; justify-content: space-between; align-items: center; z-index: 20; position: relative; border-bottom: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
+        .toolbar { padding: 15px; background: #1a1c23; display: flex; justify-content: space-between; align-items: center; z-index: 20; position: relative; border-bottom: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.5); flex-wrap: wrap; gap: 10px;}
         .btn { padding: 8px 15px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold; text-decoration: none;}
-        .btn-back { background: #4b5563; color: white; margin-right: 15px;}
+        .btn-back { background: #4b5563; color: white;}
         .btn-back:hover { background: #6b7280; }
         .btn-capture { background: #e50914; color: white; }
-        .legend span { display: inline-block; width: 15px; height: 15px; margin: 0 10px; border-radius: 3px; vertical-align: middle; }
+        .btn-zoom { background: #374151; color: white; padding: 8px 12px; font-size: 16px;}
+        .legend { display: flex; align-items: center; font-size: 12px;}
+        .legend span { display: inline-block; width: 12px; height: 12px; margin: 0 5px 0 10px; border-radius: 3px; }
         
         .map-container { 
             width: 100vw; 
@@ -25,6 +28,7 @@
             padding-top: 40px; 
             box-sizing: border-box;
             overflow: hidden;
+            touch-action: none; /* สำคัญมาก: ป้องกันมือถือ Scroll เอง */
         }
         
         #seatingArea { 
@@ -35,24 +39,25 @@
             padding: 40px; 
             background: #0f1115; 
             margin: 0 auto;
+            transform-origin: center top;
         }
         
         .stage-container { grid-area: 1 / 3; display: flex; flex-direction: column; align-items: center; height: 100%;}
-        .stage-main { width: 100%; height: 60px; background: #ffb74d; border-radius: 10px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 20px;}
+        .stage-main { width: 100%; height: 60px; background: #ffb74d; border-radius: 10px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 18px;}
         .stage-catwalk { width: 40%; height: 80px; background: #ffb74d; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;}
 
-        .zone { border: 1px solid #333; padding: 10px; border-radius: 8px; background: #1a1c23; }
-        .zone-title { text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: #fff; background: #941724; padding: 4px; border-radius: 4px;}
+        .zone { border: 1px solid #333; padding: 8px; border-radius: 8px; background: #1a1c23; }
+        .zone-title { text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 4px; border-radius: 4px;}
         .zone-title.normal { background: #263238; }
         
-        .seats-grid { display: grid; gap: 4px; justify-content: center; }
+        .seats-grid { display: grid; gap: 3px; justify-content: center; }
         
         .seat { 
-            width: 24px; 
-            height: 24px; 
+            width: 20px; 
+            height: 20px; 
             border-radius: 3px; 
             cursor: pointer; 
-            font-size: 11px; 
+            font-size: 10px; 
             font-weight: bold;
             display: flex;
             justify-content: center;
@@ -64,39 +69,49 @@
         .status-Pending { background: #f59e0b; color: #000; }
         .status-Booked { background: #dc2626; color: #fff; }
         
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1f2937; padding: 25px; border-radius: 10px; z-index: 100; width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); border: 1px solid #374151;}
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1f2937; padding: 25px; border-radius: 10px; z-index: 100; width: 90%; max-width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); border: 1px solid #374151;}
         .modal h3 { margin-top: 0; color: #f3f4f6; text-align: center;}
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { display: block; font-size: 13px; color: #9ca3af; margin-bottom: 5px; }
         .input-group input { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #4b5563; background: #111827; color: white; box-sizing: border-box;}
         .action-btns { display: flex; flex-direction: column; gap: 8px; }
         .modal button { padding: 10px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; font-size: 14px;}
+        
+        /* ปรับ Toolbar บนมือถือให้พอดี */
+        @media (max-width: 768px) {
+            .toolbar { flex-direction: column; align-items: stretch; padding: 10px;}
+            .toolbar > div { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;}
+        }
     </style>
 </head>
 <body>
 
     <div class="toolbar">
         <div>
-            <a href="index.html" class="btn btn-back">← กลับหน้าแรก</a>
-            สถานะ: <span id="currentUser" style="color:#ffb74d; font-weight: bold;"></span>
+            <a href="index.html" class="btn btn-back">← กลับ</a>
+            <span id="currentUser" style="color:#ffb74d; font-weight: bold; font-size: 14px;"></span>
         </div>
         <div class="legend">
-            <span style="background:#374151;"></span> ว่าง
-            <span style="background:#f59e0b;"></span> รอโอน
-            <span style="background:#dc2626;"></span> จองแล้ว
+            <span style="background:#374151;"></span>ว่าง
+            <span style="background:#f59e0b;"></span>รอโอน
+            <span style="background:#dc2626;"></span>จองแล้ว
         </div>
-        <button class="btn btn-capture" onclick="captureMap()">แคปรูปภาพผัง</button>
+        <div>
+            <!-- ปุ่มควบคุมการซูมด้วยการกด -->
+            <button class="btn btn-zoom" onclick="panzoom.zoomIn()">+</button>
+            <button class="btn btn-zoom" onclick="panzoom.zoomOut()">-</button>
+            <button class="btn btn-capture" onclick="captureMap()" style="margin-left: 10px;">แคปรูป</button>
+        </div>
     </div>
 
     <div class="map-container" id="mapContainer">
         <div id="seatingArea">
-            <h2 style="grid-column: span 5; text-align: center; color: #888;">กำลังโหลดข้อมูลผังที่นั่ง...</h2>
+            <h2 style="grid-column: span 5; text-align: center; color: #888;">กำลังโหลดข้อมูล...</h2>
         </div>
     </div>
 
     <div class="modal" id="actionModal">
         <h3 id="modalSeatId"></h3>
-        
         <div class="input-group">
             <label>ชื่อลูกค้า (คนจอง)</label>
             <input type="text" id="custName" placeholder="กรอกชื่อลูกค้า">
@@ -105,11 +120,10 @@
             <label>เบอร์โทรศัพท์</label>
             <input type="text" id="custPhone" placeholder="กรอกเบอร์โทร">
         </div>
-
         <div class="action-btns">
             <button style="background: #dc2626; color: white;" onclick="updateStatus('Booked')">ยืนยันจอง (Booked)</button>
             <button style="background: #f59e0b; color: black;" onclick="updateStatus('Pending')">รอโอน (Pending)</button>
-            <button style="background: #374151; color: white;" onclick="updateStatus('Available')">ยกเลิกจอง (ตั้งเป็นที่ว่าง)</button>
+            <button style="background: #374151; color: white;" onclick="updateStatus('Available')">ยกเลิกจอง (ตั้งเป็นว่าง)</button>
             <button style="background: transparent; color: #9ca3af; border: 1px solid #4b5563;" onclick="document.getElementById('actionModal').style.display='none'">ปิดหน้าต่าง</button>
         </div>
     </div>
@@ -118,7 +132,7 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxnh9eh_SQBpkuEVlb42onEWnUNmMtGtujz1yStLz70OSUnDVWKFRvG_sztDXcKhU81/exec"; 
         
         const adminName = sessionStorage.getItem('adminName');
-        document.getElementById('currentUser').innerText = adminName && adminName !== "Guest" ? `Admin (${adminName})` : "ผู้ชมทั่วไป (ดูได้อย่างเดียว)";
+        document.getElementById('currentUser').innerText = adminName && adminName !== "Guest" ? `Admin: ${adminName}` : "ผู้ชมทั่วไป";
         
         let currentSelectedSeat = "";
         window.seatDataMap = {}; 
@@ -132,14 +146,16 @@
             "ZONE Q": "6 / 1", "ZONE R": "6 / 2", "ZONE S": "6 / 3", "ZONE T": "6 / 4", "ZONE U": "6 / 5"
         };
 
+        // คำนวณสเกลเริ่มต้น: มือถือให้เล็กสุด คอมให้ใหญ่ขึ้น
+        const isMobile = window.innerWidth <= 768;
+        const initialScale = isMobile ? 0.15 : 0.35;
+
         const elem = document.getElementById('seatingArea');
-        
-        // ปรับ startScale ให้เล็กลงเพื่อให้ซูมออกสุดตอนเปิดหน้าเว็บครั้งแรก
         const panzoom = Panzoom(elem, { 
             maxScale: 4, 
-            minScale: 0.15,      // ลด minScale ให้ซูมออกได้มากขึ้น
-            startScale: 0.35,    // ค่าซูมเริ่มต้น
-            contain: 'outside' 
+            minScale: 0.1,      
+            startScale: initialScale,
+            contain: false // ปลดล็อค contain เพื่อให้มือถือเลื่อนได้อิสระ
         });
         elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
@@ -154,17 +170,12 @@
                 
                 if (result.status === "success") {
                     renderSeats(result.data);
-                    
-                    // หน่วงเวลาเล็กน้อยให้วาดผังเสร็จ แล้วสั่งจัดกึ่งกลางและซูมออก
-                    setTimeout(() => {
-                        panzoom.zoom(0.35, { animate: true });
-                    }, 200);
-
+                    setTimeout(() => { panzoom.zoom(initialScale, { animate: true }); }, 200);
                 } else {
                     document.getElementById('seatingArea').innerHTML = `<h2 style="color:red; grid-column: span 5;">ข้อผิดพลาด: ${result.message}</h2>`;
                 }
             } catch (e) {
-                document.getElementById('seatingArea').innerHTML = `<h2 style="color:red; grid-column: span 5;">ไม่สามารถเชื่อมต่อฐานข้อมูลได้ เช็คว่า Deploy เป็น 'ทุกคน (Anyone)' หรือยัง</h2>`;
+                document.getElementById('seatingArea').innerHTML = `<h2 style="color:red; grid-column: span 5;">ไม่สามารถเชื่อมต่อฐานข้อมูลได้</h2>`;
             }
         }
 
