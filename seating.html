@@ -15,15 +15,14 @@
         .btn-capture { background: #e50914; color: white; }
         .legend span { display: inline-block; width: 15px; height: 15px; margin: 0 10px; border-radius: 3px; vertical-align: middle; }
         
-        /* แก้ไขส่วนนี้ให้ขยับลงมา และไม่ให้โดนบัง */
         .map-container { 
             width: 100vw; 
             height: calc(100vh - 70px); 
             cursor: grab; 
             display: flex; 
             justify-content: center; 
-            align-items: flex-start; /* เปลี่ยนจาก center เป็น flex-start */
-            padding-top: 80px; /* เพิ่มระยะห่างจากขอบบน */
+            align-items: flex-start;
+            padding-top: 40px; 
             box-sizing: border-box;
             overflow: hidden;
         }
@@ -134,8 +133,14 @@
         };
 
         const elem = document.getElementById('seatingArea');
-        // กำหนด Initial Scale เพื่อให้เห็นผังได้พอดีขึ้นในตอนแรกเริ่ม
-        const panzoom = Panzoom(elem, { maxScale: 4, minScale: 0.3, contain: 'outside' });
+        
+        // ปรับ startScale ให้เล็กลงเพื่อให้ซูมออกสุดตอนเปิดหน้าเว็บครั้งแรก
+        const panzoom = Panzoom(elem, { 
+            maxScale: 4, 
+            minScale: 0.15,      // ลด minScale ให้ซูมออกได้มากขึ้น
+            startScale: 0.35,    // ค่าซูมเริ่มต้น
+            contain: 'outside' 
+        });
         elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
         async function loadSeats() {
@@ -149,6 +154,12 @@
                 
                 if (result.status === "success") {
                     renderSeats(result.data);
+                    
+                    // หน่วงเวลาเล็กน้อยให้วาดผังเสร็จ แล้วสั่งจัดกึ่งกลางและซูมออก
+                    setTimeout(() => {
+                        panzoom.zoom(0.35, { animate: true });
+                    }, 200);
+
                 } else {
                     document.getElementById('seatingArea').innerHTML = `<h2 style="color:red; grid-column: span 5;">ข้อผิดพลาด: ${result.message}</h2>`;
                 }
