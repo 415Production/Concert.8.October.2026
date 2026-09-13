@@ -289,7 +289,7 @@
             });
         }
 
-        // ระบบแคปภาพแบบใหม่: โคลนผังไปไว้หลังฉาก แล้วแคปแบบเต็มจอ
+        // ระบบแคปภาพแบบบังคับขนาดจอให้เทียบเท่า Desktop
         function captureMap() {
             const btn = document.querySelector('.btn-capture');
             const originalText = btn.innerText;
@@ -301,6 +301,7 @@
             cloneWrapper.style.position = 'absolute';
             cloneWrapper.style.top = '0';
             cloneWrapper.style.left = '-9999px'; 
+            cloneWrapper.style.width = '1800px'; // บังคับให้กว้างเท่าจอคอมพิวเตอร์เสมอ
             cloneWrapper.style.background = '#0f1115';
             cloneWrapper.style.padding = '40px';
             cloneWrapper.style.zIndex = '-1';
@@ -312,9 +313,11 @@
             cloneWrapper.appendChild(clone);
             document.body.appendChild(cloneWrapper);
 
-            html2canvas(clone, { 
+            // ส่งคำสั่ง html2canvas พร้อมหลอกขนาดหน้าจอ (windowWidth)
+            html2canvas(cloneWrapper, { 
                 backgroundColor: "#0f1115",
-                scale: 2 // เพิ่มความละเอียดภาพ 2 เท่า
+                scale: 2,
+                windowWidth: 1800 
             }).then(canvas => {
                 let link = document.createElement('a');
                 link.download = 'Seating_Map.png';
