@@ -28,12 +28,12 @@
         
         .overview-layout { 
             display: grid; 
-            /* กำหนดขนาด Column แยกตามสัดส่วน 50 ที่นั่ง (VIP) และ 75 ที่นั่ง (Zone ปกติ) อย่างแม่นยำ */
-            grid-template-columns: 140px 105px 120px 105px 140px;
+            /* ขยาย Column แถวกลาง (คอลัมน์ 3) ให้กว้างพอดีกับ 75 ที่นั่ง */
+            grid-template-columns: 130px 115px 145px 115px 130px;
             gap: 8px; 
             justify-content: center; 
             margin: 0 auto;
-            min-width: 630px; 
+            min-width: 660px; 
         }
         
         /* เวที */
@@ -49,7 +49,6 @@
         .zone-box-title { text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #fff; background: #941724; padding: 2px; border-radius: 3px;}
         .zone-box-title.normal { background: #263238; }
         
-        /* ตารางเก้าอี้จิ๋ว ควบคุมขนาดให้พอดีเป๊ะไม่ล้นขอบ */
         .mini-seats-grid { display: grid; gap: 1.5px; justify-content: center; width: 100%; }
         .grid-mini-10 { grid-template-columns: repeat(10, 8px); }
         .grid-mini-15 { grid-template-columns: repeat(15, 7px); }
@@ -71,10 +70,10 @@
             padding-bottom: 20px;
         }
 
-        .seats-grid { display: grid; justify-content: center; margin: 0 auto;}
-        /* เพิ่มช่องไฟ (Gap) ให้โซน 75 ที่นั่ง (grid-15) และ 50 ที่นั่ง (grid-10) กดง่ายไม่ติดกัน */
+        .seats-grid { display: grid; justify-content: center; margin: 0 auto; padding: 0 10px;}
         .grid-15 { grid-template-columns: repeat(15, 34px); gap: 6px; min-width: 630px; }
-        .grid-10 { grid-template-columns: repeat(10, 36px); gap: 8px; min-width: 420px; }
+        /* ขยายมินิความกว้างของ grid-10 เพื่อให้ตัวเลขหลักสิบไม่ตกขอบ */
+        .grid-10 { grid-template-columns: repeat(10, 38px); gap: 8px; min-width: 460px; }
         
         .seat { 
             aspect-ratio: 1; width: 100%; border-radius: 4px; cursor: pointer; 
@@ -232,7 +231,6 @@
                 const miniGrid = document.createElement('div');
                 const seatCount = zoneData[zoneName].length;
                 
-                // แยกคลาสกริดเก้าอี้จิ๋วให้ตรงกับจำนวนที่นั่ง (50 หรือ 75)
                 miniGrid.className = `mini-seats-grid ${seatCount > 50 ? 'grid-mini-15' : 'grid-mini-10'}`;
 
                 zoneData[zoneName].forEach(seatId => {
