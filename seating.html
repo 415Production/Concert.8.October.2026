@@ -2,7 +2,6 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <!-- บังคับ Mobile First: ห้ามเบราว์เซอร์ซูมเองเด็ดขาด -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ผังที่นั่งคอนเสิร์ต</title>
     <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
@@ -20,18 +19,58 @@
         .legend { display: flex; align-items: center; font-size: 13px; font-weight: bold;}
         .legend span { display: inline-block; width: 14px; height: 14px; margin: 0 5px 0 15px; border-radius: 3px; }
         
-        /* ปุ่มลอย (Floating Controls) สไตล์ Google Maps */
-        .floating-controls { position: fixed; bottom: 70px; right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 30;}
-        .fab-btn { width: 40px; height: 40px; border-radius: 50%; background: #374151; color: white; border: 1px solid #4b5563; font-size: 20px; font-weight: bold; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.6);}
-        .fab-btn-reset { width: auto; height: 35px; border-radius: 20px; font-size: 12px; padding: 0 15px; background: #e50914; border: none;}
+        /* ปุ่มลอย (Floating Controls) ย้ายมาตรงกลางด้านล่าง */
+        .floating-controls { 
+            position: fixed; 
+            bottom: 70px; /* ลอยอยู่เหนือ Footer */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex; 
+            flex-direction: row; 
+            gap: 15px; 
+            z-index: 30;
+            align-items: center;
+        }
+        .fab-btn { 
+            width: 45px; height: 45px; border-radius: 50%; 
+            background: #374151; color: white; border: 1px solid #4b5563; 
+            font-size: 24px; font-weight: bold; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+        }
+        .fab-btn-reset { 
+            width: auto; height: 40px; border-radius: 20px; 
+            font-size: 14px; padding: 0 20px; 
+            background: #e50914; border: none; font-weight: bold; color: white;
+            white-space: nowrap; box-shadow: 0 4px 8px rgba(0,0,0,0.6); cursor: pointer;
+        }
 
         /* พื้นที่แสดงผัง */
-        .map-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; cursor: grab; overflow: hidden; }
+        .map-container { 
+            position: fixed;
+            top: 60px; /* เริ่มใต้ Header */
+            left: 0;
+            width: 100vw; 
+            height: calc(100vh - 110px); /* พื้นที่ระหว่าง Header กับ Footer */
+            cursor: grab; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+            touch-action: none;
+        }
         
-        /* แผ่นรองรับการทัชขนาดใหญ่ (ทำให้แตะลากตรงไหนก็ได้) */
-        #zoomWrapper { width: 10000px; height: 10000px; display: flex; justify-content: center; align-items: center; }
-        
-        #seatingArea { display: grid; grid-template-columns: repeat(5, auto); grid-template-rows: repeat(6, auto); gap: 20px; padding: 40px; background: #0f1115; }
+        /* ผังที่นั่ง (ปรับให้รองรับการลากจากพื้นที่ว่างได้เต็มจอ) */
+        #seatingArea { 
+            display: grid; 
+            grid-template-columns: repeat(5, auto); 
+            grid-template-rows: repeat(6, auto);
+            gap: 20px; 
+            padding: 40px; 
+            background: #0f1115; 
+            min-width: 100%; /* บังคับให้ขนาดอย่างน้อยเท่าหน้าจอ */
+            min-height: 100%;
+            place-content: center; /* จัดให้เนื้อหาผังอยู่ตรงกลาง */
+            box-sizing: border-box;
+        }
         
         /* Loading Overlay ตรงกลางจอ */
         #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #0f1115; z-index: 50; }
@@ -70,20 +109,17 @@
         <button class="btn-capture" onclick="captureMap()">แคปผัง</button>
     </div>
 
-    <!-- ปุ่มลอย (ซูมและจัดกึ่งกลาง) -->
+    <!-- ปุ่มลอย (Zoom - / กึ่งกลาง / Zoom +) -->
     <div class="floating-controls">
-        <button class="fab-btn fab-btn-reset" onclick="fitToScreen()">กึ่งกลางหน้าจอ</button>
-        <button class="fab-btn" onclick="panzoom.zoomIn()">+</button>
         <button class="fab-btn" onclick="panzoom.zoomOut()">-</button>
+        <button class="fab-btn-reset" onclick="fitToScreen()">กลับสู่กลางจอ</button>
+        <button class="fab-btn" onclick="panzoom.zoomIn()">+</button>
     </div>
 
     <div class="map-container" id="mapContainer">
         <div id="loadingOverlay"><h2 style="color: #888;">กำลังโหลดข้อมูล...</h2></div>
         
-        <!-- แผ่นรองรับการทัชขนาดใหญ่ -->
-        <div id="zoomWrapper">
-            <div id="seatingArea"></div>
-        </div>
+        <div id="seatingArea"></div>
     </div>
 
     <!-- Footer -->
@@ -125,10 +161,16 @@
             "ZONE Q": "6 / 1", "ZONE R": "6 / 2", "ZONE S": "6 / 3", "ZONE T": "6 / 4", "ZONE U": "6 / 5"
         };
 
-        const zoomElem = document.getElementById('zoomWrapper');
-        // กำหนด Panzoom ไปที่แผ่นรองทัชขนาดใหญ่
-        const panzoom = Panzoom(zoomElem, { maxScale: 3, minScale: 0.1, contain: false });
-        zoomElem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+        const elem = document.getElementById('seatingArea');
+        
+        // ผูก Panzoom เข้ากับตัวผังโดยตรง (แก้ปัญหาซูมไวเกินไป)
+        const panzoom = Panzoom(elem, { 
+            maxScale: 4, 
+            minScale: 0.1, 
+            contain: false,
+            step: 0.15 // ปรับความสมูทของการซูม
+        });
+        elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
         async function loadSeats() {
             try {
@@ -143,7 +185,7 @@
                     document.getElementById('loadingOverlay').style.display = 'none';
                     renderSeats(result.data);
                     
-                    // หน่วงเวลาเล็กน้อยเพื่อให้เบราว์เซอร์วาดผังเสร็จ แล้วสั่ง Fit to screen
+                    // หน่วงเวลาให้เบราว์เซอร์วาดตารางเสร็จ แล้วค่อยจัดกึ่งกลางและซูมให้พอดีจอ
                     setTimeout(fitToScreen, 200);
                 } else {
                     document.getElementById('loadingOverlay').innerHTML = `<h2 style="color:red;">ข้อผิดพลาด: ${result.message}</h2>`;
@@ -153,21 +195,21 @@
             }
         }
 
-        // ฟังก์ชันคำนวณและจัดผังให้อยู่ตรงกลางพอดีกับหน้าจอ (Fit to Screen)
+        // ฟังก์ชันคำนวณสเกลเพื่อให้พอดีกับหน้าจอ
         function fitToScreen() {
             const area = document.getElementById('seatingArea');
             const screenW = window.innerWidth;
-            const screenH = window.innerHeight - 110; // หัก Header และ Footer ออก
+            const screenH = window.innerHeight - 110; 
             
-            const areaW = area.offsetWidth || 1500;
-            const areaH = area.offsetHeight || 1500;
+            // ดึงความกว้างและความสูงที่แท้จริงของผังมาคำนวณ
+            const areaW = area.offsetWidth;
+            const areaH = area.offsetHeight;
             
-            // คำนวณสเกลที่พอดี (เว้นขอบนิดหน่อย)
             const scaleX = (screenW * 0.95) / areaW;
             const scaleY = (screenH * 0.95) / areaH;
             const targetScale = Math.min(scaleX, scaleY);
             
-            // รีเซ็ตตำแหน่งให้อยู่ตรงกลาง และซูมตามสเกลที่คำนวณได้
+            // สั่งขยับกลับไปจุดกึ่งกลาง (0,0) และซูมตามสเกลที่คำนวณไว้
             panzoom.pan(0, 0);
             panzoom.zoom(targetScale, { animate: true });
         }
@@ -270,14 +312,18 @@
             });
         }
 
-        // ฟังก์ชัน Capture เฉพาะตัวผัง (ไม่เอาพื้นหลังพื้นที่ลากที่กว้างเกินไป)
         function captureMap() {
             const area = document.getElementById('seatingArea');
+            const oldTransform = area.style.transform;
+            
+            // เซ็ตสเกลเป็น 1 ชั่วคราวเพื่อแคปภาพให้ชัดเจน แล้วค่อยคืนค่าเดิม
+            area.style.transform = 'scale(1)'; 
             html2canvas(area, { backgroundColor: "#0f1115" }).then(canvas => {
                 let link = document.createElement('a');
                 link.download = 'Seating_Map.png';
                 link.href = canvas.toDataURL("image/png");
                 link.click();
+                area.style.transform = oldTransform; 
             });
         }
 
