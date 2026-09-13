@@ -24,16 +24,23 @@
         /* ---------------------------------
            หน้า 1: ภาพรวมทุกโซน (Overview)
         --------------------------------- */
-        #view-overview { padding: 15px; max-width: 900px; margin: 0 auto; display: block;}
+        #view-overview { padding: 20px 30px; margin: 0 auto; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         
-        .overview-layout { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; justify-content: center; margin-top: 10px;}
+        .overview-layout { 
+            display: grid; 
+            grid-template-columns: repeat(5, minmax(130px, 1fr)); 
+            gap: 12px; 
+            justify-content: center; 
+            margin: 0 auto;
+            min-width: 720px; /* บังคับความกว้างขั้นต่ำเพื่อให้เลื่อนดูได้รอบด้าน */
+        }
         
         /* เวที */
         .stage-container { grid-area: 1 / 3; display: flex; flex-direction: column; align-items: center; margin-bottom: 10px;}
         .stage-main { width: 100%; height: 45px; background: #ffb74d; border-radius: 6px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 14px;}
         .stage-catwalk { width: 40%; height: 40px; background: #ffb74d; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;}
 
-        /* กล่องโซนในหน้าภาพรวม (คลิกเพื่อเข้าหน้าเฉพาะโซน) */
+        /* กล่องโซนในหน้าภาพรวม */
         .zone-box { background: #1a1c23; border: 1px solid #333; border-radius: 8px; padding: 8px; cursor: pointer; transition: 0.1s;}
         .zone-box:active { background: #2d3748; transform: scale(0.98); }
         .zone-box.vip { border: 1px solid #941724; background: #221013; }
@@ -41,7 +48,7 @@
         .zone-box-title { text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 3px; border-radius: 4px;}
         .zone-box-title.normal { background: #263238; }
         
-        /* ตารางเก้าอี้จิ๋วในหน้าภาพรวม (โชว์สีครบทุกตัว) */
+        /* ตารางเก้าอี้จิ๋วในหน้าภาพรวม */
         .mini-seats-grid { display: grid; gap: 2px; justify-content: center; }
         .mini-seat { width: 10px; height: 10px; border-radius: 1px; }
 
@@ -57,14 +64,12 @@
         .grid-15 { grid-template-columns: repeat(15, 1fr); }
         .grid-10 { grid-template-columns: repeat(10, 1fr); }
         
-        /* เก้าอี้ขนาดใหญ่เต็มตาในหน้าโซนย่อย จิ้มง่ายไม่พลาด */
         .seat { 
             aspect-ratio: 1; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; 
             font-size: 12px; font-weight: bold; display: flex; justify-content: center; align-items: center; 
         }
         .seat:active { transform: scale(0.9); }
         
-        /* สีสถานะเก้าอี้ */
         .status-Available { background: #374151; color: #9ca3af; }
         .status-Pending { background: #f59e0b; color: #000; }
         .status-Booked { background: #dc2626; color: #fff; }
@@ -88,12 +93,11 @@
         <button class="btn-capture" onclick="captureOverviewMap()">แคปผังรวม</button>
     </div>
 
-    <!-- หน้าจอโหลด -->
     <div id="loadingOverlay">
         <h2 style="color: #888;">กำลังโหลดข้อมูล...</h2>
     </div>
 
-    <!-- หน้า 1: ภาพรวมทุกโซน (แสดงสีทุกที่นั่งครบ) -->
+    <!-- หน้า 1: ภาพรวมทุกโซน -->
     <div id="view-overview">
         <div class="overview-layout" id="overviewLayout">
             <div class="stage-container">
@@ -103,7 +107,7 @@
         </div>
     </div>
 
-    <!-- หน้า 2: หน้าจอเฉพาะโซน (เลือกที่นั่งเต็มตา) -->
+    <!-- หน้า 2: เจาะจงโซน -->
     <div id="view-zone">
         <div class="zone-header-bar">
             <button class="btn-back" onclick="showOverview()">← กลับภาพรวม</button>
@@ -120,7 +124,6 @@
         </div>
     </div>
 
-    <!-- Modal จัดการที่นั่ง -->
     <div class="backdrop" id="modalBackdrop" onclick="closeModal()"></div>
     <div class="modal" id="actionModal">
         <h3 id="modalSeatId"></h3>
@@ -195,7 +198,6 @@
             });
         }
 
-        // สร้างหน้าภาพรวม: แสดงทุกโซนและจุดสีของเก้าอี้ทุกตัว
         function renderOverview() {
             const overviewLayout = document.getElementById('overviewLayout');
             const oldBoxes = overviewLayout.querySelectorAll('.zone-box');
@@ -226,14 +228,11 @@
                 });
 
                 box.appendChild(miniGrid);
-                
-                // คลิกที่โซนเพื่อเปิดหน้าเฉพาะโซน
                 box.onclick = () => openZoneDetail(zoneName);
                 overviewLayout.appendChild(box);
             });
         }
 
-        // เปิดหน้าเฉพาะโซน
         function openZoneDetail(zoneName) {
             currentViewedZone = zoneName;
             document.getElementById('view-overview').style.display = 'none';
@@ -244,14 +243,12 @@
             window.scrollTo(0, 0);
         }
 
-        // กลับหน้าภาพรวม
         function showOverview() {
             document.getElementById('view-zone').style.display = 'none';
             document.getElementById('view-overview').style.display = 'block';
-            renderOverview(); // อัปเดตสีภาพรวมทันที
+            renderOverview();
         }
 
-        // วาดเก้าอี้ขนาดใหญ่ในหน้าโซนย่อย
         function renderZoneSeats(zoneName) {
             const grid = document.getElementById('zoneSeatsGrid');
             grid.innerHTML = "";
@@ -298,11 +295,9 @@
 
             closeModal();
             
-            // อัปเดต UI หน้าโซนทันที
             const seatElem = document.getElementById(`seat-${currentSelectedSeat}`);
             if (seatElem) seatElem.className = `seat status-${newStatus}`;
             
-            // อัปเดตข้อมูลในระบบ
             seatDataMap[currentSelectedSeat].status = newStatus;
             seatDataMap[currentSelectedSeat].customerName = newStatus === 'Available' ? "" : cName;
             seatDataMap[currentSelectedSeat].phone = newStatus === 'Available' ? "" : cPhone;
@@ -321,7 +316,6 @@
             });
         }
 
-        // ระบบแคปภาพหน้าภาพรวม (จำลองจอ Desktop เพื่อให้ได้ภาพครบถ้วนไม่ขาดหาย)
         function captureOverviewMap() {
             const btn = document.querySelector('.btn-capture');
             const originalText = btn.innerText;
