@@ -9,7 +9,9 @@
     <style>
         body { background: #0f1115; color: white; font-family: sans-serif; margin: 0; overflow: hidden; }
         .toolbar { padding: 15px; background: #1a1c23; display: flex; justify-content: space-between; align-items: center; z-index: 10; position: relative; border-bottom: 1px solid #333;}
-        .btn { padding: 8px 15px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold;}
+        .btn { padding: 8px 15px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold; text-decoration: none;}
+        .btn-back { background: #4b5563; color: white; margin-right: 15px;}
+        .btn-back:hover { background: #6b7280; }
         .btn-capture { background: #e50914; color: white; }
         .legend span { display: inline-block; width: 15px; height: 15px; margin: 0 10px; border-radius: 3px; vertical-align: middle; }
         
@@ -24,34 +26,9 @@
             background: #0f1115; 
         }
         
-        /* สไตล์เวทีแบบมี Catwalk ยื่นลงมา */
-        .stage-container {
-            grid-area: 1 / 3; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            height: 100%;
-        }
-        .stage-main {
-            width: 100%;
-            height: 60px;
-            background: #ffb74d;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #000;
-            font-weight: bold;
-            font-size: 20px;
-        }
-        .stage-catwalk {
-            width: 40%;
-            height: 80px;
-            background: #ffb74d;
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-        }
+        .stage-container { grid-area: 1 / 3; display: flex; flex-direction: column; align-items: center; height: 100%;}
+        .stage-main { width: 100%; height: 60px; background: #ffb74d; border-radius: 10px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 20px;}
+        .stage-catwalk { width: 40%; height: 80px; background: #ffb74d; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;}
 
         .zone { border: 1px solid #333; padding: 10px; border-radius: 8px; background: #1a1c23; }
         .zone-title { text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: #fff; background: #941724; padding: 4px; border-radius: 4px;}
@@ -59,26 +36,24 @@
         
         .seats-grid { display: grid; gap: 4px; justify-content: center; }
         
-        /* สไตล์เก้าอี้ พร้อมโชว์เลข */
+        /* สไตล์เก้าอี้และตัวเลข */
         .seat { 
-            width: 22px; 
-            height: 22px; 
-            background: #374151; 
+            width: 24px; 
+            height: 24px; 
             border-radius: 3px; 
             cursor: pointer; 
-            font-size: 10px; /* ขนาดตัวเลขในเก้าอี้ */
+            font-size: 11px; 
+            font-weight: bold;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #ccc;
         }
         .seat:hover { opacity: 0.7; transform: scale(1.1); transition: 0.1s;}
         
-        .status-Available { background: #374151; }
-        .status-Pending { background: #f59e0b; color: #000;}
-        .status-Booked { background: #dc2626; color: #fff;}
+        .status-Available { background: #374151; color: #9ca3af; }
+        .status-Pending { background: #f59e0b; color: #000; }
+        .status-Booked { background: #dc2626; color: #fff; }
         
-        /* Modal Style */
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1f2937; padding: 25px; border-radius: 10px; z-index: 100; width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); border: 1px solid #374151;}
         .modal h3 { margin-top: 0; color: #f3f4f6; text-align: center;}
         .input-group { margin-bottom: 15px; text-align: left; }
@@ -91,7 +66,10 @@
 <body>
 
     <div class="toolbar">
-        <div>เข้าใช้งานโดย: <span id="currentUser" style="color:#ffb74d; font-weight: bold;"></span></div>
+        <div>
+            <a href="index.html" class="btn btn-back">← กลับหน้าแรก</a>
+            สถานะ: <span id="currentUser" style="color:#ffb74d; font-weight: bold;"></span>
+        </div>
         <div class="legend">
             <span style="background:#374151;"></span> ว่าง
             <span style="background:#f59e0b;"></span> รอโอน
@@ -106,7 +84,6 @@
         </div>
     </div>
 
-    <!-- หน้าต่าง Modal จัดการที่นั่ง -->
     <div class="modal" id="actionModal">
         <h3 id="modalSeatId"></h3>
         
@@ -128,16 +105,15 @@
     </div>
 
     <script>
-        // สำคัญ: เอา URL ของ Web App Google Script ของคุณมาใส่ตรงนี้เหมือนเดิม
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw05tykCr4TM9HLCsjCc_33tYfUjGnVDWEkyB_q6JzF-2TDjgt1cmlAwVwLBBWfLDgQ/exec"; 
+        // อัปเดต URL ใหม่ล่าสุดที่นี่
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHwc37Mt0KdP2dyzXWI1gLR0JZsWW4smsfJs9Lf3gITE4mznULUorUrWsRF72gUYF2/exec"; 
         
         const adminName = sessionStorage.getItem('adminName');
-        document.getElementById('currentUser').innerText = adminName ? `Admin (${adminName})` : "ผู้ชมทั่วไป (ดูได้อย่างเดียว)";
+        document.getElementById('currentUser').innerText = adminName && adminName !== "Guest" ? `Admin (${adminName})` : "ผู้ชมทั่วไป (ดูได้อย่างเดียว)";
         
         let currentSelectedSeat = "";
         window.seatDataMap = {}; 
 
-        // จัดเรียงตำแหน่งโซนตามชื่อใหม่ (มีเว้นวรรค)
         const layoutGrid = {
             "ZONE A": "1 / 1", "VIP 1": "1 / 2", "VIP 2": "1 / 4", "ZONE B": "1 / 5",
             "ZONE C": "2 / 1", "VIP 3": "2 / 2", "VIP 4": "2 / 3", "VIP 5": "2 / 4", "ZONE D": "2 / 5",
@@ -148,7 +124,8 @@
         };
 
         const elem = document.getElementById('seatingArea');
-        const panzoom = Panzoom(elem, { maxScale: 4, minScale: 0.3 });
+        // จำกัดการเลื่อนจอด้วย contain: 'outside'
+        const panzoom = Panzoom(elem, { maxScale: 4, minScale: 0.3, contain: 'outside' });
         elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
         async function loadSeats() {
@@ -174,13 +151,9 @@
             const area = document.getElementById('seatingArea');
             area.innerHTML = "";
             
-            // สร้างเวที T-Shape + Catwalk ตรงกลาง
             const stageContainer = document.createElement('div');
             stageContainer.className = 'stage-container';
-            stageContainer.innerHTML = `
-                <div class="stage-main">STAGE</div>
-                <div class="stage-catwalk"></div>
-            `;
+            stageContainer.innerHTML = `<div class="stage-main">STAGE</div><div class="stage-catwalk"></div>`;
             area.appendChild(stageContainer);
 
             const zones = {};
@@ -195,7 +168,6 @@
                     phone: row[7] ? row[7].toString().trim() : ""
                 };
 
-                // แยกชื่อโซนแบบใหม่ (เอาส่วนหน้าของ - มาใช้ เช่น "ZONE A")
                 const prefix = id.split('-')[0]; 
                 if (!zones[prefix]) zones[prefix] = [];
                 zones[prefix].push(id);
@@ -204,10 +176,7 @@
             Object.keys(zones).forEach(zoneName => {
                 const zoneDiv = document.createElement('div');
                 zoneDiv.className = 'zone';
-                
-                if (layoutGrid[zoneName]) {
-                    zoneDiv.style.gridArea = layoutGrid[zoneName];
-                }
+                if (layoutGrid[zoneName]) zoneDiv.style.gridArea = layoutGrid[zoneName];
 
                 const isVip = zoneName.includes('VIP');
                 zoneDiv.innerHTML = `<div class="zone-title ${isVip ? '' : 'normal'}">${zoneName}</div>`;
@@ -221,15 +190,12 @@
                 zones[zoneName].forEach(seatId => {
                     const btn = document.createElement('div');
                     const seatInfo = window.seatDataMap[seatId];
-                    
-                    // ดึงเฉพาะตัวเลขหลังขีด - มาแสดงในเก้าอี้
                     const seatNumber = parseInt(seatId.split('-')[1], 10);
                     
                     btn.className = `seat status-${seatInfo.status}`; 
                     btn.id = `seat-${seatId}`;
-                    btn.innerText = seatNumber; // ใส่เลขเก้าอี้
+                    btn.innerText = seatNumber; // รันเลขที่นั่ง 1, 2, 3...
                     
-                    // ถ้าเข้าสู่ระบบด้วยชื่อแอดมิน ให้กดได้
                     if (adminName && adminName !== "Guest") {
                         btn.onclick = () => openModal(seatId);
                     }
