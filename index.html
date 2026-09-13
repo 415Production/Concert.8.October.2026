@@ -8,10 +8,10 @@
         :root { --primary-color: #e50914; --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #ffffff; }
         body { font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .login-box { background: var(--card-bg); padding: 30px; border-radius: 10px; width: 350px; text-align: center; }
-        input, select, button { width: 100%; margin-top: 15px; padding: 10px; border-radius: 5px; border: none; box-sizing: border-box;}
+        input, select, button { width: 100%; margin-top: 15px; padding: 10px; border-radius: 5px; border: none; box-sizing: border-box; font-size: 16px; }
         button { background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
         .link { margin-top: 15px; color: #888; cursor: pointer; font-size: 14px; text-decoration: underline;}
-        #msg { margin-top: 15px; font-size: 14px; }
+        #msg { margin-top: 15px; font-size: 14px; font-weight: bold; height: 20px;}
     </style>
 </head>
 <body>
@@ -47,7 +47,11 @@
             const pass = document.getElementById('pass').value;
             const msg = document.getElementById('msg');
             
-            if (!pass) return msg.innerText = "กรุณาใส่รหัสผ่าน";
+            if (!pass) {
+                msg.style.color = "red";
+                msg.innerText = "กรุณาใส่รหัสผ่าน";
+                return;
+            }
             
             msg.innerText = "กำลังประมวลผล...";
             msg.style.color = "yellow";
@@ -79,7 +83,7 @@
                 }
             } catch (e) {
                 msg.style.color = "red";
-                msg.innerText = "การเชื่อมต่อล้มเหลว ลองใหม่อีกครั้ง";
+                msg.innerText = "การเชื่อมต่อล้มเหลว กรุณาลองใหม่";
             }
         }
 
