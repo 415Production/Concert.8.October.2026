@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ผังที่นั่งคอนเสิร์ต</title>
+    <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        body { background: #111; color: white; font-family: sans-serif; margin: 0; overflow: hidden; }
+        .toolbar { padding: 10px; background: #222; display: flex; justify-content: space-between; align-items: center; z-index: 10; position: relative; }
+        .btn { padding: 8px 15px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold;}
+        .btn-capture { background: #e50914; color: white; }
+        .legend span { display: inline-block; width: 15px; height: 15px; margin: 0 10px; border-radius: 3px; }
+        .map-container { width: 100vw; height: calc(100vh - 50px); cursor: grab; display: flex; justify-content: center; align-items: center; }
+        #seatingArea { display: flex; flex-wrap: wrap; gap: 20px; padding: 50px; background: #1a1a1a; border-radius: 10px; max-width: 1200px;}
+        .zone { border: 1px solid #333; padding: 10px; border-radius: 8px; background: #222; }
+        .zone-title { text-align: center; font-size: 12px; margin-bottom: 5px; color: #aaa; }
+        .seats-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; }
+        .seat { width: 15px; height: 15px; background: #555; border-radius: 2px; cursor: pointer; font-size: 0px;}
+        .seat:hover { opacity: 0.7; }
+        .status-Available { background: #555; }
+        .status-Pending { background: #ffcc00; }
+        .status-Booked { background: #e50914; }
+        
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #333; padding: 20px; border-radius: 10px; z-index: 100; text-align: center; }
+        .modal button { margin: 5px; padding: 10px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <div>เข้าสู่ระบบโดย: <span id="currentUser" style="color:yellow;"></span></div>
+        <div class="legend">
+            <span style="background:#555;"></span> ว่าง
+            <span style="background:#ffcc00;"></span> รอโอน
+            <span style="background:#e50914;"></span> จองแล้ว
+        </div>
+        <button class="btn btn-capture" onclick="captureMap()">แคปรูปภาพผัง</button>
+    </div>
+
+    <div class="map-container" id="mapContainer">
+        <div id="seatingArea">
+            <h2 style="width: 100%; text-align: center;">กำลังโหลดผังที่นั่ง...</h2>
+        </div>
+    </div>
+
+    <div class="modal" id="actionModal">
+        <h3 id="modalSeatId"></h3>
+        <p>เลือกสถานะที่ต้องการเปลี่ยน</p>
+        <button style="background: #555; color: white;" onclick="updateStatus('Available')">ว่าง (Available)</button>
+        <button style="background: #ffcc00;" onclick="updateStatus('Pending')">รอโอน (Pending)</button>
+        <button style="background: #e50914; color: white;" onclick="updateStatus('Booked')">ยืนยันจอง (Booked)</button>
+        <br><br>
+        <button style="background: #aaa;" onclick="document.getElementById('actionModal').style.display='none'">ยกเลิก</button>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw05tykCr4TM9HLCsjCc_33tYfUjGnVDWEkyB_q6JzF-2TDjgt1cmlAwVwLBBWfLDgQ/exec"; 
+        
+        const adminName = sessionStorage.getItem('adminName');
+        document.getElementById('currentUser').innerText = adminName || "ยังไม่ได้เข้าสู่ระบบ";
+        
+        let currentSelectedSeat = "";
+
+        const elem = document.getElementById('seatingArea');
+        const panzoom = Panzoom(elem, { maxScale: 4, minScale: 0.5 });
+        elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+
+        async function loadSeats() {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: "getSeats" })
+                });
+                const result = await response.json();
+                if (result.status === "success") renderSeats(result.data);
+            } catch (e) {
+                document.getElementById('seatingArea').innerHTML = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+            }
+        }
+
+        function renderSeats(data) {
+            const area = document.getElementById('seatingArea');
+            area.innerHTML = "";
+            const zones = {};
+
+            data.forEach(row => {
+                const id = row[0]; 
+                const prefix = id.split('-')[0]; 
+                if (!zones[prefix]) zones[prefix] = [];
+                zones[prefix].push(row);
+            });
+
+            Object.keys(zones).forEach(zoneName => {
+                const zoneDiv = document.createElement('div');
+                zoneDiv.className = 'zone';
+                zoneDiv.innerHTML = `<div class="zone-title">${zoneName}</div>`;
+                
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'seats-grid';
+                
+                zones[zoneName].forEach(seat => {
+                    const btn = document.createElement('div');
+                    btn.className = `seat status-${seat[3]}`; 
+                    btn.id = `seat-${seat[0]}`;
+                    
+                    if (adminName !== "Guest" && adminName !== null) {
+                        btn.onclick = () => openModal(seat[0]);
+                    }
+                    gridDiv.appendChild(btn);
+                });
+                
+                zoneDiv.appendChild(gridDiv);
+                area.appendChild(zoneDiv);
+            });
+        }
+
+        function openModal(seatId) {
+            currentSelectedSeat = seatId;
+            document.getElementById('modalSeatId').innerText = "รหัสที่นั่ง: " + seatId;
+            document.getElementById('actionModal').style.display = "block";
+        }
+
+        async function updateStatus(newStatus) {
+            document.getElementById('actionModal').style.display = "none";
+            const seatElem = document.getElementById(`seat-${currentSelectedSeat}`);
+            seatElem.className = `seat status-${newStatus}`;
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ 
+                    action: "updateSeat", 
+                    seatId: currentSelectedSeat, 
+                    newStatus: newStatus,
+                    adminName: adminName
+                })
+            });
+        }
+
+        function captureMap() {
+            const area = document.getElementById('seatingArea');
+            const oldTransform = area.style.transform;
+            area.style.transform = 'scale(1)'; 
+            
+            html2canvas(area, { backgroundColor: "#1a1a1a" }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'Seating_Map.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                area.style.transform = oldTransform; 
+            });
+        }
+
+        loadSeats();
+    </script>
+</body>
+</html>

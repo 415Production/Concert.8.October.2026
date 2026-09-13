@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - ต้นข้าว สุปรียา</title>
+    <style>
+        :root { --primary-color: #e50914; --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #ffffff; }
+        body { font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-box { background: var(--card-bg); padding: 30px; border-radius: 10px; width: 350px; text-align: center; }
+        input, select, button { width: 100%; margin-top: 15px; padding: 10px; border-radius: 5px; border: none; box-sizing: border-box;}
+        button { background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
+        .link { margin-top: 15px; color: #888; cursor: pointer; font-size: 14px; text-decoration: underline;}
+        #msg { margin-top: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>คอนเสิร์ต ต้นข้าว สุปรียา</h2>
+        <p>8 ตุลาคม 2569</p>
+        <select id="user">
+            <option value="KEW">KEW</option>
+            <option value="EURO">EURO</option>
+            <option value="NK">NK</option>
+        </select>
+        <input type="password" id="pass" placeholder="รหัสผ่าน">
+        <button onclick="submitData()">เข้าสู่ระบบ</button>
+        <div class="link" onclick="toggleMode()" id="toggleTxt">หรือ ตั้งรหัสผ่านใหม่ (สำหรับแอดมิน)</div>
+        <button style="background: #444;" onclick="viewMap()">ดูผังที่นั่ง (ผู้เข้าชมทั่วไป)</button>
+        <div id="msg"></div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw05tykCr4TM9HLCsjCc_33tYfUjGnVDWEkyB_q6JzF-2TDjgt1cmlAwVwLBBWfLDgQ/exec"; 
+        
+        let isLogin = true;
+
+        function toggleMode() {
+            isLogin = !isLogin;
+            document.querySelector('button').innerText = isLogin ? "เข้าสู่ระบบ" : "บันทึกรหัสผ่าน";
+            document.getElementById('toggleTxt').innerText = isLogin ? "หรือ ตั้งรหัสผ่านใหม่ (สำหรับแอดมิน)" : "กลับไปหน้าเข้าสู่ระบบ";
+            document.getElementById('msg').innerText = "";
+        }
+
+        async function submitData() {
+            const user = document.getElementById('user').value;
+            const pass = document.getElementById('pass').value;
+            const msg = document.getElementById('msg');
+            
+            if (!pass) return msg.innerText = "กรุณาใส่รหัสผ่าน";
+            
+            msg.innerText = "กำลังประมวลผล...";
+            msg.style.color = "yellow";
+
+            const action = isLogin ? "login" : "register";
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: action, username: user, password: pass })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    msg.style.color = "lime";
+                    msg.innerText = result.message;
+                    if (isLogin) {
+                        sessionStorage.setItem('adminName', user);
+                        setTimeout(() => window.location.href = "seating.html", 1000);
+                    } else {
+                        setTimeout(toggleMode, 1500);
+                        document.getElementById('pass').value = "";
+                    }
+                } else {
+                    msg.style.color = "red";
+                    msg.innerText = result.message;
+                }
+            } catch (e) {
+                msg.style.color = "red";
+                msg.innerText = "การเชื่อมต่อล้มเหลว ลองใหม่อีกครั้ง";
+            }
+        }
+
+        function viewMap() {
+            sessionStorage.setItem('adminName', 'Guest');
+            window.location.href = "seating.html";
+        }
+    </script>
+</body>
+</html>
