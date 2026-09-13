@@ -21,7 +21,7 @@
         <h2 style="margin-top:0;">คอนเสิร์ต ต้นข้าว สุปรียา</h2>
         <p style="color: #aaa; margin-bottom: 30px;">8 ตุลาคม 2569</p>
         
-        <label style="display:block; text-align:left; font-size:14px; color:#aaa;">เลือกชื่อแอดมิน:</label>
+        <label style="display:block; text-align:left; font-size:14px; color:#aaa;">เลือกชื่อเจ้าหน้าที่:</label>
         <select id="user">
             <option value="KEW">KEW</option>
             <option value="EURO">EURO</option>
@@ -35,8 +35,8 @@
     <script>
         function loginAdmin() {
             const user = document.getElementById('user').value;
-            sessionStorage.setItem('adminName', user); // บันทึกชื่อลงเบราว์เซอร์
-            window.location.href = "seating.html"; // เปลี่ยนหน้าทันที
+            sessionStorage.setItem('adminName', user); 
+            window.location.href = "seating.html"; 
         }
 
         function loginGuest() {
