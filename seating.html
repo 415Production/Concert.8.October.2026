@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ผังที่นั่งคอนเสิร์ต - ภาพรวม</title>
+    <title>ผังที่นั่งคอนเสิร์ต</title>
     <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
@@ -47,8 +47,8 @@
             display: grid; 
             grid-template-columns: repeat(5, auto); 
             grid-template-rows: repeat(6, auto);
-            gap: 12px; padding: 25px; background: #0f1115; 
-            transform-origin: center top;
+            gap: 15px; padding: 30px; background: #0f1115; 
+            transform-origin: center center;
         }
         
         #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #0f1115; z-index: 50; }
@@ -59,16 +59,22 @@
         .stage-catwalk { width: 40%; height: 50px; background: #ffb74d; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;}
 
         /* โซนต่างๆ */
-        .zone { border: 1px solid #333; padding: 6px; border-radius: 6px; background: #1a1c23; }
-        .zone-title { text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #fff; background: #941724; padding: 2px; border-radius: 3px;}
+        .zone { border: 1px solid #333; padding: 8px; border-radius: 8px; background: #1a1c23; }
+        
+        /* หัวข้อโซน: ทำให้กดได้ เพื่อซูมโฟกัส */
+        .zone-title { 
+            text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 4px; border-radius: 4px;
+            cursor: pointer; transition: 0.1s;
+        }
+        .zone-title:active { transform: scale(0.95); opacity: 0.8; }
         .zone-title.normal { background: #263238; }
         
-        .seats-grid { display: grid; gap: 2px; justify-content: center; }
+        .seats-grid { display: grid; gap: 3px; justify-content: center; }
         
-        /* เก้าอี้ขนาดกะทัดรัด มองเห็นภาพรวมชัดเจน */
+        /* เก้าอี้ขนาดกะทัดรัด เห็นภาพรวมชัด */
         .seat { 
-            width: 16px; height: 16px; border-radius: 2px; cursor: pointer; 
-            font-size: 8px; font-weight: bold; display: flex; justify-content: center; align-items: center; 
+            width: 18px; height: 18px; border-radius: 3px; cursor: pointer; 
+            font-size: 9px; font-weight: bold; display: flex; justify-content: center; align-items: center; 
         }
         .seat:hover { opacity: 0.7; transform: scale(1.2); }
         
@@ -134,6 +140,7 @@
         
         let currentSelectedSeat = "";
         window.seatDataMap = {}; 
+        let zoneElements = {}; // เก็บ element ของแต่ละโซนไว้ใช้อ้างอิงตอนกดซูม
 
         const layoutGrid = {
             "ZONE A": "1 / 1", "VIP 1": "1 / 2", "VIP 2": "1 / 4", "ZONE B": "1 / 5",
@@ -145,7 +152,7 @@
         };
 
         const elem = document.getElementById('seatingArea');
-        const panzoom = Panzoom(elem, { maxScale: 4, minScale: 0.1, contain: false, step: 0.15 });
+        const panzoom = Panzoom(elem, { maxScale: 5, minScale: 0.1, contain: false, step: 0.15 });
         elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
 
         async function loadSeats() {
@@ -169,7 +176,7 @@
             }
         }
 
-        // คำนวณให้เห็นภาพรวมทั้งผังพอดีจอตอนเปิด
+        // ซูมออกดูภาพรวมทั้งผัง
         function fitToScreen() {
             const area = document.getElementById('seatingArea');
             const screenW = window.innerWidth;
@@ -185,9 +192,38 @@
             panzoom.zoom(targetScale, { animate: true });
         }
 
+        // ฟังก์ชันคลิกที่ชื่อโซน เพื่อซูมโฟกัสไปที่โซนนั้นๆ
+        function focusOnZone(zoneName) {
+            const zoneDiv = zoneElements[zoneName];
+            if (!zoneDiv) return;
+
+            const container = document.getElementById('mapContainer');
+            const cWidth = container.clientWidth;
+            const cHeight = container.clientHeight;
+
+            // คำนวณตำแหน่งกึ่งกลางของโซนเทียบกับผังหลัก
+            const zRect = zoneDiv.getBoundingClientRect();
+            const eRect = elem.getBoundingClientRect();
+
+            // คำนวณพิกัดเพื่อดึงโซนมาไว้กลางจอด้วยสเกลขยาย 2.5 เท่า
+            const targetScale = 2.5;
+            const currentScale = panzoom.getScale();
+            
+            // หาจุดกึ่งกลางของโซนในสเกลปัจจุบัน
+            const zoneCenterX = (zRect.left + zRect.width / 2) - eRect.left;
+            const zoneCenterY = (zRect.top + zRect.height / 2) - eRect.top;
+
+            const panX = (cWidth / 2) - (zoneCenterX * targetScale);
+            const panY = (cHeight / 2) - (zoneCenterY * targetScale);
+
+            panzoom.zoom(targetScale, { animate: true });
+            panzoom.pan(panX / targetScale, panY / targetScale, { animate: true });
+        }
+
         function renderSeats(data) {
             const area = document.getElementById('seatingArea');
             area.innerHTML = "";
+            zoneElements = {};
             
             const stageContainer = document.createElement('div');
             stageContainer.className = 'stage-container';
@@ -215,9 +251,17 @@
                 const zoneDiv = document.createElement('div');
                 zoneDiv.className = 'zone';
                 if (layoutGrid[zoneName]) zoneDiv.style.gridArea = layoutGrid[zoneName];
+                
+                zoneElements[zoneName] = zoneDiv; // บันทึกเก็บไว้ใช้อ้างอิงตอนกดซูม
 
                 const isVip = zoneName.includes('VIP');
-                zoneDiv.innerHTML = `<div class="zone-title ${isVip ? '' : 'normal'}">${zoneName}</div>`;
+                
+                // หัวข้อโซน: พ่วง Event คลิกเพื่อซูมโฟกัส
+                const titleDiv = document.createElement('div');
+                titleDiv.className = `zone-title ${isVip ? '' : 'normal'}`;
+                titleDiv.innerText = zoneName + " (แตะเพื่อซูม)";
+                titleDiv.onclick = () => focusOnZone(zoneName);
+                zoneDiv.appendChild(titleDiv);
                 
                 const gridDiv = document.createElement('div');
                 gridDiv.className = 'seats-grid';
@@ -283,7 +327,6 @@
             });
         }
 
-        // ระบบแคปภาพแบบจำลองขนาดจอคอมพิวเตอร์ (ไม่ตัดขอบ ไม่แหว่ง ทั้งคอมและมือถือ)
         function captureMap() {
             const btn = document.querySelector('.btn-capture');
             const originalText = btn.innerText;
