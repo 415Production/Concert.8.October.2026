@@ -24,49 +24,57 @@
         /* ---------------------------------
            หน้า 1: ภาพรวมทุกโซน (Overview)
         --------------------------------- */
-        #view-overview { padding: 20px 30px; margin: 0 auto; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        #view-overview { padding: 15px; margin: 0 auto; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         
         .overview-layout { 
             display: grid; 
-            grid-template-columns: repeat(5, minmax(130px, 1fr)); 
-            gap: 12px; 
+            grid-template-columns: repeat(5, minmax(110px, 1fr)); 
+            gap: 8px; 
             justify-content: center; 
             margin: 0 auto;
-            min-width: 720px; /* บังคับความกว้างขั้นต่ำเพื่อให้เลื่อนดูได้รอบด้าน */
+            min-width: 600px; 
         }
         
         /* เวที */
-        .stage-container { grid-area: 1 / 3; display: flex; flex-direction: column; align-items: center; margin-bottom: 10px;}
-        .stage-main { width: 100%; height: 45px; background: #ffb74d; border-radius: 6px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 14px;}
-        .stage-catwalk { width: 40%; height: 40px; background: #ffb74d; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;}
+        .stage-container { grid-area: 1 / 3; display: flex; flex-direction: column; align-items: center; margin-bottom: 5px;}
+        .stage-main { width: 100%; height: 40px; background: #ffb74d; border-radius: 6px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 13px;}
+        .stage-catwalk { width: 40%; height: 35px; background: #ffb74d; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;}
 
-        /* กล่องโซนในหน้าภาพรวม */
-        .zone-box { background: #1a1c23; border: 1px solid #333; border-radius: 8px; padding: 8px; cursor: pointer; transition: 0.1s;}
+        /* กล่องโซนในหน้าภาพรวม (จัดระเบียบไม่ให้เก้าอี้ล้นขอบ) */
+        .zone-box { background: #1a1c23; border: 1px solid #333; border-radius: 6px; padding: 6px; cursor: pointer; transition: 0.1s; box-sizing: border-box;}
         .zone-box:active { background: #2d3748; transform: scale(0.98); }
         .zone-box.vip { border: 1px solid #941724; background: #221013; }
         
-        .zone-box-title { text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 3px; border-radius: 4px;}
+        .zone-box-title { text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #fff; background: #941724; padding: 2px; border-radius: 3px;}
         .zone-box-title.normal { background: #263238; }
         
-        /* ตารางเก้าอี้จิ๋วในหน้าภาพรวม */
-        .mini-seats-grid { display: grid; gap: 2px; justify-content: center; }
-        .mini-seat { width: 10px; height: 10px; border-radius: 1px; }
+        /* ตารางเก้าอี้จิ๋ว */
+        .mini-seats-grid { display: grid; gap: 1.5px; justify-content: center; width: 100%; }
+        .mini-seat { width: 7px; height: 7px; border-radius: 1px; }
 
         /* ---------------------------------
-           หน้า 2: เจาะจงโซน (Zone Detail)
+           หน้า 2: เจาะจงโซน (Zone Detail) - รองรับเลื่อนซ้ายขวาได้อิสระ
         --------------------------------- */
-        #view-zone { display: none; padding: 15px; max-width: 800px; margin: 0 auto;}
+        #view-zone { display: none; padding: 15px; max-width: 100%; margin: 0 auto; box-sizing: border-box;}
         
-        .zone-header-bar { display: flex; justify-content: space-between; align-items: center; background: #1a1c23; padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333;}
+        .zone-header-bar { display: flex; justify-content: space-between; align-items: center; background: #1a1c23; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333;}
         .zone-header-bar h2 { margin: 0; font-size: 16px; color: #ffb74d;}
         
+        /* ส่วนห่อหุ้มตารางเก้าอี้ ให้เลื่อนซ้ายขวาได้นุ่มนวล */
+        .zone-scroll-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 20px;
+        }
+
         .seats-grid { display: grid; gap: 6px; justify-content: center; margin: 0 auto;}
-        .grid-15 { grid-template-columns: repeat(15, 1fr); }
-        .grid-10 { grid-template-columns: repeat(10, 1fr); }
+        .grid-15 { grid-template-columns: repeat(15, minmax(28px, 1fr)); min-width: 500px; }
+        .grid-10 { grid-template-columns: repeat(10, minmax(32px, 1fr)); min-width: 350px; }
         
         .seat { 
-            aspect-ratio: 1; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; 
-            font-size: 12px; font-weight: bold; display: flex; justify-content: center; align-items: center; 
+            aspect-ratio: 1; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; 
+            font-size: 11px; font-weight: bold; display: flex; justify-content: center; align-items: center; 
         }
         .seat:active { transform: scale(0.9); }
         
@@ -113,7 +121,10 @@
             <button class="btn-back" onclick="showOverview()">← กลับภาพรวม</button>
             <h2 id="currentZoneTitle">ZONE Name</h2>
         </div>
-        <div class="seats-grid" id="zoneSeatsGrid"></div>
+        <!-- เพิ่มกล่องรองรับเลื่อนซ้ายขวา -->
+        <div class="zone-scroll-container">
+            <div class="seats-grid" id="zoneSeatsGrid"></div>
+        </div>
     </div>
 
     <div class="footer">
