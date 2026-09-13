@@ -15,7 +15,6 @@
         
         .map-container { width: 100vw; height: calc(100vh - 60px); cursor: grab; display: flex; justify-content: center; align-items: center; }
         
-        /* Grid พื้นที่จัดวางโซนแบบเป๊ะตามรูป */
         #seatingArea { 
             display: grid; 
             grid-template-columns: repeat(5, auto); 
@@ -25,32 +24,59 @@
             background: #0f1115; 
         }
         
-        /* สไตล์เวที */
-        .stage {
-            grid-area: 1 / 3; /* อยู่ตรงกลางแถวบนสุด */
+        /* สไตล์เวทีแบบมี Catwalk ยื่นลงมา */
+        .stage-container {
+            grid-area: 1 / 3; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%;
+        }
+        .stage-main {
+            width: 100%;
+            height: 60px;
             background: #ffb74d;
-            color: #000;
             border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            color: #000;
             font-weight: bold;
-            min-height: 120px;
-            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        .stage-catwalk {
+            width: 40%;
+            height: 80px;
+            background: #ffb74d;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
         }
 
         .zone { border: 1px solid #333; padding: 10px; border-radius: 8px; background: #1a1c23; }
         .zone-title { text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: #fff; background: #941724; padding: 4px; border-radius: 4px;}
         .zone-title.normal { background: #263238; }
         
-        .seats-grid { display: grid; gap: 3px; justify-content: center; }
-        .seat { width: 16px; height: 16px; background: #374151; border-radius: 3px; cursor: pointer; font-size: 0px;}
-        .seat:hover { opacity: 0.7; transform: scale(1.2); transition: 0.1s;}
+        .seats-grid { display: grid; gap: 4px; justify-content: center; }
+        
+        /* สไตล์เก้าอี้ พร้อมโชว์เลข */
+        .seat { 
+            width: 22px; 
+            height: 22px; 
+            background: #374151; 
+            border-radius: 3px; 
+            cursor: pointer; 
+            font-size: 10px; /* ขนาดตัวเลขในเก้าอี้ */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ccc;
+        }
+        .seat:hover { opacity: 0.7; transform: scale(1.1); transition: 0.1s;}
         
         .status-Available { background: #374151; }
-        .status-Pending { background: #f59e0b; }
-        .status-Booked { background: #dc2626; }
+        .status-Pending { background: #f59e0b; color: #000;}
+        .status-Booked { background: #dc2626; color: #fff;}
         
         /* Modal Style */
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1f2937; padding: 25px; border-radius: 10px; z-index: 100; width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.8); border: 1px solid #374151;}
@@ -65,7 +91,7 @@
 <body>
 
     <div class="toolbar">
-        <div>สถานะ: <span id="currentUser" style="color:#ffb74d; font-weight: bold;"></span></div>
+        <div>เข้าใช้งานโดย: <span id="currentUser" style="color:#ffb74d; font-weight: bold;"></span></div>
         <div class="legend">
             <span style="background:#374151;"></span> ว่าง
             <span style="background:#f59e0b;"></span> รอโอน
@@ -80,7 +106,7 @@
         </div>
     </div>
 
-    <!-- Modal สำหรับจัดการที่นั่ง -->
+    <!-- หน้าต่าง Modal จัดการที่นั่ง -->
     <div class="modal" id="actionModal">
         <h3 id="modalSeatId"></h3>
         
@@ -102,23 +128,23 @@
     </div>
 
     <script>
-        // เปลี่ยน URL เป็นของตัวเองที่เพิ่ง Deploy ใหม่
+        // สำคัญ: เอา URL ของ Web App Google Script ของคุณมาใส่ตรงนี้เหมือนเดิม
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw05tykCr4TM9HLCsjCc_33tYfUjGnVDWEkyB_q6JzF-2TDjgt1cmlAwVwLBBWfLDgQ/exec"; 
         
         const adminName = sessionStorage.getItem('adminName');
         document.getElementById('currentUser').innerText = adminName ? `Admin (${adminName})` : "ผู้ชมทั่วไป (ดูได้อย่างเดียว)";
         
         let currentSelectedSeat = "";
-        window.seatDataMap = {}; // เก็บข้อมูลลูกค้าไว้ในเครื่อง
+        window.seatDataMap = {}; 
 
-        // ตำแหน่งของแต่ละโซนใน Grid (อิงตามรูปเป๊ะๆ) Row / Col
+        // จัดเรียงตำแหน่งโซนตามชื่อใหม่ (มีเว้นวรรค)
         const layoutGrid = {
-            "ZONEA": "1 / 1", "VIP1": "1 / 2", "VIP2": "1 / 4", "ZONEB": "1 / 5",
-            "ZONEC": "2 / 1", "VIP3": "2 / 2", "VIP4": "2 / 3", "VIP5": "2 / 4", "ZONED": "2 / 5",
-            "ZONEE": "3 / 1", "VIP6": "3 / 2", "VIP7": "3 / 3", "VIP8": "3 / 4", "ZONEF": "3 / 5",
-            "ZONEG": "4 / 1", "ZONEH": "4 / 2", "ZONEI": "4 / 3", "ZONEJ": "4 / 4", "ZONEK": "4 / 5",
-            "ZONEL": "5 / 1", "ZONEM": "5 / 2", "ZONEN": "5 / 3", "ZONEO": "5 / 4", "ZONEP": "5 / 5",
-            "ZONEQ": "6 / 1", "ZONER": "6 / 2", "ZONES": "6 / 3", "ZONET": "6 / 4", "ZONEU": "6 / 5"
+            "ZONE A": "1 / 1", "VIP 1": "1 / 2", "VIP 2": "1 / 4", "ZONE B": "1 / 5",
+            "ZONE C": "2 / 1", "VIP 3": "2 / 2", "VIP 4": "2 / 3", "VIP 5": "2 / 4", "ZONE D": "2 / 5",
+            "ZONE E": "3 / 1", "VIP 6": "3 / 2", "VIP 7": "3 / 3", "VIP 8": "3 / 4", "ZONE F": "3 / 5",
+            "ZONE G": "4 / 1", "ZONE H": "4 / 2", "ZONE I": "4 / 3", "ZONE J": "4 / 4", "ZONE K": "4 / 5",
+            "ZONE L": "5 / 1", "ZONE M": "5 / 2", "ZONE N": "5 / 3", "ZONE O": "5 / 4", "ZONE P": "5 / 5",
+            "ZONE Q": "6 / 1", "ZONE R": "6 / 2", "ZONE S": "6 / 3", "ZONE T": "6 / 4", "ZONE U": "6 / 5"
         };
 
         const elem = document.getElementById('seatingArea');
@@ -148,11 +174,14 @@
             const area = document.getElementById('seatingArea');
             area.innerHTML = "";
             
-            // วาดเวที
-            const stage = document.createElement('div');
-            stage.className = 'stage';
-            stage.innerText = 'STAGE';
-            area.appendChild(stage);
+            // สร้างเวที T-Shape + Catwalk ตรงกลาง
+            const stageContainer = document.createElement('div');
+            stageContainer.className = 'stage-container';
+            stageContainer.innerHTML = `
+                <div class="stage-main">STAGE</div>
+                <div class="stage-catwalk"></div>
+            `;
+            area.appendChild(stageContainer);
 
             const zones = {};
 
@@ -160,24 +189,22 @@
                 const id = row[0].toString().trim(); 
                 if(!id) return;
                 
-                // เก็บข้อมูลลง Object เพื่อให้ดึงไปโชว์ใน Modal ได้
                 window.seatDataMap[id] = {
                     status: row[3] ? row[3].toString().trim() : "Available",
                     customerName: row[4] ? row[4].toString().trim() : "",
                     phone: row[7] ? row[7].toString().trim() : ""
                 };
 
+                // แยกชื่อโซนแบบใหม่ (เอาส่วนหน้าของ - มาใช้ เช่น "ZONE A")
                 const prefix = id.split('-')[0]; 
                 if (!zones[prefix]) zones[prefix] = [];
                 zones[prefix].push(id);
             });
 
-            // วาดโซนตาม Layout 
             Object.keys(zones).forEach(zoneName => {
                 const zoneDiv = document.createElement('div');
                 zoneDiv.className = 'zone';
                 
-                // เช็คว่ามีใน layoutGrid ไหม ถ้ามีให้วางตามตำแหน่ง
                 if (layoutGrid[zoneName]) {
                     zoneDiv.style.gridArea = layoutGrid[zoneName];
                 }
@@ -194,9 +221,15 @@
                 zones[zoneName].forEach(seatId => {
                     const btn = document.createElement('div');
                     const seatInfo = window.seatDataMap[seatId];
+                    
+                    // ดึงเฉพาะตัวเลขหลังขีด - มาแสดงในเก้าอี้
+                    const seatNumber = parseInt(seatId.split('-')[1], 10);
+                    
                     btn.className = `seat status-${seatInfo.status}`; 
                     btn.id = `seat-${seatId}`;
+                    btn.innerText = seatNumber; // ใส่เลขเก้าอี้
                     
+                    // ถ้าเข้าสู่ระบบด้วยชื่อแอดมิน ให้กดได้
                     if (adminName && adminName !== "Guest") {
                         btn.onclick = () => openModal(seatId);
                     }
@@ -212,7 +245,6 @@
             currentSelectedSeat = seatId;
             document.getElementById('modalSeatId').innerText = "ที่นั่ง: " + seatId;
             
-            // ดึงชื่อและเบอร์มาแสดงถ้าเคยจองไว้แล้ว
             const seatInfo = window.seatDataMap[seatId];
             document.getElementById('custName').value = seatInfo.customerName || "";
             document.getElementById('custPhone').value = seatInfo.phone || "";
@@ -224,10 +256,8 @@
             const cName = document.getElementById('custName').value;
             const cPhone = document.getElementById('custPhone').value;
 
-            // ปิด Modal
             document.getElementById('actionModal').style.display = "none";
             
-            // เปลี่ยนสีหน้าจอทันที & อัปเดตข้อมูลในเครื่อง
             const seatElem = document.getElementById(`seat-${currentSelectedSeat}`);
             seatElem.className = `seat status-${newStatus}`;
             
@@ -235,7 +265,6 @@
             window.seatDataMap[currentSelectedSeat].customerName = newStatus === 'Available' ? "" : cName;
             window.seatDataMap[currentSelectedSeat].phone = newStatus === 'Available' ? "" : cPhone;
 
-            // ส่งข้อมูลไปบันทึก
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
