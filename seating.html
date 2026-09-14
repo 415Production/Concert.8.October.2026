@@ -28,11 +28,11 @@
         
         .overview-layout { 
             display: grid; 
-            grid-template-columns: 130px 115px 145px 115px 130px;
-            gap: 8px; 
+            grid-template-columns: 145px 125px 165px 125px 145px;
+            gap: 10px; 
             justify-content: center; 
             margin: 0 auto;
-            min-width: 660px; 
+            min-width: 740px; 
         }
         
         /* เวที */
@@ -48,11 +48,15 @@
         .zone-box-title { text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #fff; background: #941724; padding: 2px; border-radius: 3px;}
         .zone-box-title.normal { background: #263238; }
         
-        .mini-seats-grid { display: grid; gap: 1.5px; justify-content: center; width: 100%; }
-        .grid-mini-10 { grid-template-columns: repeat(10, 8px); }
-        .grid-mini-15 { grid-template-columns: repeat(15, 7px); }
+        /* ขยายช่องเก้าอี้จิ๋วในหน้าภาพรวมให้ใส่ตัวเลขได้พอดี */
+        .mini-seats-grid { display: grid; gap: 2px; justify-content: center; width: 100%; }
+        .grid-mini-10 { grid-template-columns: repeat(10, 11px); }
+        .grid-mini-15 { grid-template-columns: repeat(15, 9.5px); }
         
-        .mini-seat { width: 100%; aspect-ratio: 1; border-radius: 1px; }
+        .mini-seat { 
+            width: 100%; aspect-ratio: 1; border-radius: 1px; 
+            font-size: 5px; font-weight: bold; display: flex; justify-content: center; align-items: center;
+        }
 
         /* ---------------------------------
            หน้า 2: เจาะจงโซน (Zone Detail)
@@ -99,7 +103,8 @@
     <div class="header">
         <a href="index.html" class="btn-back">← ออกระบบ</a>
         <span id="currentUser" style="color:#ffb74d; font-weight: bold; font-size: 13px;"></span>
-        <button class="btn-capture" onclick="captureOverviewMap()">แคปผังรวม</button>
+        <!-- ปุ่มแคปจะเปลี่ยนฟังก์ชันตามหน้าที่เปิดอยู่ -->
+        <button class="btn-capture" id="btnCapture" onclick="handleCapture()">แคปผังรวม</button>
     </div>
 
     <div id="loadingOverlay">
@@ -233,8 +238,11 @@
 
                 zoneData[zoneName].forEach(seatId => {
                     const info = seatDataMap[seatId];
+                    const seatNumber = parseInt(seatId.split('-')[1], 10);
+                    
                     const miniSeat = document.createElement('div');
                     miniSeat.className = `mini-seat status-${info.status}`;
+                    miniSeat.innerText = seatNumber; // ใส่ตัวเลขเก้าอี้ลงในผังรวม
                     miniGrid.appendChild(miniSeat);
                 });
 
@@ -250,6 +258,9 @@
             document.getElementById('view-zone').style.display = 'block';
             document.getElementById('currentZoneTitle').innerText = zoneName;
             
+            // เปลี่ยนข้อความปุ่มแคปเป็นแคปโซนนี้
+            document.getElementById('btnCapture').innerText = "แคปโซนนี้";
+            
             renderZoneSeats(zoneName);
             window.scrollTo(0, 0);
         }
@@ -257,6 +268,10 @@
         function showOverview() {
             document.getElementById('view-zone').style.display = 'none';
             document.getElementById('view-overview').style.display = 'block';
+            
+            // เปลี่ยนข้อความปุ่มแคปกลับเป็นแคปผังรวม
+            document.getElementById('btnCapture').innerText = "แคปผังรวม";
+            
             renderOverview();
         }
 
@@ -327,9 +342,19 @@
             });
         }
 
-        // ระบบแคปภาพแบบพอดีเป๊ะ (Auto-fit) ไม่ติดพื้นที่ว่างซ้ายขวา และเพิ่มความคมชัด
+        // ฟังก์ชันควบคุมการแคปภาพแยกตามหน้าปัจจุบัน
+        function handleCapture() {
+            const isOverviewVisible = document.getElementById('view-overview').style.display !== 'none';
+            if (isOverviewVisible) {
+                captureOverviewMap();
+            } else {
+                captureSingleZoneMap();
+            }
+        }
+
+        // แคปภาพผังรวมทั้งหมด
         function captureOverviewMap() {
-            const btn = document.querySelector('.btn-capture');
+            const btn = document.getElementById('btnCapture');
             const originalText = btn.innerText;
             btn.innerText = "กำลังแคป...";
             
@@ -339,7 +364,7 @@
             cloneWrapper.style.position = 'absolute';
             cloneWrapper.style.top = '0';
             cloneWrapper.style.left = '-9999px'; 
-            cloneWrapper.style.width = 'max-content'; // ให้ความกว้างปรับตามตัวผังจริงพอดี
+            cloneWrapper.style.width = 'max-content'; 
             cloneWrapper.style.background = '#0f1115';
             cloneWrapper.style.padding = '20px';
             cloneWrapper.style.zIndex = '-1';
@@ -348,12 +373,11 @@
             cloneWrapper.appendChild(clone);
             document.body.appendChild(cloneWrapper);
 
-            // ใช้ขนาดความกว้างจริงของตัวผังในการเรนเดอร์ภาพ
             const exactWidth = clone.scrollWidth + 40;
 
             html2canvas(cloneWrapper, { 
                 backgroundColor: "#0f1115",
-                scale: 2.5, // เพิ่มความคมชัดขึ้นอีกนิด
+                scale: 2.5,
                 windowWidth: exactWidth 
             }).then(canvas => {
                 let link = document.createElement('a');
@@ -367,6 +391,58 @@
                 document.body.removeChild(cloneWrapper);
                 btn.innerText = originalText;
                 alert("เกิดข้อผิดพลาดในการบันทึกภาพ");
+            });
+        }
+
+        // แคปภาพเฉพาะโซนที่กำลังเปิดดูอยู่
+        function captureSingleZoneMap() {
+            const btn = document.getElementById('btnCapture');
+            const originalText = btn.innerText;
+            btn.innerText = "กำลังแคปโซน...";
+            
+            const zoneContainer = document.getElementById('zoneSeatsGrid');
+            
+            const cloneWrapper = document.createElement('div');
+            cloneWrapper.style.position = 'absolute';
+            cloneWrapper.style.top = '0';
+            cloneWrapper.style.left = '-9999px'; 
+            cloneWrapper.style.width = 'max-content'; 
+            cloneWrapper.style.background = '#0f1115';
+            cloneWrapper.style.padding = '30px';
+            cloneWrapper.style.zIndex = '-1';
+            
+            // สร้างหัวข้อชื่อโซนแปะไว้ด้านบนสุดของรูปภาพที่แคป
+            const titleHeader = document.createElement('h2');
+            titleHeader.innerText = currentViewedZone;
+            titleHeader.style.color = '#ffb74d';
+            titleHeader.style.textAlign = 'center';
+            titleHeader.style.fontFamily = 'sans-serif';
+            titleHeader.style.marginBottom = '20px';
+            cloneWrapper.appendChild(titleHeader);
+
+            const clone = zoneContainer.cloneNode(true);
+            clone.style.margin = '0 auto';
+            cloneWrapper.appendChild(clone);
+            document.body.appendChild(cloneWrapper);
+
+            const exactWidth = clone.scrollWidth + 60;
+
+            html2canvas(cloneWrapper, { 
+                backgroundColor: "#0f1115",
+                scale: 2.5,
+                windowWidth: exactWidth 
+            }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = `${currentViewedZone}_Map.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                
+                document.body.removeChild(cloneWrapper);
+                btn.innerText = originalText;
+            }).catch(e => {
+                document.body.removeChild(cloneWrapper);
+                btn.innerText = originalText;
+                alert("เกิดข้อผิดพลาดในการบันทึกภาพโซน");
             });
         }
 
