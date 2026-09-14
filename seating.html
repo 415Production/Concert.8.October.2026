@@ -28,12 +28,12 @@
         
         .overview-layout { 
             display: grid; 
-            /* ขยายขนาด Column ให้กว้างขึ้นเพื่อรองรับเก้าอี้และตัวเลขให้อยู่ในกรอบพอดี */
-            grid-template-columns: 180px 150px 220px 150px 180px;
-            gap: 12px; 
-            justify-content: center; 
+            /* ใช้สัดส่วน 1.5 เท่า สำหรับโซน 75 ที่นั่ง (15 แถว) และ 1 เท่า สำหรับ 50 ที่นั่ง (10 แถว) */
+            grid-template-columns: 1.5fr 1fr 1.5fr 1fr 1.5fr;
+            gap: 8px; 
             margin: 0 auto;
-            min-width: 930px; 
+            min-width: 900px; /* บังคับความกว้างขั้นต่ำเพื่อให้เลื่อนดูได้ในมือถือ */
+            width: 100%;
         }
         
         /* เวที */
@@ -41,22 +41,28 @@
         .stage-main { width: 100%; height: 40px; background: #ffb74d; border-radius: 6px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 13px;}
         .stage-catwalk { width: 40%; height: 35px; background: #ffb74d; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;}
 
-        /* กล่องโซน */
-        .zone-box { background: #1a1c23; border: 1px solid #333; border-radius: 6px; padding: 8px; cursor: pointer; transition: 0.1s; box-sizing: border-box;}
+        /* กล่องโซน (ตั้งให้บังคับเนื้อหาไม่ล้นกรอบ) */
+        .zone-box { 
+            background: #1a1c23; border: 1px solid #333; border-radius: 6px; 
+            padding: 8px; cursor: pointer; transition: 0.1s; 
+            box-sizing: border-box; width: 100%; overflow: hidden;
+        }
         .zone-box:active { background: #2d3748; transform: scale(0.98); }
         .zone-box.vip { border: 1px solid #941724; background: #221013; }
         
-        .zone-box-title { text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 3px; border-radius: 4px;}
+        .zone-box-title { text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 3px; border-radius: 4px;}
         .zone-box-title.normal { background: #263238; }
         
-        /* ปรับขนาดช่องเก้าอี้จิ๋วให้ไม่ล้นขอบโซน */
-        .mini-seats-grid { display: grid; gap: 2px; justify-content: center; width: 100%; }
-        .grid-mini-10 { grid-template-columns: repeat(10, 14px); }
-        .grid-mini-15 { grid-template-columns: repeat(15, 12px); }
+        /* ตารางเก้าอี้จิ๋ว (ใช้ 1fr เพื่อให้เก้าอี้ปรับขนาดพอดีกล่องโซนอัตโนมัติ) */
+        .mini-seats-grid { display: grid; gap: 2px; width: 100%; }
+        .grid-mini-10 { grid-template-columns: repeat(10, 1fr); }
+        .grid-mini-15 { grid-template-columns: repeat(15, 1fr); }
         
         .mini-seat { 
             width: 100%; aspect-ratio: 1; border-radius: 1px; 
-            font-size: 5.5px; font-weight: bold; display: flex; justify-content: center; align-items: center;
+            font-size: 6.5px; line-height: 1; font-weight: bold; 
+            display: flex; justify-content: center; align-items: center;
+            box-sizing: border-box; overflow: hidden; /* ไม่ให้ตัวเลขล้นทะลุช่อง */
         }
 
         /* ---------------------------------
