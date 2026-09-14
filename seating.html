@@ -20,9 +20,9 @@
         
         /* ช่องค้นหา (แสดงเฉพาะโหมดตรวจสอบผัง) */
         .search-container {
-            display: none; /* เริ่มต้นซ่อนไว้ ใช้ JS เปิด */
+            display: none; 
             position: fixed;
-            bottom: 65px; /* ลอยขึ้นมาจาก Footer 15px */
+            bottom: 65px; 
             left: 50%;
             transform: translateX(-50%);
             gap: 8px;
@@ -71,10 +71,10 @@
             margin: 0 auto;
             min-width: 900px; 
             width: 100%;
-            padding-top: 65px; /* ดันลงมาเว้นที่ให้เวทีด้านบนสุด */
+            padding-top: 65px;
         }
         
-        /* เวที (ปรับรูปทรงตัว T ให้สัดส่วนคงที่ และเว้นระยะห่าง) */
+        /* เวที */
         .stage-container { 
             grid-area: 1 / 3; 
             position: relative; 
@@ -85,9 +85,9 @@
         }
         .stage-main { 
             position: absolute;
-            bottom: calc(100% + 8px); /* เว้นระยะห่างจากขอบโซน 8 พิกเซล */
-            width: 250%; /* ขนาดเวทีสัมพันธ์กับ Catwalk เสมอ */
-            height: 55px; /* ทำให้เวทีดูหนาขึ้น */
+            bottom: calc(100% + 8px); 
+            width: 250%; 
+            height: 55px; 
             background: #ffb74d; 
             border-radius: 6px; 
             display: flex; 
@@ -100,8 +100,8 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
         .stage-catwalk { 
-            width: 45%; /* ความกว้าง Catwalk */
-            height: 100%; /* ลากยาวลงมาเชื่อมขอบพอดี */
+            width: 45%; 
+            height: 100%; 
             background: #ffb74d; 
             border-bottom-left-radius: 6px; 
             border-bottom-right-radius: 6px;
@@ -134,7 +134,6 @@
             box-sizing: border-box; overflow: hidden;
         }
 
-        /* ระบบ Responsive Font Size */
         .grid-mini-10 .mini-seat { font-size: clamp(6px, 4.5cqw, 16px); }
         .grid-mini-15 .mini-seat { font-size: clamp(5.5px, 3.2cqw, 14px); }
 
@@ -167,7 +166,7 @@
         .status-Pending { background: #f59e0b; color: #000; }
         .status-Booked { background: #dc2626; color: #fff; }
         
-        /* Modal & Pop-up */
+        /* Modal */
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1f2937; padding: 20px; border-radius: 12px; z-index: 100; width: 85%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); border: 1px solid #4b5563;}
         .modal h3 { margin-top: 0; color: #f3f4f6; text-align: center; font-size: 18px;}
         .input-group { margin-bottom: 12px; text-align: left; }
@@ -240,9 +239,9 @@
         </div>
     </div>
 
-    <!-- Modal แจ้งผลการค้นหา -->
+    <!-- Modal แจ้งผลการค้นหา และดูข้อมูลสำหรับผู้ชม -->
     <div class="modal" id="searchResultModal">
-        <h3 style="color: #4ade80;">ผลการค้นหา</h3>
+        <h3 id="searchModalTitle" style="color: #4ade80;">ผลการค้นหา</h3>
         <div id="searchResultMsg" style="margin: 15px 0; font-size: 15px; line-height: 1.6; text-align: center;"></div>
         <button style="width: 100%; background: #374151; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;" onclick="closeModal()">ปิดหน้าต่าง</button>
     </div>
@@ -255,7 +254,6 @@
         
         document.getElementById('currentUser').innerText = !isGuest ? `Admin: ${adminName}` : "ผู้ชมทั่วไป";
         
-        // ถ้าเป็นผู้ชมทั่วไป ให้แสดงช่องค้นหาด้านล่าง
         if (isGuest) {
             document.getElementById('searchContainer').style.display = "flex";
         }
@@ -392,14 +390,13 @@
                 btn.id = `seat-${seatId}`;
                 btn.innerText = seatNumber; 
                 
-                if (!isGuest) {
-                    btn.onclick = () => openModal(seatId);
-                }
+                // ให้ทุกคนคลิกที่นั่งได้ (ทั้งแอดมินและผู้ชม)
+                btn.onclick = () => openModal(seatId);
+                
                 grid.appendChild(btn);
             });
         }
 
-        // ระบบค้นหาข้อมูล (ชื่อ หรือ เบอร์โทร)
         function searchSeat() {
             const query = document.getElementById('searchInput').value.trim().toLowerCase();
             if(!query) {
@@ -418,12 +415,17 @@
                     
                     if (cName.includes(query) || cPhone.includes(query)) {
                         foundSeats.push(seatId);
-                        if(!foundName) foundName = info.customerName; // ดึงชื่อมาแสดง
+                        if(!foundName) foundName = info.customerName; 
                     }
                 }
             });
 
+            const modalTitle = document.getElementById('searchModalTitle');
             const resultMsg = document.getElementById('searchResultMsg');
+            
+            modalTitle.innerText = "ผลการค้นหา";
+            modalTitle.style.color = "#4ade80";
+
             if (foundSeats.length > 0) {
                 resultMsg.innerHTML = 
                     `<div style="margin-bottom:10px;">พบการจองของคุณ <b>${foundName}</b></div>
@@ -438,14 +440,41 @@
 
         function openModal(seatId) {
             currentSelectedSeat = seatId;
-            document.getElementById('modalSeatId').innerText = "ที่นั่ง: " + seatId;
-            
             const info = seatDataMap[seatId];
-            document.getElementById('custName').value = info.customerName || "";
-            document.getElementById('custPhone').value = info.phone || "";
             
-            document.getElementById('modalBackdrop').style.display = "block";
-            document.getElementById('actionModal').style.display = "block";
+            // ถ้าเป็นผู้ชมทั่วไป ให้เปิด Pop-up ดูข้อมูล (แก้ไขไม่ได้)
+            if (isGuest) {
+                const modalTitle = document.getElementById('searchModalTitle');
+                const resultMsg = document.getElementById('searchResultMsg');
+                
+                modalTitle.innerText = "ข้อมูลที่นั่ง";
+                modalTitle.style.color = "#ffb74d";
+                
+                if (info.status === 'Available') {
+                    resultMsg.innerHTML = `<div style="font-size:18px;">ที่นั่ง <b>${seatId}</b></div><div style="color:#4ade80; margin-top:10px;">สถานะ: ว่าง</div>`;
+                } else {
+                    const statusText = info.status === 'Booked' ? '<span style="color:#dc2626;">จองแล้ว</span>' : '<span style="color:#f59e0b;">รอโอน</span>';
+                    resultMsg.innerHTML = 
+                        `<div style="font-size:18px; margin-bottom:15px;">ที่นั่ง <b>${seatId}</b></div>
+                         <div style="text-align:left; background:#111827; padding:15px; border-radius:8px; border:1px solid #374151;">
+                            <div style="margin-bottom:8px; color:#9ca3af;">สถานะ: ${statusText}</div>
+                            <div style="margin-bottom:8px; color:#9ca3af;">ชื่อลูกค้า: <span style="color:white; font-weight:bold;">${info.customerName || "-"}</span></div>
+                            <div style="color:#9ca3af;">เบอร์โทร: <span style="color:white; font-weight:bold;">${info.phone || "-"}</span></div>
+                         </div>`;
+                }
+                
+                document.getElementById('modalBackdrop').style.display = "block";
+                document.getElementById('searchResultModal').style.display = "block";
+            } 
+            // ถ้าเป็นแอดมิน ให้เปิดหน้าต่างจัดการปกติ
+            else {
+                document.getElementById('modalSeatId').innerText = "ที่นั่ง: " + seatId;
+                document.getElementById('custName').value = info.customerName || "";
+                document.getElementById('custPhone').value = info.phone || "";
+                
+                document.getElementById('modalBackdrop').style.display = "block";
+                document.getElementById('actionModal').style.display = "block";
+            }
         }
 
         function closeModal() {
@@ -482,7 +511,6 @@
         }
 
         function handleCapture() {
-            // ปิดช่องค้นหาชั่วคราวก่อนแคป เพื่อไม่ให้ติดไปในรูป
             const searchBox = document.getElementById('searchContainer');
             if(searchBox) searchBox.style.display = "none";
 
@@ -528,7 +556,7 @@
                 
                 document.body.removeChild(cloneWrapper);
                 btn.innerText = originalText;
-                if(isGuest) document.getElementById('searchContainer').style.display = "flex"; // คืนค่าปุ่มค้นหา
+                if(isGuest) document.getElementById('searchContainer').style.display = "flex"; 
             }).catch(e => {
                 document.body.removeChild(cloneWrapper);
                 btn.innerText = originalText;
