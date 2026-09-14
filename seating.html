@@ -74,7 +74,7 @@
             padding-top: 65px;
         }
         
-        /* เวที (ปรับรูปทรงตัว T ให้เป็นเนื้อเดียวกัน) */
+        /* เวที */
         .stage-container { 
             grid-area: 1 / 3; 
             position: relative; 
@@ -85,8 +85,9 @@
         }
         .stage-main { 
             position: absolute;
-            bottom: calc(100% + 8px); /* เว้นช่องว่างจากโซน VIP 8 พิกเซล */
-            width: 250%; 
+            bottom: calc(100% + 8px); 
+            /* ปรับขนาดไม่ให้เกินครึ่งของ VIP1 และ VIP2 (165%) */
+            width: 165%; 
             height: 55px; 
             background: #ffb74d; 
             border-radius: 6px; 
@@ -101,8 +102,8 @@
         }
         .stage-catwalk { 
             width: 45%; 
-            height: calc(100% + 8px); /* ยืดความสูงขึ้นไปเชื่อมให้ติดกับเวทีหลักพอดี */
-            margin-top: -8px; /* ดันขึ้นไปชดเชยช่องว่าง */
+            height: calc(100% + 8px); 
+            margin-top: -8px; 
             background: #ffb74d; 
             border-bottom-left-radius: 6px; 
             border-bottom-right-radius: 6px;
@@ -393,7 +394,6 @@
                 btn.id = `seat-${seatId}`;
                 btn.innerText = seatNumber; 
                 
-                // แก้ไขแล้ว: ให้ทุกคนคลิกที่นั่งได้ (ทั้งแอดมินและผู้ชม)
                 btn.onclick = () => openModal(seatId);
                 
                 grid.appendChild(btn);
@@ -432,7 +432,6 @@
             modalTitle.style.color = "#4ade80";
 
             if (foundSeats.length > 0) {
-                // เพิ่มเบอร์โทรศัพท์ลงใน Pop-up ผลการค้นหา
                 resultMsg.innerHTML = 
                     `<div style="margin-bottom:10px;">พบการจองของคุณ <b>${foundName}</b></div>
                      <div style="margin-bottom:10px; color:#9ca3af; font-size:14px;">เบอร์โทร: <b>${foundPhone || "-"}</b></div>
