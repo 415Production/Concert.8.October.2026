@@ -2,46 +2,152 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ - ต้นข้าว สุปรียา</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>เข้าสู่ระบบ - ผังที่นั่งคอนเสิร์ต</title>
     <style>
-        :root { --primary-color: #e50914; --bg-color: #0f1115; --card-bg: #1a1c23; --text-color: #ffffff; }
-        body { font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-box { background: var(--card-bg); padding: 40px 30px; border-radius: 12px; width: 350px; text-align: center; border: 1px solid #333;}
-        select, button { width: 100%; margin-top: 20px; padding: 12px; border-radius: 5px; border: none; box-sizing: border-box; font-size: 16px; font-weight: bold;}
-        select { background: #111827; color: white; border: 1px solid #4b5563; text-align: center; cursor: pointer;}
-        button { background: var(--primary-color); color: white; cursor: pointer; transition: 0.2s;}
-        button:hover { background: #b0060f;}
-        .guest-btn { background: #374151; margin-top: 15px;}
-        .guest-btn:hover { background: #4b5563;}
+        body { 
+            background: #0f1115; 
+            color: white; 
+            font-family: sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            touch-action: manipulation;
+        }
+        .login-container { 
+            background: #1a1c23; 
+            padding: 30px; 
+            border-radius: 12px; 
+            border: 1px solid #333; 
+            width: 85%; 
+            max-width: 350px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+            text-align: center; 
+        }
+        h2 { 
+            color: #ffb74d; 
+            margin-top: 0; 
+            margin-bottom: 25px;
+            font-size: 22px;
+        }
+        .input-group { 
+            margin-bottom: 15px; 
+            text-align: left; 
+        }
+        .input-group label { 
+            display: block; 
+            font-size: 13px; 
+            color: #9ca3af; 
+            margin-bottom: 5px; 
+        }
+        .input-group input { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 6px; 
+            border: 1px solid #4b5563; 
+            background: #111827; 
+            color: white; 
+            box-sizing: border-box; 
+            font-size: 15px; 
+        }
+        .btn-admin { 
+            background: #e50914; 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            width: 100%; 
+            border-radius: 6px; 
+            font-size: 15px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(229, 9, 20, 0.3);
+        }
+        .btn-admin:active { transform: scale(0.98); }
+        
+        .divider { 
+            margin: 20px 0; 
+            color: #6b7280; 
+            font-size: 12px; 
+            position: relative; 
+        }
+        .divider::before, .divider::after { 
+            content: ""; 
+            position: absolute; 
+            top: 50%; 
+            width: 40%; 
+            height: 1px; 
+            background: #374151; 
+        }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+        
+        /* ปุ่มสำหรับผู้ชมทั่วไป */
+        .btn-guest { 
+            background: #374151; 
+            color: white; 
+            border: 1px solid #4b5563; 
+            padding: 14px; 
+            width: 100%; 
+            border-radius: 6px; 
+            font-size: 15px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .btn-guest:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
-    <div class="login-box">
-        <h2 style="margin-top:0;">คอนเสิร์ต ต้นข้าว สุปรียา</h2>
-        <p style="color: #aaa; margin-bottom: 30px;">8 ตุลาคม 2569</p>
+
+    <div class="login-container">
+        <h2>ระบบจัดการผังที่นั่ง</h2>
         
-        <label style="display:block; text-align:left; font-size:14px; color:#aaa;">เลือกชื่อเจ้าหน้าที่:</label>
-        <select id="user">
-            <option value="KEW">KEW</option>
-            <option value="EURO">EURO</option>
-            <option value="NK">NK</option>
-        </select>
+        <div class="input-group">
+            <label>ชื่อแอดมิน (Admin Name)</label>
+            <input type="text" id="adminName" placeholder="กรอกชื่อของคุณ">
+        </div>
         
-        <button onclick="loginAdmin()">เข้าสู่ระบบจัดการที่นั่ง</button>
-        <button class="guest-btn" onclick="loginGuest()">ดูผังที่นั่ง (ผู้ชมทั่วไป)</button>
+        <div class="input-group">
+            <label>รหัสผ่าน (Password)</label>
+            <input type="password" id="adminPass" placeholder="กรอกรหัสผ่าน">
+        </div>
+        
+        <button class="btn-admin" onclick="adminLogin()">เข้าสู่ระบบจัดการ</button>
+        
+        <div class="divider">หรือ</div>
+        
+        <!-- เปลี่ยนคำเป็น ตรวจสอบผังที่นั่ง ตามที่คุณต้องการ -->
+        <button class="btn-guest" onclick="guestLogin()">ตรวจสอบผังที่นั่ง</button>
     </div>
 
     <script>
-        function loginAdmin() {
-            const user = document.getElementById('user').value;
-            sessionStorage.setItem('adminName', user); 
-            window.location.href = "seating.html"; 
+        function adminLogin() {
+            const name = document.getElementById('adminName').value.trim();
+            const pass = document.getElementById('adminPass').value.trim();
+            
+            if (!name) {
+                alert('กรุณากรอกชื่อแอดมิน');
+                return;
+            }
+            
+            // ตั้งค่ารหัสผ่านเข้าถึงโหมดแอดมินได้ตรงนี้ครับ (ตอนนี้ตั้งไว้เป็น 1234)
+            if (pass !== '1234') { 
+                alert('รหัสผ่านไม่ถูกต้อง');
+                return;
+            }
+
+            // บันทึกชื่อแอดมินแล้วเปลี่ยนหน้าไปที่ผังที่นั่ง
+            sessionStorage.setItem('adminName', name);
+            window.location.href = 'seating.html';
         }
 
-        function loginGuest() {
+        function guestLogin() {
+            // ตั้งค่าเป็น Guest แล้วเปลี่ยนหน้าไปที่ผังที่นั่ง
             sessionStorage.setItem('adminName', 'Guest');
-            window.location.href = "seating.html";
+            window.location.href = 'seating.html';
         }
     </script>
 </body>
