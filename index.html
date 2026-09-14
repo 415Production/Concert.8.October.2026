@@ -33,16 +33,18 @@
             font-size: 22px;
         }
         .input-group { 
-            margin-bottom: 15px; 
+            margin-bottom: 20px; 
             text-align: left; 
         }
         .input-group label { 
             display: block; 
             font-size: 13px; 
             color: #9ca3af; 
-            margin-bottom: 5px; 
+            margin-bottom: 8px; 
         }
-        .input-group input { 
+        
+        /* สไตล์สำหรับ Dropdown เลือกชื่อ */
+        select { 
             width: 100%; 
             padding: 12px; 
             border-radius: 6px; 
@@ -51,7 +53,13 @@
             color: white; 
             box-sizing: border-box; 
             font-size: 15px; 
+            cursor: pointer;
         }
+        select:focus {
+            outline: none;
+            border-color: #ffb74d;
+        }
+        
         .btn-admin { 
             background: #e50914; 
             color: white; 
@@ -84,7 +92,6 @@
         .divider::before { left: 0; }
         .divider::after { right: 0; }
         
-        /* ปุ่มสำหรับผู้ชมทั่วไป */
         .btn-guest { 
             background: #374151; 
             color: white; 
@@ -106,46 +113,41 @@
         <h2>ระบบจัดการผังที่นั่ง</h2>
         
         <div class="input-group">
-            <label>ชื่อแอดมิน (Admin Name)</label>
-            <input type="text" id="adminName" placeholder="กรอกชื่อของคุณ">
-        </div>
-        
-        <div class="input-group">
-            <label>รหัสผ่าน (Password)</label>
-            <input type="password" id="adminPass" placeholder="กรอกรหัสผ่าน">
+            <label>เลือกชื่อแอดมิน (Select Admin)</label>
+            <!-- แก้ไขชื่อทีมงานของคุณที่นี่ได้เลยครับ -->
+            <select id="adminName">
+                <option value="" disabled selected>-- กรุณาเลือกชื่อแอดมิน --</option>
+                <option value="Admin 1">Admin 1</option>
+                <option value="Admin 2">Admin 2</option>
+                <option value="Admin 3">Admin 3</option>
+                <option value="Admin 4">Admin 4</option>
+            </select>
         </div>
         
         <button class="btn-admin" onclick="adminLogin()">เข้าสู่ระบบจัดการ</button>
         
         <div class="divider">หรือ</div>
         
-        <!-- เปลี่ยนคำเป็น ตรวจสอบผังที่นั่ง ตามที่คุณต้องการ -->
         <button class="btn-guest" onclick="guestLogin()">ตรวจสอบผังที่นั่ง</button>
     </div>
 
     <script>
         function adminLogin() {
-            const name = document.getElementById('adminName').value.trim();
-            const pass = document.getElementById('adminPass').value.trim();
+            const selectElement = document.getElementById('adminName');
+            const name = selectElement.options[selectElement.selectedIndex].value;
             
             if (!name) {
-                alert('กรุณากรอกชื่อแอดมิน');
-                return;
-            }
-            
-            // ตั้งค่ารหัสผ่านเข้าถึงโหมดแอดมินได้ตรงนี้ครับ (ตอนนี้ตั้งไว้เป็น 1234)
-            if (pass !== '1234') { 
-                alert('รหัสผ่านไม่ถูกต้อง');
+                alert('กรุณาเลือกชื่อแอดมินก่อนเข้าสู่ระบบ');
                 return;
             }
 
-            // บันทึกชื่อแอดมินแล้วเปลี่ยนหน้าไปที่ผังที่นั่ง
+            // บันทึกชื่อแอดมินที่เลือกแล้วเปลี่ยนหน้าไปที่ผังที่นั่ง
             sessionStorage.setItem('adminName', name);
             window.location.href = 'seating.html';
         }
 
         function guestLogin() {
-            // ตั้งค่าเป็น Guest แล้วเปลี่ยนหน้าไปที่ผังที่นั่ง
+            // ตั้งค่าเป็นโหมดผู้ชมทั่วไป แล้วเปลี่ยนหน้าไปที่ผังที่นั่ง
             sessionStorage.setItem('adminName', 'Guest');
             window.location.href = 'seating.html';
         }
