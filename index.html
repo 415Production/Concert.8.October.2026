@@ -42,8 +42,6 @@
             color: #9ca3af; 
             margin-bottom: 8px; 
         }
-        
-        /* สไตล์สำหรับ Dropdown เลือกชื่อ */
         select { 
             width: 100%; 
             padding: 12px; 
@@ -59,7 +57,6 @@
             outline: none;
             border-color: #ffb74d;
         }
-        
         .btn-admin { 
             background: #e50914; 
             color: white; 
@@ -114,13 +111,11 @@
         
         <div class="input-group">
             <label>เลือกชื่อแอดมิน (Select Admin)</label>
-            <!-- แก้ไขชื่อทีมงานของคุณที่นี่ได้เลยครับ -->
             <select id="adminName">
                 <option value="" disabled selected>-- กรุณาเลือกชื่อแอดมิน --</option>
-                <option value="Admin 1">Admin 1</option>
-                <option value="Admin 2">Admin 2</option>
-                <option value="Admin 3">Admin 3</option>
-                <option value="Admin 4">Admin 4</option>
+                <option value="EURO">EURO</option>
+                <option value="KEW">KEW</option>
+                <option value="NK">NK</option>
             </select>
         </div>
         
@@ -141,13 +136,11 @@
                 return;
             }
 
-            // บันทึกชื่อแอดมินที่เลือกแล้วเปลี่ยนหน้าไปที่ผังที่นั่ง
             sessionStorage.setItem('adminName', name);
             window.location.href = 'seating.html';
         }
 
         function guestLogin() {
-            // ตั้งค่าเป็นโหมดผู้ชมทั่วไป แล้วเปลี่ยนหน้าไปที่ผังที่นั่ง
             sessionStorage.setItem('adminName', 'Guest');
             window.location.href = 'seating.html';
         }
