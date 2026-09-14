@@ -33,12 +33,40 @@
             margin: 0 auto;
             min-width: 900px; 
             width: 100%;
+            padding-top: 55px; /* เพิ่มพื้นที่ด้านบนเพื่อให้เวทีหลักมีที่ว่าง ไม่โดนตัด */
         }
         
-        /* เวที */
-        .stage-container { grid-area: 1 / 3; display: flex; flex-direction: column; align-items: center; margin-bottom: 5px;}
-        .stage-main { width: 100%; height: 40px; background: #ffb74d; border-radius: 6px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 13px;}
-        .stage-catwalk { width: 40%; height: 35px; background: #ffb74d; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;}
+        /* เวที (ปรับแก้ตามรีเควสต์) */
+        .stage-container { 
+            grid-area: 1 / 3; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            height: 100%; /* ให้ความสูงเต็มช่องว่างของ Row 1 */
+        }
+        .stage-main { 
+            position: absolute;
+            bottom: 100%; /* ดันเวทีหลักขึ้นไปอยู่บนสุด ทำให้ขอบล่างเสมอขอบบนของโซน VIP พอดี */
+            width: 280px; /* ขยายให้กว้างครอบคลุมส่วนบนของ VIP ทั้งสองข้างนิดๆ */
+            height: 45px; 
+            background: #ffb74d; 
+            border-radius: 6px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            color: #000; 
+            font-weight: bold; 
+            font-size: 14px;
+            z-index: 5;
+        }
+        .stage-catwalk { 
+            width: 45%; 
+            height: 100%; /* ยืด Cat walk เต็มช่องว่างตั้งแต่ขอบเวทีลงมาจนสุด */
+            background: #ffb74d; 
+            border-bottom-left-radius: 6px; 
+            border-bottom-right-radius: 6px;
+        }
 
         /* กล่องโซน */
         .zone-box { 
@@ -52,10 +80,7 @@
         .zone-box-title { text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 3px; border-radius: 4px;}
         .zone-box-title.normal { background: #263238; }
         
-        /* 
-           ตารางเก้าอี้จิ๋ว: เพิ่ม container-type 
-           เพื่อให้สามารถคำนวณสัดส่วนฟอนต์ (cqw) ตามความกว้างของกล่องโซนได้ 
-        */
+        /* ตารางเก้าอี้จิ๋ว */
         .mini-seats-grid { 
             display: grid; gap: 2px; width: 100%; 
             container-type: inline-size; 
@@ -70,10 +95,7 @@
             box-sizing: border-box; overflow: hidden;
         }
 
-        /* 
-           ระบบ Responsive Font Size:
-           ตัวเลขจะขยายตามสัดส่วนกล่องเป๊ะๆ แต่ไม่เล็กไปกว่า 6px/5.5px บนมือถือ
-        */
+        /* ระบบ Responsive Font Size หน้าภาพรวม */
         .grid-mini-10 .mini-seat { font-size: clamp(6px, 4.5cqw, 16px); }
         .grid-mini-15 .mini-seat { font-size: clamp(5.5px, 3.2cqw, 14px); }
 
