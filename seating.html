@@ -28,11 +28,10 @@
         
         .overview-layout { 
             display: grid; 
-            /* ใช้สัดส่วน 1.5 เท่า สำหรับโซน 75 ที่นั่ง (15 แถว) และ 1 เท่า สำหรับ 50 ที่นั่ง (10 แถว) */
             grid-template-columns: 1.5fr 1fr 1.5fr 1fr 1.5fr;
             gap: 8px; 
             margin: 0 auto;
-            min-width: 900px; /* บังคับความกว้างขั้นต่ำเพื่อให้เลื่อนดูได้ในมือถือ */
+            min-width: 900px; 
             width: 100%;
         }
         
@@ -41,7 +40,7 @@
         .stage-main { width: 100%; height: 40px; background: #ffb74d; border-radius: 6px; display: flex; justify-content: center; align-items: center; color: #000; font-weight: bold; font-size: 13px;}
         .stage-catwalk { width: 40%; height: 35px; background: #ffb74d; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;}
 
-        /* กล่องโซน (ตั้งให้บังคับเนื้อหาไม่ล้นกรอบ) */
+        /* กล่องโซน */
         .zone-box { 
             background: #1a1c23; border: 1px solid #333; border-radius: 6px; 
             padding: 8px; cursor: pointer; transition: 0.1s; 
@@ -53,17 +52,30 @@
         .zone-box-title { text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 3px; border-radius: 4px;}
         .zone-box-title.normal { background: #263238; }
         
-        /* ตารางเก้าอี้จิ๋ว (ใช้ 1fr เพื่อให้เก้าอี้ปรับขนาดพอดีกล่องโซนอัตโนมัติ) */
-        .mini-seats-grid { display: grid; gap: 2px; width: 100%; }
+        /* 
+           ตารางเก้าอี้จิ๋ว: เพิ่ม container-type 
+           เพื่อให้สามารถคำนวณสัดส่วนฟอนต์ (cqw) ตามความกว้างของกล่องโซนได้ 
+        */
+        .mini-seats-grid { 
+            display: grid; gap: 2px; width: 100%; 
+            container-type: inline-size; 
+        }
         .grid-mini-10 { grid-template-columns: repeat(10, 1fr); }
         .grid-mini-15 { grid-template-columns: repeat(15, 1fr); }
         
         .mini-seat { 
             width: 100%; aspect-ratio: 1; border-radius: 1px; 
-            font-size: 6.5px; line-height: 1; font-weight: bold; 
+            line-height: 1; font-weight: bold; 
             display: flex; justify-content: center; align-items: center;
-            box-sizing: border-box; overflow: hidden; /* ไม่ให้ตัวเลขล้นทะลุช่อง */
+            box-sizing: border-box; overflow: hidden;
         }
+
+        /* 
+           ระบบ Responsive Font Size:
+           ตัวเลขจะขยายตามสัดส่วนกล่องเป๊ะๆ แต่ไม่เล็กไปกว่า 6px/5.5px บนมือถือ
+        */
+        .grid-mini-10 .mini-seat { font-size: clamp(6px, 4.5cqw, 16px); }
+        .grid-mini-15 .mini-seat { font-size: clamp(5.5px, 3.2cqw, 14px); }
 
         /* ---------------------------------
            หน้า 2: เจาะจงโซน (Zone Detail)
