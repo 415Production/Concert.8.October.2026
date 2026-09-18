@@ -13,16 +13,33 @@
         .btn-back { background: #4b5563; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; border: none; cursor: pointer;}
         .btn-capture { background: #e50914; color: white; padding: 8px 12px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; font-size: 14px;}
         
+        /* แถบสรุปยอดขาย (ย้ายมาอยู่ด้านล่าง ติดกับ Footer) */
+        .summary-bar {
+            display: none; 
+            position: fixed;
+            bottom: 50px; /* วางเหนือ Footer พอดี (Footer สูง 50px) */
+            left: 0;
+            width: 100%;
+            background: #1f2937;
+            padding: 8px 15px;
+            box-sizing: border-box;
+            border-top: 1px solid #4b5563;
+            z-index: 15;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
         /* Footer แถบสถานะ */
         .footer { background: #1a1c23; display: flex; justify-content: center; align-items: center; z-index: 20; position: fixed; bottom: 0; left: 0; width: 100%; box-sizing: border-box; border-top: 1px solid #333; height: 50px;}
         .legend { display: flex; align-items: center; font-size: 12px; font-weight: bold;}
         .legend span { display: inline-block; width: 12px; height: 12px; margin: 0 5px 0 12px; border-radius: 3px; }
         
-        /* ช่องค้นหา (แสดงเฉพาะโหมดตรวจสอบผัง) */
+        /* ช่องค้นหา (ขยับขึ้นให้พ้นแถบสรุปยอดขาย) */
         .search-container {
             display: none; 
             position: fixed;
-            bottom: 65px; 
+            bottom: 120px; /* ขยับลอยขึ้นมาให้พ้นแถบ Summary */
             left: 50%;
             transform: translateX(-50%);
             gap: 8px;
@@ -86,7 +103,6 @@
         .stage-main { 
             position: absolute;
             bottom: calc(100% + 8px); 
-            /* ปรับขนาดไม่ให้เกินครึ่งของ VIP1 และ VIP2 (165%) */
             width: 165%; 
             height: 55px; 
             background: #ffb74d; 
@@ -189,6 +205,12 @@
         <button class="btn-capture" id="btnCapture" onclick="handleCapture()">แคปผังรวม</button>
     </div>
 
+    <!-- แถบสรุปยอดขายสำหรับผู้ชมทั่วไป (ย้ายมาด้านล่าง) -->
+    <div class="summary-bar" id="summaryBar">
+        <div style="margin-bottom: 4px;">VIP ขายแล้ว: <span id="vipCount" style="color:#ffb74d; font-weight:bold;">0/0</span> | ธรรมดา ขายแล้ว: <span id="normalCount" style="color:#ffb74d; font-weight:bold;">0/0</span></div>
+        <div style="color:#4ade80; font-weight:bold;">รายรับรวม: <span id="totalRevenue">0</span> บาท</div>
+    </div>
+
     <!-- ช่องค้นหาสำหรับผู้ชมทั่วไป -->
     <div class="search-container" id="searchContainer">
         <input type="text" id="searchInput" placeholder="ค้นหาด้วยชื่อ หรือ เบอร์โทร...">
@@ -260,6 +282,9 @@
         
         if (isGuest) {
             document.getElementById('searchContainer').style.display = "flex";
+            document.getElementById('summaryBar').style.display = "block";
+            // ดันพื้นที่ด้านล่างสุดของเพจเพิ่มขึ้น เพื่อไม่ให้แถบข้อมูลบังเก้าอี้โซนล่างสุด
+            document.body.style.paddingBottom = "180px"; 
         }
 
         let seatDataMap = {}; 
@@ -315,6 +340,32 @@
                 if (!zoneData[prefix]) zoneData[prefix] = [];
                 zoneData[prefix].push(id);
             });
+            
+            updateSummary();
+        }
+
+        function updateSummary() {
+            if (!isGuest) return; 
+
+            let vipTotal = 0, vipSold = 0;
+            let normTotal = 0, normSold = 0;
+
+            Object.keys(seatDataMap).forEach(seatId => {
+                const info = seatDataMap[seatId];
+                if (seatId.includes('VIP')) {
+                    vipTotal++;
+                    if (info.status === 'Booked') vipSold++;
+                } else {
+                    normTotal++;
+                    if (info.status === 'Booked') normSold++;
+                }
+            });
+
+            const rev = (vipSold * 899) + (normSold * 399);
+
+            document.getElementById('vipCount').innerText = `${vipSold}/${vipTotal}`;
+            document.getElementById('normalCount').innerText = `${normSold}/${normTotal}`;
+            document.getElementById('totalRevenue').innerText = rev.toLocaleString();
         }
 
         function renderOverview() {
@@ -512,6 +563,8 @@
                     customerPhone: newStatus === 'Available' ? "" : cPhone
                 })
             });
+            
+            updateSummary();
         }
 
         function handleCapture() {
