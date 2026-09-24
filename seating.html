@@ -11,35 +11,42 @@
         /* Header */
         .header { padding: 0 15px; background: #1a1c23; display: flex; justify-content: space-between; align-items: center; z-index: 20; position: fixed; top: 0; left: 0; width: 100%; box-sizing: border-box; border-bottom: 1px solid #333; height: 60px;}
         .btn-back { background: #4b5563; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 14px; font-weight: bold; border: none; cursor: pointer;}
-        .btn-capture { background: #e50914; color: white; padding: 8px 12px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; font-size: 14px;}
         
-        /* แถบสรุปยอดขาย (ย้ายมาอยู่ด้านล่าง ติดกับ Footer) */
-        .summary-bar {
-            display: none; 
-            position: fixed;
-            bottom: 50px; /* วางเหนือ Footer พอดี (Footer สูง 50px) */
-            left: 0;
-            width: 100%;
-            background: #1f2937;
-            padding: 8px 15px;
-            box-sizing: border-box;
-            border-top: 1px solid #4b5563;
-            z-index: 15;
-            text-align: center;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
+        .header-actions { display: flex; gap: 8px; }
+        .btn-capture { background: #e50914; color: white; padding: 8px 12px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; font-size: 13px;}
+        .btn-summary { background: #3b82f6; color: white; padding: 8px 12px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; font-size: 13px; display: none;}
+        
         /* Footer แถบสถานะ */
         .footer { background: #1a1c23; display: flex; justify-content: center; align-items: center; z-index: 20; position: fixed; bottom: 0; left: 0; width: 100%; box-sizing: border-box; border-top: 1px solid #333; height: 50px;}
         .legend { display: flex; align-items: center; font-size: 12px; font-weight: bold;}
         .legend span { display: inline-block; width: 12px; height: 12px; margin: 0 5px 0 12px; border-radius: 3px; }
+        .legend span.l-selected { background: #22c55e; }
         
-        /* ช่องค้นหา (ขยับขึ้นให้พ้นแถบสรุปยอดขาย) */
+        /* ปุ่มจองแบบลอยตัว (Floating Button) */
+        #floatingBookBtn {
+            display: none;
+            position: fixed;
+            bottom: 65px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #22c55e;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+            border: none;
+            z-index: 40;
+            cursor: pointer;
+        }
+        #floatingBookBtn:active { transform: translateX(-50%) scale(0.95); }
+
+        /* ช่องค้นหา (แสดงเฉพาะโหมดตรวจสอบผัง) */
         .search-container {
             display: none; 
             position: fixed;
-            bottom: 120px; /* ขยับลอยขึ้นมาให้พ้นแถบ Summary */
+            bottom: 65px; 
             left: 50%;
             transform: translateX(-50%);
             gap: 8px;
@@ -73,8 +80,7 @@
             font-size: 14px;
         }
 
-        /* Loading Overlay */
-        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #0f1115; z-index: 50; }
+        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: rgba(15,17,21,0.9); z-index: 999; }
 
         /* ---------------------------------
            หน้า 1: ภาพรวมทุกโซน (Overview)
@@ -91,44 +97,18 @@
             padding-top: 65px;
         }
         
-        /* เวที */
-        .stage-container { 
-            grid-area: 1 / 3; 
-            position: relative; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            height: 100%; 
-        }
+        .stage-container { grid-area: 1 / 3; position: relative; display: flex; flex-direction: column; align-items: center; height: 100%; }
         .stage-main { 
-            position: absolute;
-            bottom: calc(100% + 8px); 
-            width: 165%; 
-            height: 55px; 
-            background: #ffb74d; 
-            border-radius: 6px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            color: #000; 
-            font-weight: bold; 
-            font-size: 15px;
-            z-index: 5;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            position: absolute; bottom: calc(100% + 8px); width: 165%; height: 55px; 
+            background: #ffb74d; border-radius: 6px; display: flex; justify-content: center; align-items: center; 
+            color: #000; font-weight: bold; font-size: 15px; z-index: 5; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
         .stage-catwalk { 
-            width: 45%; 
-            height: calc(100% + 8px); 
-            margin-top: -8px; 
-            background: #ffb74d; 
-            border-bottom-left-radius: 6px; 
-            border-bottom-right-radius: 6px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            position: relative;
-            z-index: 4;
+            width: 45%; height: calc(100% + 8px); margin-top: -8px; background: #ffb74d; 
+            border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4); position: relative; z-index: 4;
         }
 
-        /* กล่องโซน */
         .zone-box { 
             background: #1a1c23; border: 1px solid #333; border-radius: 6px; 
             padding: 8px; cursor: pointer; transition: 0.1s; 
@@ -140,18 +120,13 @@
         .zone-box-title { text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 6px; color: #fff; background: #941724; padding: 3px; border-radius: 4px;}
         .zone-box-title.normal { background: #263238; }
         
-        .mini-seats-grid { 
-            display: grid; gap: 2px; width: 100%; 
-            container-type: inline-size; 
-        }
+        .mini-seats-grid { display: grid; gap: 2px; width: 100%; container-type: inline-size; }
         .grid-mini-10 { grid-template-columns: repeat(10, 1fr); }
         .grid-mini-15 { grid-template-columns: repeat(15, 1fr); }
         
         .mini-seat { 
-            width: 100%; aspect-ratio: 1; border-radius: 1px; 
-            line-height: 1; font-weight: bold; 
-            display: flex; justify-content: center; align-items: center;
-            box-sizing: border-box; overflow: hidden;
+            width: 100%; aspect-ratio: 1; border-radius: 1px; line-height: 1; font-weight: bold; 
+            display: flex; justify-content: center; align-items: center; box-sizing: border-box; overflow: hidden;
         }
 
         .grid-mini-10 .mini-seat { font-size: clamp(6px, 4.5cqw, 16px); }
@@ -165,13 +140,7 @@
         .zone-header-bar { display: flex; justify-content: space-between; align-items: center; background: #1a1c23; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #333;}
         .zone-header-bar h2 { margin: 0; font-size: 16px; color: #ffb74d;}
         
-        .zone-scroll-container {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 20px;
-        }
-
+        .zone-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px;}
         .seats-grid { display: grid; justify-content: center; margin: 0 auto; padding: 0 10px;}
         .grid-15 { grid-template-columns: repeat(15, 34px); gap: 6px; min-width: 630px; }
         .grid-10 { grid-template-columns: repeat(10, 38px); gap: 8px; min-width: 460px; }
@@ -179,19 +148,22 @@
         .seat { 
             aspect-ratio: 1; width: 100%; border-radius: 4px; cursor: pointer; 
             font-size: 11px; font-weight: bold; display: flex; justify-content: center; align-items: center; 
+            transition: transform 0.1s;
         }
-        .seat:active { transform: scale(0.9); }
+        .seat:active { transform: scale(0.85); }
         
         .status-Available { background: #374151; color: #9ca3af; }
         .status-Pending { background: #f59e0b; color: #000; }
         .status-Booked { background: #dc2626; color: #fff; }
+        .status-Selected { background: #22c55e !important; color: #fff !important; border: 2px solid #fff; box-sizing: border-box;}
         
         /* Modal & Pop-up */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1f2937; padding: 20px; border-radius: 12px; z-index: 100; width: 85%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); border: 1px solid #4b5563;}
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1f2937; padding: 20px; border-radius: 12px; z-index: 100; width: 85%; max-width: 340px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); border: 1px solid #4b5563;}
         .modal h3 { margin-top: 0; color: #f3f4f6; text-align: center; font-size: 18px;}
         .input-group { margin-bottom: 12px; text-align: left; }
         .input-group label { display: block; font-size: 12px; color: #9ca3af; margin-bottom: 4px; }
         .input-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #4b5563; background: #111827; color: white; box-sizing: border-box; font-size: 15px;}
+        .input-group input:focus { outline: none; border-color: #ffb74d;}
         .action-btns { display: flex; flex-direction: column; gap: 8px; }
         .modal button { padding: 10px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; font-size: 14px;}
         .backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 90;}
@@ -201,27 +173,23 @@
 
     <div class="header">
         <a href="index.html" class="btn-back">← ออกระบบ</a>
-        <span id="currentUser" style="color:#ffb74d; font-weight: bold; font-size: 13px;"></span>
-        <button class="btn-capture" id="btnCapture" onclick="handleCapture()">แคปผังรวม</button>
+        <div class="header-actions">
+            <button class="btn-summary" id="btnSummary" onclick="showSummaryModal()">ภาพรวมการจองทั้งหมด</button>
+            <button class="btn-capture" id="btnCapture" onclick="handleCapture()">แคปผังรวม</button>
+        </div>
     </div>
 
-    <!-- แถบสรุปยอดขายสำหรับผู้ชมทั่วไป (ย้ายมาด้านล่าง) -->
-    <div class="summary-bar" id="summaryBar">
-        <div style="margin-bottom: 4px;">VIP ขายแล้ว: <span id="vipCount" style="color:#ffb74d; font-weight:bold;">0/0</span> | ธรรมดา ขายแล้ว: <span id="normalCount" style="color:#ffb74d; font-weight:bold;">0/0</span></div>
-        <div style="color:#4ade80; font-weight:bold;">รายรับรวม: <span id="totalRevenue">0</span> บาท</div>
-    </div>
+    <button id="floatingBookBtn" onclick="openBulkBookModal()"></button>
 
-    <!-- ช่องค้นหาสำหรับผู้ชมทั่วไป -->
     <div class="search-container" id="searchContainer">
         <input type="text" id="searchInput" placeholder="ค้นหาด้วยชื่อ หรือ เบอร์โทร...">
         <button onclick="searchSeat()">ค้นหา</button>
     </div>
 
     <div id="loadingOverlay">
-        <h2 style="color: #888;">กำลังโหลดข้อมูล...</h2>
+        <h2 style="color: #888;" id="loadingText">กำลังโหลดข้อมูล...</h2>
     </div>
 
-    <!-- หน้า 1: ภาพรวมทุกโซน -->
     <div id="view-overview">
         <div class="overview-layout" id="overviewLayout">
             <div class="stage-container">
@@ -231,7 +199,6 @@
         </div>
     </div>
 
-    <!-- หน้า 2: เจาะจงโซน -->
     <div id="view-zone">
         <div class="zone-header-bar">
             <button class="btn-back" onclick="showOverview()">← กลับภาพรวม</button>
@@ -245,6 +212,7 @@
     <div class="footer">
         <div class="legend">
             <span style="background:#374151;"></span>ว่าง
+            <span class="l-selected" id="legendSelected" style="display:none;"></span><span id="legendText" style="display:none;">เลือกอยู่</span>
             <span style="background:#f59e0b;"></span>รอโอน
             <span style="background:#dc2626;"></span>จองแล้ว
         </div>
@@ -252,24 +220,47 @@
 
     <div class="backdrop" id="modalBackdrop" onclick="closeModal()"></div>
     
-    <!-- Modal อัปเดตข้อมูล (สำหรับแอดมิน) -->
     <div class="modal" id="actionModal">
         <h3 id="modalSeatId"></h3>
         <div class="input-group"><label>ชื่อลูกค้า</label><input type="text" id="custName" placeholder="กรอกชื่อลูกค้า"></div>
-        <div class="input-group"><label>เบอร์โทรศัพท์</label><input type="text" id="custPhone" placeholder="กรอกเบอร์โทร"></div>
+        <div class="input-group"><label>เบอร์โทรศัพท์ (10 หลัก)</label><input type="tel" id="custPhone" placeholder="กรอกเบอร์โทร 10 หลัก" maxlength="10"></div>
         <div class="action-btns">
-            <button style="background: #dc2626; color: white;" onclick="updateStatus('Booked')">ยืนยันจอง (Booked)</button>
-            <button style="background: #f59e0b; color: black;" onclick="updateStatus('Pending')">รอโอน (Pending)</button>
-            <button style="background: #374151; color: white;" onclick="updateStatus('Available')">ยกเลิกจอง (ตั้งเป็นว่าง)</button>
+            <button style="background: #dc2626; color: white;" onclick="updateSingleStatus('Booked')">บันทึกเป็น จองแล้ว (Booked)</button>
+            <button style="background: #f59e0b; color: black;" onclick="updateSingleStatus('Pending')">บันทึกเป็น รอโอน (Pending)</button>
+            <button style="background: #374151; color: white;" onclick="updateSingleStatus('Available')">ยกเลิกจอง (ตั้งเป็นว่าง)</button>
             <button style="background: transparent; color: #9ca3af; border: 1px solid #4b5563;" onclick="closeModal()">ปิด</button>
         </div>
     </div>
 
-    <!-- Modal แจ้งผลการค้นหา และดูข้อมูลสำหรับผู้ชม -->
-    <div class="modal" id="searchResultModal">
-        <h3 id="searchModalTitle" style="color: #4ade80;">ผลการค้นหา</h3>
-        <div id="searchResultMsg" style="margin: 15px 0; font-size: 15px; line-height: 1.6; text-align: center;"></div>
+    <div class="modal" id="bulkBookModal">
+        <h3 style="color:#22c55e;" id="bulkModalTitle">ดำเนินการจองที่นั่ง</h3>
+        <div style="font-size:13px; color:#9ca3af; margin-bottom:15px; text-align:center;" id="bulkSeatsList"></div>
+        <div class="input-group"><label>ชื่อลูกค้า</label><input type="text" id="bulkCustName" placeholder="กรอกชื่อลูกค้า"></div>
+        <div class="input-group"><label>เบอร์โทรศัพท์ (บังคับ 10 หลัก)</label><input type="tel" id="bulkCustPhone" placeholder="ตัวอย่าง: 0812345678" maxlength="10"></div>
+        <div class="action-btns">
+            <button style="background: #dc2626; color: white;" onclick="submitBulkBooking('Booked')">ยืนยันจอง (Booked)</button>
+            <button style="background: #f59e0b; color: black;" onclick="submitBulkBooking('Pending')">รอโอน (Pending)</button>
+            <button style="background: transparent; color: #9ca3af; border: 1px solid #4b5563;" onclick="closeModal()">ยกเลิก</button>
+        </div>
+    </div>
+
+    <div class="modal" id="infoModal">
+        <h3 id="infoModalTitle" style="color: #4ade80;">ผลการค้นหา</h3>
+        <div id="infoResultMsg" style="margin: 15px 0; font-size: 15px; line-height: 1.6; text-align: center;"></div>
         <button style="width: 100%; background: #374151; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;" onclick="closeModal()">ปิดหน้าต่าง</button>
+    </div>
+
+    <div class="modal" id="summaryModal">
+        <h3 style="color: #ffb74d;">ภาพรวมการจองทั้งหมด</h3>
+        <div style="text-align:left; background:#111827; padding:15px; border-radius:8px; border:1px solid #374151; margin-top:15px;">
+            <div style="margin-bottom:10px; color:#9ca3af;">VIP ขายแล้ว: <span style="color:white; font-weight:bold; float:right;" id="sumVip">0/0</span></div>
+            <div style="margin-bottom:10px; color:#9ca3af;">ธรรมดา ขายแล้ว: <span style="color:white; font-weight:bold; float:right;" id="sumNorm">0/0</span></div>
+            <hr style="border:0; border-top:1px solid #374151; margin:10px 0;">
+            <div style="color:#4ade80; font-weight:bold; font-size:16px;">รายรับรวม: <span style="float:right;" id="sumRev">0 บาท</span></div>
+        </div>
+        <div class="action-btns" style="margin-top:15px;">
+            <button style="background: #374151; color: white;" onclick="closeModal()">ปิด</button>
+        </div>
     </div>
 
     <script>
@@ -278,15 +269,7 @@
         const adminName = sessionStorage.getItem('adminName');
         const isGuest = !adminName || adminName === "Guest";
         
-        document.getElementById('currentUser').innerText = !isGuest ? `Admin: ${adminName}` : "ผู้ชมทั่วไป";
-        
-        if (isGuest) {
-            document.getElementById('searchContainer').style.display = "flex";
-            document.getElementById('summaryBar').style.display = "block";
-            // ดันพื้นที่ด้านล่างสุดของเพจเพิ่มขึ้น เพื่อไม่ให้แถบข้อมูลบังเก้าอี้โซนล่างสุด
-            document.body.style.paddingBottom = "180px"; 
-        }
-
+        let selectedSeatsToBook = [];
         let seatDataMap = {}; 
         let zoneData = {}; 
         let currentSelectedSeat = "";
@@ -300,6 +283,15 @@
             "ZONE L": "5 / 1", "ZONE M": "5 / 2", "ZONE N": "5 / 3", "ZONE O": "5 / 4", "ZONE P": "5 / 5",
             "ZONE Q": "6 / 1", "ZONE R": "6 / 2", "ZONE S": "6 / 3", "ZONE T": "6 / 4", "ZONE U": "6 / 5"
         };
+
+        if (isGuest) {
+            document.getElementById('searchContainer').style.display = "flex";
+            document.body.style.paddingBottom = "120px"; 
+        } else {
+            document.getElementById('btnSummary').style.display = "block";
+            document.getElementById('legendSelected').style.display = "inline-block";
+            document.getElementById('legendText').style.display = "inline-block";
+        }
 
         async function loadSeats() {
             try {
@@ -315,10 +307,10 @@
                     processData(result.data);
                     renderOverview();
                 } else {
-                    document.getElementById('loadingOverlay').innerHTML = `<h2 style="color:red;">ข้อผิดพลาด: ${result.message}</h2>`;
+                    document.getElementById('loadingText').innerText = `ข้อผิดพลาด: ${result.message}`;
                 }
             } catch (e) {
-                document.getElementById('loadingOverlay').innerHTML = `<h2 style="color:red;">ไม่สามารถเชื่อมต่อฐานข้อมูลได้</h2>`;
+                document.getElementById('loadingText').innerText = `ไม่สามารถเชื่อมต่อฐานข้อมูลได้`;
             }
         }
 
@@ -340,33 +332,68 @@
                 if (!zoneData[prefix]) zoneData[prefix] = [];
                 zoneData[prefix].push(id);
             });
-            
-            updateSummary();
         }
 
-        function updateSummary() {
-            if (!isGuest) return; 
+        // --- ระบบ Sync ข้อมูลเบื้องหลัง (Background Sync) ---
+        async function syncDataBackground() {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: "getSeats" })
+                });
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    let selectionChanged = false;
 
-            let vipTotal = 0, vipSold = 0;
-            let normTotal = 0, normSold = 0;
+                    result.data.forEach(row => {
+                        const id = row[0].toString().trim(); 
+                        if(!id) return;
+                        
+                        const newStatus = row[3] ? row[3].toString().trim() : "Available";
+                        
+                        if (seatDataMap[id]) {
+                            // อัปเดตข้อมูลใน Map
+                            seatDataMap[id].status = newStatus;
+                            seatDataMap[id].customerName = row[4] ? row[4].toString().trim() : "";
+                            seatDataMap[id].phone = row[7] ? row[7].toString().trim() : "";
+                            
+                            // ถ้าที่นั่งที่เราจิ้มไว้ (สีเขียว) ถูกคนอื่นจองไปแล้ว ให้เอาออกจากการเลือก
+                            const isSelected = selectedSeatsToBook.includes(id);
+                            if (isSelected && newStatus !== 'Available') {
+                                selectedSeatsToBook = selectedSeatsToBook.filter(s => s !== id);
+                                selectionChanged = true;
+                            }
 
-            Object.keys(seatDataMap).forEach(seatId => {
-                const info = seatDataMap[seatId];
-                if (seatId.includes('VIP')) {
-                    vipTotal++;
-                    if (info.status === 'Booked') vipSold++;
-                } else {
-                    normTotal++;
-                    if (info.status === 'Booked') normSold++;
+                            // อัปเดตหน้าต่างเจาะจงโซน (ถ้าเปิดอยู่)
+                            const seatBtn = document.getElementById(`seat-${id}`);
+                            if (seatBtn) {
+                                const currentlySelected = selectedSeatsToBook.includes(id);
+                                seatBtn.className = `seat status-${currentlySelected ? 'Selected' : newStatus}`;
+                            }
+                            
+                            // อัปเดตหน้าภาพรวม
+                            const miniSeat = document.getElementById(`mini-seat-${id}`);
+                            if (miniSeat) {
+                                const currentlySelected = selectedSeatsToBook.includes(id);
+                                miniSeat.className = `mini-seat status-${currentlySelected ? 'Selected' : newStatus}`;
+                            }
+                        }
+                    });
+
+                    // อัปเดตตัวเลขในปุ่มลอย ถ้ารายการเก้าอี้ที่เลือกมีการเปลี่ยนแปลง
+                    if (selectionChanged) {
+                        updateFloatingBtn();
+                    }
                 }
-            });
-
-            const rev = (vipSold * 899) + (normSold * 399);
-
-            document.getElementById('vipCount').innerText = `${vipSold}/${vipTotal}`;
-            document.getElementById('normalCount').innerText = `${normSold}/${normTotal}`;
-            document.getElementById('totalRevenue').innerText = rev.toLocaleString();
+            } catch (e) {
+                // ปล่อยผ่านถ้าเชื่อมต่อไม่ได้ชั่วคราว เพื่อไม่ให้เด้ง Error กวนใจ
+            }
         }
+        
+        // สั่งให้ระบบ Sync ทุกๆ 15 วินาที
+        setInterval(syncDataBackground, 15000);
 
         function renderOverview() {
             const overviewLayout = document.getElementById('overviewLayout');
@@ -387,7 +414,6 @@
 
                 const miniGrid = document.createElement('div');
                 const seatCount = zoneData[zoneName].length;
-                
                 miniGrid.className = `mini-seats-grid ${seatCount > 50 ? 'grid-mini-15' : 'grid-mini-10'}`;
 
                 zoneData[zoneName].forEach(seatId => {
@@ -395,7 +421,9 @@
                     const seatNumber = parseInt(seatId.split('-')[1], 10);
                     
                     const miniSeat = document.createElement('div');
-                    miniSeat.className = `mini-seat status-${info.status}`;
+                    miniSeat.id = `mini-seat-${seatId}`; // เพิ่ม ID สำหรับให้ระบบ Sync หากเจอ
+                    const isSelected = selectedSeatsToBook.includes(seatId);
+                    miniSeat.className = `mini-seat status-${isSelected ? 'Selected' : info.status}`;
                     miniSeat.innerText = seatNumber;
                     miniGrid.appendChild(miniSeat);
                 });
@@ -441,14 +469,215 @@
                 const seatNumber = parseInt(seatId.split('-')[1], 10);
                 
                 const btn = document.createElement('div');
-                btn.className = `seat status-${info.status}`; 
+                const isSelected = selectedSeatsToBook.includes(seatId);
+                btn.className = `seat status-${isSelected ? 'Selected' : info.status}`; 
                 btn.id = `seat-${seatId}`;
                 btn.innerText = seatNumber; 
                 
-                btn.onclick = () => openModal(seatId);
-                
+                btn.onclick = () => handleSeatClick(seatId);
                 grid.appendChild(btn);
             });
+        }
+
+        function handleSeatClick(seatId) {
+            const info = seatDataMap[seatId];
+
+            if (isGuest) {
+                showSeatInfoReadOnly(seatId, info);
+            } else {
+                if (info.status === 'Available' || selectedSeatsToBook.includes(seatId)) {
+                    toggleSeatSelection(seatId);
+                } else {
+                    openSingleEditModal(seatId, info);
+                }
+            }
+        }
+
+        function toggleSeatSelection(seatId) {
+            const idx = selectedSeatsToBook.indexOf(seatId);
+            const btn = document.getElementById(`seat-${seatId}`);
+            const miniBtn = document.getElementById(`mini-seat-${seatId}`);
+            
+            if (idx > -1) {
+                selectedSeatsToBook.splice(idx, 1);
+                if(btn) btn.className = 'seat status-Available';
+                if(miniBtn) miniBtn.className = 'mini-seat status-Available';
+            } else {
+                selectedSeatsToBook.push(seatId);
+                if(btn) btn.className = 'seat status-Selected';
+                if(miniBtn) miniBtn.className = 'mini-seat status-Selected';
+            }
+            updateFloatingBtn();
+        }
+
+        function updateFloatingBtn() {
+            const btn = document.getElementById('floatingBookBtn');
+            if (selectedSeatsToBook.length > 0) {
+                btn.style.display = 'block';
+                btn.innerText = `ดำเนินการจอง (${selectedSeatsToBook.length} ที่นั่ง)`;
+            } else {
+                btn.style.display = 'none';
+            }
+        }
+
+        function openBulkBookModal() {
+            document.getElementById('bulkCustName').value = "";
+            document.getElementById('bulkCustPhone').value = "";
+            document.getElementById('bulkSeatsList').innerText = `ที่นั่งที่เลือก: ${selectedSeatsToBook.join(', ')}`;
+            
+            document.getElementById('modalBackdrop').style.display = "block";
+            document.getElementById('bulkBookModal').style.display = "block";
+        }
+
+        async function submitBulkBooking(newStatus) {
+            const cName = document.getElementById('bulkCustName').value.trim();
+            const cPhone = document.getElementById('bulkCustPhone').value.trim();
+
+            if (!cName) {
+                alert("กรุณากรอกชื่อลูกค้า");
+                return;
+            }
+            if (!/^0\d{9}$/.test(cPhone)) {
+                alert("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง\n(ตัวเลข 10 หลัก ขึ้นต้นด้วย 0)");
+                return;
+            }
+
+            closeModal();
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('loadingText').innerText = "กำลังบันทึกการจอง...";
+
+            const bookedSeatsList = [...selectedSeatsToBook];
+
+            for (let seatId of bookedSeatsList) {
+                seatDataMap[seatId].status = newStatus;
+                seatDataMap[seatId].customerName = cName;
+                seatDataMap[seatId].phone = cPhone;
+            }
+
+            const requests = bookedSeatsList.map(seatId => {
+                return fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ 
+                        action: "updateSeat", 
+                        seatId: seatId, 
+                        newStatus: newStatus,
+                        adminName: adminName,
+                        customerName: cName,
+                        customerPhone: cPhone
+                    })
+                });
+            });
+
+            try {
+                await Promise.all(requests);
+            } catch (e) {
+                console.error("Error saving some seats", e);
+            }
+
+            selectedSeatsToBook = [];
+            updateFloatingBtn();
+            
+            document.getElementById('loadingOverlay').style.display = 'none';
+            if (currentViewedZone !== "") renderZoneSeats(currentViewedZone); 
+            else renderOverview();
+
+            showSuccessModal(cName, cPhone, bookedSeatsList);
+        }
+
+        function showSuccessModal(name, phone, seatsArr) {
+            let zoneMap = {};
+            seatsArr.forEach(s => {
+                let parts = s.split('-');
+                let z = parts[0].trim();
+                let num = parts[1].trim();
+                if(!zoneMap[z]) zoneMap[z] = [];
+                zoneMap[z].push(num);
+            });
+            let seatStr = Object.keys(zoneMap).map(z => `<b>${z}</b>: ${zoneMap[z].join(', ')}`).join('<br>');
+
+            const modalTitle = document.getElementById('infoModalTitle');
+            const resultMsg = document.getElementById('infoResultMsg');
+            
+            modalTitle.innerText = "การจองสำเร็จ!";
+            modalTitle.style.color = "#4ade80";
+            
+            resultMsg.innerHTML = `
+                <div style="text-align:left; background:#111827; padding:15px; border-radius:8px; border:1px solid #374151; font-size:14px;">
+                    <div style="margin-bottom:8px; color:#9ca3af;">ชื่อผู้จอง: <span style="color:white; font-weight:bold;">${name}</span></div>
+                    <div style="margin-bottom:12px; color:#9ca3af;">เบอร์โทร: <span style="color:white; font-weight:bold;">${phone}</span></div>
+                    <div style="color:#9ca3af;">ที่นั่ง:<br><span style="color:#ffb74d; font-weight:bold; line-height:1.6; display:block; margin-top:5px;">${seatStr}</span></div>
+                </div>
+            `;
+            
+            document.getElementById('modalBackdrop').style.display = "block";
+            document.getElementById('infoModal').style.display = "block";
+        }
+
+        function openSingleEditModal(seatId, info) {
+            currentSelectedSeat = seatId;
+            document.getElementById('modalSeatId').innerText = "แก้ไขที่นั่ง: " + seatId;
+            document.getElementById('custName').value = info.customerName || "";
+            document.getElementById('custPhone').value = info.phone || "";
+            
+            document.getElementById('modalBackdrop').style.display = "block";
+            document.getElementById('actionModal').style.display = "block";
+        }
+
+        async function updateSingleStatus(newStatus) {
+            const cName = document.getElementById('custName').value.trim();
+            const cPhone = document.getElementById('custPhone').value.trim();
+
+            if (newStatus !== 'Available' && !/^0\d{9}$/.test(cPhone)) {
+                alert("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง\n(ตัวเลข 10 หลัก ขึ้นต้นด้วย 0)");
+                return;
+            }
+
+            closeModal();
+            
+            const seatElem = document.getElementById(`seat-${currentSelectedSeat}`);
+            if (seatElem) seatElem.className = `seat status-${newStatus}`;
+            
+            seatDataMap[currentSelectedSeat].status = newStatus;
+            seatDataMap[currentSelectedSeat].customerName = newStatus === 'Available' ? "" : cName;
+            seatDataMap[currentSelectedSeat].phone = newStatus === 'Available' ? "" : cPhone;
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ 
+                    action: "updateSeat", 
+                    seatId: currentSelectedSeat, 
+                    newStatus: newStatus,
+                    adminName: adminName,
+                    customerName: newStatus === 'Available' ? "" : cName,
+                    customerPhone: newStatus === 'Available' ? "" : cPhone
+                })
+            });
+        }
+
+        function showSeatInfoReadOnly(seatId, info) {
+            const modalTitle = document.getElementById('infoModalTitle');
+            const resultMsg = document.getElementById('infoResultMsg');
+            
+            modalTitle.innerText = "ข้อมูลที่นั่ง";
+            modalTitle.style.color = "#ffb74d";
+            
+            if (info.status === 'Available') {
+                resultMsg.innerHTML = `<div style="font-size:18px;">ที่นั่ง <b>${seatId}</b></div><div style="color:#4ade80; margin-top:10px;">สถานะ: ว่าง</div>`;
+            } else {
+                const statusText = info.status === 'Booked' ? '<span style="color:#dc2626;">จองแล้ว</span>' : '<span style="color:#f59e0b;">รอโอน</span>';
+                resultMsg.innerHTML = 
+                    `<div style="font-size:18px; margin-bottom:15px;">ที่นั่ง <b>${seatId}</b></div>
+                     <div style="text-align:left; background:#111827; padding:15px; border-radius:8px; border:1px solid #374151;">
+                        <div style="margin-bottom:8px; color:#9ca3af;">สถานะ: ${statusText}</div>
+                        <div style="margin-bottom:8px; color:#9ca3af;">ชื่อลูกค้า: <span style="color:white; font-weight:bold;">${info.customerName || "-"}</span></div>
+                        <div style="color:#9ca3af;">เบอร์โทร: <span style="color:white; font-weight:bold;">${info.phone || "-"}</span></div>
+                     </div>`;
+            }
+            
+            document.getElementById('modalBackdrop').style.display = "block";
+            document.getElementById('infoModal').style.display = "block";
         }
 
         function searchSeat() {
@@ -476,8 +705,8 @@
                 }
             });
 
-            const modalTitle = document.getElementById('searchModalTitle');
-            const resultMsg = document.getElementById('searchResultMsg');
+            const modalTitle = document.getElementById('infoModalTitle');
+            const resultMsg = document.getElementById('infoResultMsg');
             
             modalTitle.innerText = "ผลการค้นหา";
             modalTitle.style.color = "#4ade80";
@@ -492,79 +721,40 @@
             }
             
             document.getElementById('modalBackdrop').style.display = "block";
-            document.getElementById('searchResultModal').style.display = "block";
+            document.getElementById('infoModal').style.display = "block";
         }
 
-        function openModal(seatId) {
-            currentSelectedSeat = seatId;
-            const info = seatDataMap[seatId];
-            
-            if (isGuest) {
-                const modalTitle = document.getElementById('searchModalTitle');
-                const resultMsg = document.getElementById('searchResultMsg');
-                
-                modalTitle.innerText = "ข้อมูลที่นั่ง";
-                modalTitle.style.color = "#ffb74d";
-                
-                if (info.status === 'Available') {
-                    resultMsg.innerHTML = `<div style="font-size:18px;">ที่นั่ง <b>${seatId}</b></div><div style="color:#4ade80; margin-top:10px;">สถานะ: ว่าง</div>`;
+        function showSummaryModal() {
+            let vipTotal = 0, vipSold = 0;
+            let normTotal = 0, normSold = 0;
+
+            Object.keys(seatDataMap).forEach(seatId => {
+                const info = seatDataMap[seatId];
+                if (seatId.includes('VIP')) {
+                    vipTotal++;
+                    if (info.status === 'Booked') vipSold++;
                 } else {
-                    const statusText = info.status === 'Booked' ? '<span style="color:#dc2626;">จองแล้ว</span>' : '<span style="color:#f59e0b;">รอโอน</span>';
-                    resultMsg.innerHTML = 
-                        `<div style="font-size:18px; margin-bottom:15px;">ที่นั่ง <b>${seatId}</b></div>
-                         <div style="text-align:left; background:#111827; padding:15px; border-radius:8px; border:1px solid #374151;">
-                            <div style="margin-bottom:8px; color:#9ca3af;">สถานะ: ${statusText}</div>
-                            <div style="margin-bottom:8px; color:#9ca3af;">ชื่อลูกค้า: <span style="color:white; font-weight:bold;">${info.customerName || "-"}</span></div>
-                            <div style="color:#9ca3af;">เบอร์โทร: <span style="color:white; font-weight:bold;">${info.phone || "-"}</span></div>
-                         </div>`;
+                    normTotal++;
+                    if (info.status === 'Booked') normSold++;
                 }
-                
-                document.getElementById('modalBackdrop').style.display = "block";
-                document.getElementById('searchResultModal').style.display = "block";
-            } 
-            else {
-                document.getElementById('modalSeatId').innerText = "ที่นั่ง: " + seatId;
-                document.getElementById('custName').value = info.customerName || "";
-                document.getElementById('custPhone').value = info.phone || "";
-                
-                document.getElementById('modalBackdrop').style.display = "block";
-                document.getElementById('actionModal').style.display = "block";
-            }
+            });
+
+            const rev = (vipSold * 899) + (normSold * 399);
+
+            document.getElementById('sumVip').innerText = `${vipSold}/${vipTotal}`;
+            document.getElementById('sumNorm').innerText = `${normSold}/${normTotal}`;
+            document.getElementById('sumRev').innerText = `${rev.toLocaleString()} บาท`;
+            
+            document.getElementById('modalBackdrop').style.display = "block";
+            document.getElementById('summaryModal').style.display = "block";
         }
 
         function closeModal() {
             document.getElementById('modalBackdrop').style.display = "none";
             document.getElementById('actionModal').style.display = "none";
-            document.getElementById('searchResultModal').style.display = "none";
-        }
-
-        async function updateStatus(newStatus) {
-            const cName = document.getElementById('custName').value;
-            const cPhone = document.getElementById('custPhone').value;
-
-            closeModal();
-            
-            const seatElem = document.getElementById(`seat-${currentSelectedSeat}`);
-            if (seatElem) seatElem.className = `seat status-${newStatus}`;
-            
-            seatDataMap[currentSelectedSeat].status = newStatus;
-            seatDataMap[currentSelectedSeat].customerName = newStatus === 'Available' ? "" : cName;
-            seatDataMap[currentSelectedSeat].phone = newStatus === 'Available' ? "" : cPhone;
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ 
-                    action: "updateSeat", 
-                    seatId: currentSelectedSeat, 
-                    newStatus: newStatus,
-                    adminName: adminName,
-                    customerName: newStatus === 'Available' ? "" : cName,
-                    customerPhone: newStatus === 'Available' ? "" : cPhone
-                })
-            });
-            
-            updateSummary();
+            document.getElementById('bulkBookModal').style.display = "none";
+            document.getElementById('infoModal').style.display = "none";
+            document.getElementById('summaryModal').style.display = "none";
         }
 
         function handleCapture() {
