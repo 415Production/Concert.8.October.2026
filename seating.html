@@ -6,7 +6,8 @@
     <title>ผังที่นั่งคอนเสิร์ต</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        body { background: #0f1115; color: white; font-family: sans-serif; margin: 0; padding-top: 60px; padding-bottom: 120px; touch-action: manipulation; }
+        /* เพิ่ม padding-bottom เป็น 140px เผื่อที่ให้ปุ่มค้นหาและปุ่มจอง */
+        body { background: #0f1115; color: white; font-family: sans-serif; margin: 0; padding-top: 60px; padding-bottom: 140px; touch-action: manipulation; }
         
         /* Header */
         .header { padding: 0 15px; background: #1a1c23; display: flex; justify-content: space-between; align-items: center; z-index: 20; position: fixed; top: 0; left: 0; width: 100%; box-sizing: border-box; border-bottom: 1px solid #333; height: 60px;}
@@ -22,11 +23,11 @@
         .legend span { display: inline-block; width: 12px; height: 12px; margin: 0 5px 0 12px; border-radius: 3px; }
         .legend span.l-selected { background: #22c55e; }
         
-        /* ปุ่มจองแบบลอยตัว (Floating Button) */
+        /* ปุ่มจองแบบลอยตัว ขยับขึ้นมาที่ 130px เพื่อไม่บังช่องค้นหา */
         #floatingBookBtn {
             display: none;
             position: fixed;
-            bottom: 65px;
+            bottom: 130px; 
             left: 50%;
             transform: translateX(-50%);
             background: #22c55e;
@@ -42,7 +43,7 @@
         }
         #floatingBookBtn:active { transform: translateX(-50%) scale(0.95); }
 
-        /* ช่องค้นหา (แสดงเฉพาะโหมดตรวจสอบผัง) */
+        /* ช่องค้นหา (แสดงตลอดในหน้าภาพรวม) */
         .search-container {
             display: none; 
             position: fixed;
@@ -284,10 +285,10 @@
             "ZONE Q": "6 / 1", "ZONE R": "6 / 2", "ZONE S": "6 / 3", "ZONE T": "6 / 4", "ZONE U": "6 / 5"
         };
 
-        if (isGuest) {
-            document.getElementById('searchContainer').style.display = "flex";
-            document.body.style.paddingBottom = "120px"; 
-        } else {
+        // แสดงแถบค้นหาให้ทุกคนในหน้า Overview ทันทีที่โหลด
+        document.getElementById('searchContainer').style.display = "flex";
+
+        if (!isGuest) {
             document.getElementById('btnSummary').style.display = "block";
             document.getElementById('legendSelected').style.display = "inline-block";
             document.getElementById('legendText').style.display = "inline-block";
@@ -354,26 +355,22 @@
                         const newStatus = row[3] ? row[3].toString().trim() : "Available";
                         
                         if (seatDataMap[id]) {
-                            // อัปเดตข้อมูลใน Map
                             seatDataMap[id].status = newStatus;
                             seatDataMap[id].customerName = row[4] ? row[4].toString().trim() : "";
                             seatDataMap[id].phone = row[7] ? row[7].toString().trim() : "";
                             
-                            // ถ้าที่นั่งที่เราจิ้มไว้ (สีเขียว) ถูกคนอื่นจองไปแล้ว ให้เอาออกจากการเลือก
                             const isSelected = selectedSeatsToBook.includes(id);
                             if (isSelected && newStatus !== 'Available') {
                                 selectedSeatsToBook = selectedSeatsToBook.filter(s => s !== id);
                                 selectionChanged = true;
                             }
 
-                            // อัปเดตหน้าต่างเจาะจงโซน (ถ้าเปิดอยู่)
                             const seatBtn = document.getElementById(`seat-${id}`);
                             if (seatBtn) {
                                 const currentlySelected = selectedSeatsToBook.includes(id);
                                 seatBtn.className = `seat status-${currentlySelected ? 'Selected' : newStatus}`;
                             }
                             
-                            // อัปเดตหน้าภาพรวม
                             const miniSeat = document.getElementById(`mini-seat-${id}`);
                             if (miniSeat) {
                                 const currentlySelected = selectedSeatsToBook.includes(id);
@@ -382,17 +379,15 @@
                         }
                     });
 
-                    // อัปเดตตัวเลขในปุ่มลอย ถ้ารายการเก้าอี้ที่เลือกมีการเปลี่ยนแปลง
                     if (selectionChanged) {
                         updateFloatingBtn();
                     }
                 }
             } catch (e) {
-                // ปล่อยผ่านถ้าเชื่อมต่อไม่ได้ชั่วคราว เพื่อไม่ให้เด้ง Error กวนใจ
+                // Ignore sync errors silently
             }
         }
         
-        // สั่งให้ระบบ Sync ทุกๆ 15 วินาที
         setInterval(syncDataBackground, 15000);
 
         function renderOverview() {
@@ -421,7 +416,7 @@
                     const seatNumber = parseInt(seatId.split('-')[1], 10);
                     
                     const miniSeat = document.createElement('div');
-                    miniSeat.id = `mini-seat-${seatId}`; // เพิ่ม ID สำหรับให้ระบบ Sync หากเจอ
+                    miniSeat.id = `mini-seat-${seatId}`;
                     const isSelected = selectedSeatsToBook.includes(seatId);
                     miniSeat.className = `mini-seat status-${isSelected ? 'Selected' : info.status}`;
                     miniSeat.innerText = seatNumber;
@@ -441,7 +436,8 @@
             document.getElementById('currentZoneTitle').innerText = zoneName;
             document.getElementById('btnCapture').innerText = "แคปโซนนี้";
             
-            if (isGuest) document.getElementById('searchContainer').style.display = "none";
+            // ซ่อนแถบค้นหาเมื่อเข้าไปดูเจาะจงโซน
+            document.getElementById('searchContainer').style.display = "none";
             
             renderZoneSeats(zoneName);
             window.scrollTo(0, 0);
@@ -452,7 +448,8 @@
             document.getElementById('view-overview').style.display = 'block';
             document.getElementById('btnCapture').innerText = "แคปผังรวม";
             
-            if (isGuest) document.getElementById('searchContainer').style.display = "flex";
+            // แสดงแถบค้นหาเมื่อกลับมาหน้าภาพรวม
+            document.getElementById('searchContainer').style.display = "flex";
             
             renderOverview();
         }
@@ -803,11 +800,13 @@
                 
                 document.body.removeChild(cloneWrapper);
                 btn.innerText = originalText;
-                if(isGuest) document.getElementById('searchContainer').style.display = "flex"; 
+                
+                // ให้โชว์ Search Box กลับมาให้ทุกคน เมื่อแคปภาพรวมเสร็จ
+                document.getElementById('searchContainer').style.display = "flex"; 
             }).catch(e => {
                 document.body.removeChild(cloneWrapper);
                 btn.innerText = originalText;
-                if(isGuest) document.getElementById('searchContainer').style.display = "flex";
+                document.getElementById('searchContainer').style.display = "flex";
                 alert("เกิดข้อผิดพลาดในการบันทึกภาพ");
             });
         }
