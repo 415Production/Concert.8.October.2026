@@ -6,100 +6,42 @@
     <title>เข้าสู่ระบบ - ผังที่นั่งคอนเสิร์ต</title>
     <style>
         body { 
-            background: #0f1115; 
-            color: white; 
-            font-family: sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            touch-action: manipulation;
+            background: #0f1115; color: white; font-family: sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; touch-action: manipulation;
         }
         .login-container { 
-            background: #1a1c23; 
-            padding: 30px; 
-            border-radius: 12px; 
-            border: 1px solid #333; 
-            width: 85%; 
-            max-width: 350px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
-            text-align: center; 
+            background: #1a1c23; padding: 30px; border-radius: 12px; 
+            border: 1px solid #333; width: 85%; max-width: 350px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; 
         }
-        h2 { 
-            color: #ffb74d; 
-            margin-top: 0; 
-            margin-bottom: 25px;
-            font-size: 22px;
+        h2 { color: #ffb74d; margin-top: 0; margin-bottom: 25px; font-size: 22px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 13px; color: #9ca3af; margin-bottom: 8px; }
+        .input-group input { 
+            width: 100%; padding: 12px; border-radius: 6px; 
+            border: 1px solid #4b5563; background: #111827; 
+            color: white; box-sizing: border-box; font-size: 15px; 
         }
-        .input-group { 
-            margin-bottom: 20px; 
-            text-align: left; 
-        }
-        .input-group label { 
-            display: block; 
-            font-size: 13px; 
-            color: #9ca3af; 
-            margin-bottom: 8px; 
-        }
-        select { 
-            width: 100%; 
-            padding: 12px; 
-            border-radius: 6px; 
-            border: 1px solid #4b5563; 
-            background: #111827; 
-            color: white; 
-            box-sizing: border-box; 
-            font-size: 15px; 
-            cursor: pointer;
-        }
-        select:focus {
-            outline: none;
-            border-color: #ffb74d;
-        }
+        .input-group input:focus { outline: none; border-color: #ffb74d; }
+        
         .btn-admin { 
-            background: #e50914; 
-            color: white; 
-            border: none; 
-            padding: 14px; 
-            width: 100%; 
-            border-radius: 6px; 
-            font-size: 15px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(229, 9, 20, 0.3);
+            background: #e50914; color: white; border: none; padding: 14px; 
+            width: 100%; border-radius: 6px; font-size: 15px; font-weight: bold; 
+            cursor: pointer; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(229, 9, 20, 0.3);
         }
         .btn-admin:active { transform: scale(0.98); }
         
-        .divider { 
-            margin: 20px 0; 
-            color: #6b7280; 
-            font-size: 12px; 
-            position: relative; 
-        }
+        .divider { margin: 20px 0; color: #6b7280; font-size: 12px; position: relative; }
         .divider::before, .divider::after { 
-            content: ""; 
-            position: absolute; 
-            top: 50%; 
-            width: 40%; 
-            height: 1px; 
-            background: #374151; 
+            content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #374151; 
         }
-        .divider::before { left: 0; }
-        .divider::after { right: 0; }
+        .divider::before { left: 0; } .divider::after { right: 0; }
         
         .btn-guest { 
-            background: #374151; 
-            color: white; 
-            border: 1px solid #4b5563; 
-            padding: 14px; 
-            width: 100%; 
-            border-radius: 6px; 
-            font-size: 15px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background: #374151; color: white; border: 1px solid #4b5563; padding: 14px; 
+            width: 100%; border-radius: 6px; font-size: 15px; font-weight: bold; 
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .btn-guest:active { transform: scale(0.98); }
     </style>
@@ -110,16 +52,11 @@
         <h2>ระบบจัดการผังที่นั่ง</h2>
         
         <div class="input-group">
-            <label>เลือกชื่อแอดมิน (Select Admin)</label>
-            <select id="adminName">
-                <option value="" disabled selected>-- กรุณาเลือกชื่อแอดมิน --</option>
-                <option value="EURO">EURO</option>
-                <option value="KEW">KEW</option>
-                <option value="NK">NK</option>
-            </select>
+            <label>รหัสผ่าน Admin</label>
+            <input type="password" id="adminPass" placeholder="กรอกรหัสผ่าน 4 หลัก" inputmode="numeric">
         </div>
         
-        <button class="btn-admin" onclick="adminLogin()">เข้าสู่ระบบจัดการ</button>
+        <button class="btn-admin" onclick="adminLogin()">เข้าสู่ระบบจัดการ (Admin)</button>
         
         <div class="divider">หรือ</div>
         
@@ -128,15 +65,14 @@
 
     <script>
         function adminLogin() {
-            const selectElement = document.getElementById('adminName');
-            const name = selectElement.options[selectElement.selectedIndex].value;
+            const pass = document.getElementById('adminPass').value.trim();
             
-            if (!name) {
-                alert('กรุณาเลือกชื่อแอดมินก่อนเข้าสู่ระบบ');
+            if (pass !== "8888") {
+                alert('รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง');
                 return;
             }
 
-            sessionStorage.setItem('adminName', name);
+            sessionStorage.setItem('adminName', 'Admin');
             window.location.href = 'seating.html';
         }
 
