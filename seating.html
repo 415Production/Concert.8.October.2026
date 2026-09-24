@@ -78,28 +78,30 @@
         #view-overview { padding: 15px; margin: 0 auto; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         
         .overview-layout { 
-            display: grid; grid-template-columns: 1.5fr 1fr 1.5fr 1fr 1.5fr; gap: 8px; margin: 0 auto; min-width: 900px; width: 100%; padding-top: 65px;
+            display: grid; grid-template-columns: 1.5fr 1fr 1.5fr 1fr 1.5fr; gap: 8px; margin: 0 auto; min-width: 900px; width: 100%; 
+            /* เพิ่มพื้นที่ด้านบนเผื่อให้เวทีที่ดันสูงขึ้นไป ไม่ถูก Header บัง */
+            padding-top: 100px;
         }
         
         /* --- เวทีชิ้นเดียว ไร้รอยต่อ มีแสงเรือง (Seamless T-Shape Stage) --- */
         .stage-container { 
             grid-area: 1 / 3; position: relative; display: flex; flex-direction: column; align-items: center; height: 100%; 
-            /* ใส่แสง Glow ให้เรืองแสงออกมาจากตัวเวทีรวมกันทั้งหมด */
             filter: drop-shadow(0 8px 15px rgba(255, 183, 77, 0.35)); 
         }
         .stage-main { 
-            position: absolute; bottom: 100%; width: 165%; height: 55px; 
-            /* ไล่สีจากเหลืองลงมาส้ม */
+            /* เพิ่มระยะห่างให้เวทีสูงขึ้น จากเดิม 8px เปลี่ยนเป็น 40px */
+            position: absolute; bottom: calc(100% + 40px); width: 165%; height: 55px; 
             background: linear-gradient(to bottom, #ffcc80, #ffb74d); 
-            border-radius: 8px 8px 0 0; /* มนแค่ด้านบน ด้านล่างตัดตรงให้เชื่อมกับ Catwalk */
+            border-radius: 8px 8px 0 0; 
             display: flex; justify-content: center; align-items: center; 
             color: #000; font-weight: bold; font-size: 15px; z-index: 5; 
         }
         .stage-catwalk { 
-            width: 45%; height: 100%; 
-            /* ไล่สีจากส้มลงมาส้มเข้ม (ต่อจาก Stage Main) */
+            width: 45%; 
+            /* ยืดความสูงทางเดินให้เชื่อมติดเวทีตามระยะห่างที่เพิ่มขึ้น */
+            height: calc(100% + 40px); margin-top: -40px; 
             background: linear-gradient(to bottom, #ffb74d, #f57c00); 
-            border-radius: 0 0 8px 8px; /* ตัดตรงด้านบน มนด้านล่าง */
+            border-radius: 0 0 8px 8px; 
             position: relative; z-index: 4;
         }
 
