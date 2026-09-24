@@ -6,7 +6,6 @@
     <title>ผังที่นั่งคอนเสิร์ต</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        /* เพิ่ม padding-bottom เป็น 140px เผื่อที่ให้ปุ่มค้นหาและปุ่มจอง */
         body { background: #0f1115; color: white; font-family: sans-serif; margin: 0; padding-top: 60px; padding-bottom: 140px; touch-action: manipulation; }
         
         /* Header */
@@ -23,7 +22,7 @@
         .legend span { display: inline-block; width: 12px; height: 12px; margin: 0 5px 0 12px; border-radius: 3px; }
         .legend span.l-selected { background: #22c55e; }
         
-        /* ปุ่มจองแบบลอยตัว ขยับขึ้นมาที่ 130px เพื่อไม่บังช่องค้นหา */
+        /* ปุ่มจองแบบลอยตัว */
         #floatingBookBtn {
             display: none;
             position: fixed;
@@ -43,7 +42,7 @@
         }
         #floatingBookBtn:active { transform: translateX(-50%) scale(0.95); }
 
-        /* ช่องค้นหา (แสดงตลอดในหน้าภาพรวม) */
+        /* ช่องค้นหา */
         .search-container {
             display: none; 
             position: fixed;
@@ -224,7 +223,8 @@
     <div class="modal" id="actionModal">
         <h3 id="modalSeatId"></h3>
         <div class="input-group"><label>ชื่อลูกค้า</label><input type="text" id="custName" placeholder="กรอกชื่อลูกค้า"></div>
-        <div class="input-group"><label>เบอร์โทรศัพท์ (10 หลัก)</label><input type="tel" id="custPhone" placeholder="กรอกเบอร์โทร 10 หลัก" maxlength="10"></div>
+        <!-- เพิ่ม oninput กรองตัวเลขเฉพาะ ป้องกันขีดกลางหรืออักษรอื่นตอน paste -->
+        <div class="input-group"><label>เบอร์โทรศัพท์ (10 หลัก)</label><input type="tel" id="custPhone" placeholder="กรอกเบอร์โทร 10 หลัก" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
         <div class="action-btns">
             <button style="background: #dc2626; color: white;" onclick="updateSingleStatus('Booked')">บันทึกเป็น จองแล้ว (Booked)</button>
             <button style="background: #f59e0b; color: black;" onclick="updateSingleStatus('Pending')">บันทึกเป็น รอโอน (Pending)</button>
@@ -237,7 +237,8 @@
         <h3 style="color:#22c55e;" id="bulkModalTitle">ดำเนินการจองที่นั่ง</h3>
         <div style="font-size:13px; color:#9ca3af; margin-bottom:15px; text-align:center;" id="bulkSeatsList"></div>
         <div class="input-group"><label>ชื่อลูกค้า</label><input type="text" id="bulkCustName" placeholder="กรอกชื่อลูกค้า"></div>
-        <div class="input-group"><label>เบอร์โทรศัพท์ (บังคับ 10 หลัก)</label><input type="tel" id="bulkCustPhone" placeholder="ตัวอย่าง: 0812345678" maxlength="10"></div>
+        <!-- เพิ่ม oninput กรองตัวเลขเฉพาะ ป้องกันขีดกลางหรืออักษรอื่นตอน paste -->
+        <div class="input-group"><label>เบอร์โทรศัพท์ (บังคับ 10 หลัก)</label><input type="tel" id="bulkCustPhone" placeholder="ตัวอย่าง: 0812345678" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
         <div class="action-btns">
             <button style="background: #dc2626; color: white;" onclick="submitBulkBooking('Booked')">ยืนยันจอง (Booked)</button>
             <button style="background: #f59e0b; color: black;" onclick="submitBulkBooking('Pending')">รอโอน (Pending)</button>
