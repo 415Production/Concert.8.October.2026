@@ -30,7 +30,6 @@
         
         .btn-back:active, .btn-capture:active, .btn-summary:active { transform: scale(0.95); }
 
-        /* ปรับ Footer ให้ยืดหยุ่นรองรับหลายจุดสถานะ */
         .footer { display: flex; justify-content: center; align-items: center; z-index: 20; position: fixed; bottom: 0; left: 0; width: 100%; box-sizing: border-box; min-height: 50px; height: auto; padding: 8px 15px;}
         .legend { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; font-size: 11px; font-weight: 500; gap: 8px;}
         .legend div { display: flex; align-items: center; }
@@ -133,7 +132,6 @@
         }
         .seat:active { transform: translateY(2px) scale(0.95); box-shadow: inset 0 2px 4px rgba(0,0,0,0.4); }
         
-        /* สไตล์สีของสถานะต่างๆ */
         .status-Available { background: #374151; color: #d1d5db; }
         .status-Pending { background: #f59e0b; color: #000; text-shadow: 0 1px 1px rgba(255,255,255,0.4);}
         .status-Booked { background: #dc2626; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
@@ -164,7 +162,6 @@
         .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(17, 24, 39, 0.8); color: white; box-sizing: border-box; font-size: 15px; font-family: 'Prompt', sans-serif; transition: 0.2s;}
         .input-group input:focus { outline: none; border-color: #ffb74d; box-shadow: 0 0 0 2px rgba(255, 183, 77, 0.2);}
         
-        /* ปรับ Action Buttons ให้เรียงสวยงามและกระชับขึ้น */
         .action-btns { display: flex; flex-direction: column; gap: 8px; }
         .modal button { padding: 10px; cursor: pointer; border: none; border-radius: 8px; font-weight: 500; font-size: 13px; font-family: 'Prompt', sans-serif; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
         .modal button:active { transform: scale(0.97); }
@@ -249,8 +246,8 @@
     <div class="modal" id="bulkBookModal">
         <h3 style="color:#22c55e; margin-bottom:10px;"><span class="material-icons">shopping_cart_checkout</span> ดำเนินการจองที่นั่ง</h3>
         <div style="font-size:12px; color:#9ca3af; margin-bottom:15px; text-align:center;" id="bulkSeatsList"></div>
-        <div class="input-group"><label>ชื่อลูกค้า</label><input type="text" id="bulkCustName" placeholder="กรอกชื่อลูกค้า"></div>
-        <div class="input-group"><label>เบอร์โทรศัพท์ (บังคับ 10 หลัก)</label><input type="tel" id="bulkCustPhone" placeholder="ตัวอย่าง: 0812345678" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
+        <div class="input-group"><label>ชื่อลูกค้า (ถ้าแจกฟรี ไม่ต้องใส่)</label><input type="text" id="bulkCustName" placeholder="กรอกชื่อลูกค้า"></div>
+        <div class="input-group"><label>เบอร์โทรศัพท์ (ถ้าแจกฟรี ไม่ต้องใส่)</label><input type="tel" id="bulkCustPhone" placeholder="ตัวอย่าง: 0812345678" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
         <div class="action-btns">
             <button style="background: #dc2626; color: white;" onclick="submitBulkBooking('Booked')"><span class="material-icons">language</span> จองออนไลน์ (สีแดง)</button>
             <button style="background: #3b82f6; color: white;" onclick="submitBulkBooking('WalkIn')"><span class="material-icons">directions_walk</span> ลูกค้า Walk-in (สีฟ้า)</button>
@@ -267,7 +264,7 @@
         <button style="width: 100%; background: #374151; color: white; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" onclick="closeModal()">ปิดหน้าต่าง</button>
     </div>
 
-    <!-- Modal ภาพรวมการจองทั้งหมดที่ถูกอัปเกรด -->
+    <!-- Modal ภาพรวมการจองทั้งหมด -->
     <div class="modal" id="summaryModal">
         <h3 style="color: #ffb74d; margin-bottom:10px;"><span class="material-icons">analytics</span> ภาพรวมการจองทั้งหมด</h3>
         <div style="text-align:left; background:rgba(17,24,39,0.5); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); margin-top:10px; font-size: 13px;">
@@ -558,16 +555,23 @@
         }
 
         async function submitBulkBooking(newStatus) {
-            const cName = document.getElementById('bulkCustName').value.trim();
-            const cPhone = document.getElementById('bulkCustPhone').value.trim();
+            let cName = document.getElementById('bulkCustName').value.trim();
+            let cPhone = document.getElementById('bulkCustPhone').value.trim();
 
-            if (!cName) {
-                alert("กรุณากรอกชื่อลูกค้า");
-                return;
-            }
-            if (!/^0\d{9}$/.test(cPhone)) {
-                alert("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง\n(ตัวเลข 10 หลัก ขึ้นต้นด้วย 0)");
-                return;
+            // ตรวจสอบข้อมูล ยกเว้นกรณีแจกฟรี
+            if (newStatus !== 'Free') {
+                if (!cName) {
+                    alert("กรุณากรอกชื่อลูกค้า");
+                    return;
+                }
+                if (!/^0\d{9}$/.test(cPhone)) {
+                    alert("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง\n(ตัวเลข 10 หลัก ขึ้นต้นด้วย 0)");
+                    return;
+                }
+            } else {
+                // โหมดแจกฟรี ถ้าไม่ได้พิมพ์อะไรมาเลย ให้ใส่ค่าเริ่มต้นไว้กันช่องโหว่
+                cName = cName || "กิจกรรมแจกฟรี";
+                cPhone = cPhone || "-";
             }
 
             closeModal();
@@ -650,12 +654,21 @@
         }
 
         async function updateSingleStatus(newStatus) {
-            const cName = document.getElementById('custName').value.trim();
-            const cPhone = document.getElementById('custPhone').value.trim();
+            let cName = document.getElementById('custName').value.trim();
+            let cPhone = document.getElementById('custPhone').value.trim();
 
-            if (newStatus !== 'Available' && !/^0\d{9}$/.test(cPhone)) {
+            if (newStatus !== 'Available' && newStatus !== 'Free' && !/^0\d{9}$/.test(cPhone)) {
                 alert("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง\n(ตัวเลข 10 หลัก ขึ้นต้นด้วย 0)");
                 return;
+            }
+
+            // ถ้าแอดมินลบชื่อออกจนว่าง แล้วกดฟรี ให้ใส่ค่าเริ่มต้น
+            if (newStatus === 'Free') {
+                cName = cName || "กิจกรรมแจกฟรี";
+                cPhone = cPhone || "-";
+            } else if (newStatus === 'Available') {
+                cName = "";
+                cPhone = "";
             }
 
             closeModal();
@@ -664,8 +677,8 @@
             if (seatElem) seatElem.className = `seat status-${newStatus}`;
             
             seatDataMap[currentSelectedSeat].status = newStatus;
-            seatDataMap[currentSelectedSeat].customerName = newStatus === 'Available' ? "" : cName;
-            seatDataMap[currentSelectedSeat].phone = newStatus === 'Available' ? "" : cPhone;
+            seatDataMap[currentSelectedSeat].customerName = cName;
+            seatDataMap[currentSelectedSeat].phone = cPhone;
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
@@ -675,8 +688,8 @@
                     seatId: currentSelectedSeat, 
                     newStatus: newStatus,
                     adminName: adminName,
-                    customerName: newStatus === 'Available' ? "" : cName,
-                    customerPhone: newStatus === 'Available' ? "" : cPhone
+                    customerName: cName,
+                    customerPhone: cPhone
                 })
             });
         }
@@ -691,7 +704,7 @@
             if (info.status === 'Available') {
                 resultMsg.innerHTML = `<div style="font-size:20px; font-weight:bold;">${seatId}</div><div style="color:#4ade80; margin-top:10px; font-weight:bold;"><span class="material-icons">check_circle</span> สถานะ: ว่าง</div>`;
             } else {
-                let statusText = "จองแล้ว";
+                let statusText = "จองออนไลน์";
                 let statusColor = "#dc2626";
                 if(info.status === 'Pending') { statusText = "รอโอน"; statusColor = "#f59e0b"; }
                 else if(info.status === 'WalkIn') { statusText = "Walk-in"; statusColor = "#3b82f6"; }
