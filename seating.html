@@ -10,78 +10,29 @@
     
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        /* ระบบจัดการสีธีมมืดและสว่าง (Day/Night Mode) */
-        :root {
-            --bg-main: #0f1115;
-            --text-main: white;
-            --glass-bg: rgba(26, 28, 35, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.05);
-            --btn-back-bg: rgba(75, 85, 99, 0.8);
-            --btn-back-text: white;
-            --zone-bg: #1a1c23;
-            --zone-border: rgba(255, 255, 255, 0.05);
-            --zone-vip-bg: #221013;
-            --zone-vip-border: #941724;
-            --text-muted: #9ca3af;
-            --seat-avail-bg: #374151;
-            --seat-avail-text: #d1d5db;
-            --modal-bg: rgba(31, 41, 55, 0.95);
-            --modal-border: rgba(255,255,255,0.1);
-            --input-bg: rgba(17, 24, 39, 0.8);
-            --input-border: rgba(255,255,255,0.1);
-            --popup-panel-bg: rgba(17, 24, 39, 0.5);
-            --loading-bg: rgba(15,17,21,0.9);
-            --seat-shadow: inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -3px 0 rgba(0,0,0,0.3), 0 3px 5px rgba(0,0,0,0.4);
-            --seat-active-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
-        }
-
-        body.light-mode {
-            --bg-main: #ffffff;
-            --text-main: #111827;
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(0, 0, 0, 0.1);
-            --btn-back-bg: #e5e7eb;
-            --btn-back-text: #1f2937;
-            --zone-bg: #ffffff;
-            --zone-border: #d1d5db;
-            --zone-vip-bg: #fff1f2;
-            --zone-vip-border: #fca5a5;
-            --text-muted: #4b5563;
-            --seat-avail-bg: #e5e7eb;
-            --seat-avail-text: #6b7280;
-            --modal-bg: rgba(255, 255, 255, 0.98);
-            --modal-border: rgba(0,0,0,0.1);
-            --input-bg: #f9fafb;
-            --input-border: #d1d5db;
-            --popup-panel-bg: #f3f4f6;
-            --loading-bg: rgba(255,255,255,0.9);
-            --seat-shadow: inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -3px 0 rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1);
-            --seat-active-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
-        }
-
-        body { background: var(--bg-main); color: var(--text-main); font-family: 'Prompt', sans-serif; margin: 0; padding-top: 60px; padding-bottom: 140px; touch-action: manipulation; transition: background 0.3s, color 0.3s; }
+        body { background: #0f1115; color: white; font-family: 'Prompt', sans-serif; margin: 0; padding-top: 60px; padding-bottom: 140px; touch-action: manipulation; }
         
         .material-icons { vertical-align: middle; margin-right: 4px; font-size: 18px; margin-bottom: 2px;}
 
         .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
+            background: rgba(26, 28, 35, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
-        .header { padding: 0 15px; display: flex; justify-content: space-between; align-items: center; z-index: 20; position: fixed; top: 0; left: 0; width: 100%; box-sizing: border-box; height: 60px; transition: 0.3s;}
-        .btn-back { background: var(--btn-back-bg); color: var(--btn-back-text); padding: 8px 12px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: 0.2s;}
+        .header { padding: 0 15px; display: flex; justify-content: space-between; align-items: center; z-index: 20; position: fixed; top: 0; left: 0; width: 100%; box-sizing: border-box; height: 60px;}
+        .btn-back { background: rgba(75, 85, 99, 0.8); color: white; padding: 8px 12px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: 0.2s;}
         
         .header-actions { display: flex; gap: 8px; }
-        .btn-theme { background: var(--btn-back-bg); color: var(--btn-back-text); padding: 8px 10px; border-radius: 8px; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .btn-capture { background: #e50914; color: white; padding: 8px 12px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; font-size: 13px; transition: 0.2s; box-shadow: 0 4px 10px rgba(229, 9, 20, 0.3);}
         .btn-summary { background: #3b82f6; color: white; padding: 8px 12px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; font-size: 13px; display: none; transition: 0.2s; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);}
         
-        .btn-back:active, .btn-theme:active, .btn-capture:active, .btn-summary:active { transform: scale(0.95); }
+        .btn-back:active, .btn-capture:active, .btn-summary:active { transform: scale(0.95); }
 
-        .footer { display: flex; justify-content: center; align-items: center; z-index: 20; position: fixed; bottom: 0; left: 0; width: 100%; box-sizing: border-box; min-height: 50px; height: auto; padding: 8px 15px; transition: 0.3s;}
+        .footer { display: flex; justify-content: center; align-items: center; z-index: 20; position: fixed; bottom: 0; left: 0; width: 100%; box-sizing: border-box; min-height: 50px; height: auto; padding: 8px 15px;}
         .legend { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; font-size: 11px; font-weight: 500; gap: 8px;}
-        .legend div { display: flex; align-items: center; color: var(--text-main); }
+        .legend div { display: flex; align-items: center; }
         .legend span { display: inline-block; width: 12px; height: 12px; margin-right: 4px; border-radius: 3px; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);}
         .legend span.l-selected { background: #22c55e; }
         
@@ -97,11 +48,11 @@
         .search-container {
             display: none; position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%);
             gap: 8px; padding: 10px; border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 25; width: 90%; max-width: 450px; box-sizing: border-box; transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6); z-index: 25; width: 90%; max-width: 450px; box-sizing: border-box;
         }
         .search-container input {
-            flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--input-border);
-            background: var(--input-bg); color: var(--text-main); font-size: 14px; font-family: 'Prompt', sans-serif;
+            flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(17, 24, 39, 0.8); color: white; font-size: 14px; font-family: 'Prompt', sans-serif;
             transition: 0.2s;
         }
         .search-container input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3); }
@@ -112,7 +63,7 @@
         }
         .search-container button:active { transform: scale(0.95); }
 
-        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: var(--loading-bg); z-index: 999; transition: 0.3s; }
+        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: rgba(15,17,21,0.9); z-index: 999; }
 
         #view-overview { padding: 15px; margin: 0 auto; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         
@@ -141,12 +92,12 @@
         }
 
         .zone-box { 
-            background: var(--zone-bg); border: 1px solid var(--zone-border); border-radius: 8px; 
+            background: #1a1c23; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; 
             padding: 8px; cursor: pointer; transition: 0.2s; box-sizing: border-box; width: 100%; overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
-        .zone-box:active { transform: scale(0.98); }
-        .zone-box.vip { border: 1px solid var(--zone-vip-border); background: var(--zone-vip-bg); }
+        .zone-box:active { background: #2d3748; transform: scale(0.98); }
+        .zone-box.vip { border: 1px solid #941724; background: #221013; box-shadow: 0 4px 10px rgba(148, 23, 36, 0.2);}
         
         .zone-box-title { text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 8px; color: #fff; background: linear-gradient(90deg, #b91c1c, #991b1b); padding: 4px; border-radius: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
         .zone-box-title.normal { background: linear-gradient(90deg, #374151, #1f2937); }
@@ -165,7 +116,7 @@
 
         #view-zone { display: none; padding: 15px; max-width: 100%; margin: 0 auto; box-sizing: border-box;}
         
-        .zone-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-radius: 12px; margin-bottom: 20px; transition: 0.3s;}
+        .zone-header-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-radius: 12px; margin-bottom: 20px; }
         .zone-header-bar h2 { margin: 0; font-size: 18px; color: #ffb74d; font-weight: bold;}
         
         .zone-scroll-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px;}
@@ -177,11 +128,11 @@
             aspect-ratio: 1; width: 100%; border-radius: 6px; cursor: pointer; 
             font-size: 12px; font-weight: 600; display: flex; justify-content: center; align-items: center; 
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--seat-shadow);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -3px 0 rgba(0,0,0,0.3), 0 3px 5px rgba(0,0,0,0.4);
         }
-        .seat:active { transform: translateY(2px) scale(0.95); box-shadow: var(--seat-active-shadow); }
+        .seat:active { transform: translateY(2px) scale(0.95); box-shadow: inset 0 2px 4px rgba(0,0,0,0.4); }
         
-        .status-Available { background: var(--seat-avail-bg); color: var(--seat-avail-text); }
+        .status-Available { background: #374151; color: #d1d5db; }
         .status-Pending { background: #f59e0b; color: #000; text-shadow: 0 1px 1px rgba(255,255,255,0.4);}
         .status-Booked { background: #dc2626; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
         .status-WalkIn { background: #3b82f6; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
@@ -199,16 +150,16 @@
 
         .modal { 
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            background: var(--modal-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: rgba(31, 41, 55, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             padding: 24px; border-radius: 16px; z-index: 100; width: 85%; max-width: 360px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid var(--modal-border); transition: 0.3s;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1);
         }
         .modal.show { animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
-        .modal h3 { margin-top: 0; color: var(--text-main); text-align: center; font-size: 18px; margin-bottom: 20px;}
+        .modal h3 { margin-top: 0; color: #f3f4f6; text-align: center; font-size: 18px; margin-bottom: 20px;}
         .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
-        .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-main); box-sizing: border-box; font-size: 15px; font-family: 'Prompt', sans-serif; transition: 0.2s;}
+        .input-group label { display: block; font-size: 13px; color: #9ca3af; margin-bottom: 6px; }
+        .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(17, 24, 39, 0.8); color: white; box-sizing: border-box; font-size: 15px; font-family: 'Prompt', sans-serif; transition: 0.2s;}
         .input-group input:focus { outline: none; border-color: #ffb74d; box-shadow: 0 0 0 2px rgba(255, 183, 77, 0.2);}
         
         .action-btns { display: flex; flex-direction: column; gap: 8px; }
@@ -216,13 +167,6 @@
         .modal button:active { transform: scale(0.97); }
         .backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 90;}
         .backdrop.show { animation: fadeIn 0.2s ease-out forwards; }
-
-        /* คลาสกลางสำหรับหน้าต่างย่อยที่จัดวางข้อมูล */
-        .popup-panel { text-align:left; background: var(--popup-panel-bg); padding:15px; border-radius:12px; border:1px solid var(--glass-border); font-size:14px; }
-        .popup-row { display:flex; justify-content:space-between; margin-bottom:8px; }
-        .popup-label { color: var(--text-muted); }
-        .popup-value { color: var(--text-main); font-weight:bold; }
-        .popup-divider { border:0; border-top:1px solid var(--glass-border); margin:12px 0; }
     </style>
 </head>
 <body>
@@ -230,13 +174,12 @@
     <div class="header glass-panel">
         <button class="btn-back" onclick="showOverview()"><span class="material-icons">arrow_back</span> ออกระบบ</button>
         <div class="header-actions">
-            <!-- ปุ่มเปลี่ยนธีม -->
-            <button class="btn-theme" id="btnTheme" onclick="toggleTheme()" title="เปลี่ยนธีม"><span class="material-icons" id="themeIcon">light_mode</span></button>
             <button class="btn-summary" id="btnSummary" onclick="showSummaryModal()"><span class="material-icons">analytics</span> ภาพรวม</button>
-            <button class="btn-capture" id="btnCapture" onclick="handleCapture()"><span class="material-icons">camera_alt</span> แคปผัง</button>
+            <button class="btn-capture" id="btnCapture" onclick="handleCapture()"><span class="material-icons">camera_alt</span> แคปผังรวม</button>
         </div>
     </div>
 
+    <!-- ปุ่มจองแบบลอยตัว -->
     <button id="floatingBookBtn" onclick="openBulkBookModal()"></button>
 
     <div class="search-container glass-panel" id="searchContainer">
@@ -247,7 +190,7 @@
     <div id="loadingOverlay">
         <div style="text-align: center;">
             <span class="material-icons" style="font-size: 40px; color: #ffb74d; margin-bottom: 10px; animation: spin 1s linear infinite;">autorenew</span>
-            <h3 style="color: var(--text-main); margin:0;" id="loadingText">กำลังโหลดข้อมูล...</h3>
+            <h3 style="color: #ddd; margin:0;" id="loadingText">กำลังโหลดข้อมูล...</h3>
         </div>
     </div>
     <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
@@ -273,7 +216,7 @@
 
     <div class="footer glass-panel">
         <div class="legend">
-            <div><span style="background:var(--seat-avail-bg);"></span>ว่าง</div>
+            <div><span style="background:#374151;"></span>ว่าง</div>
             <div id="legendSelectedContainer" style="display:none;"><span class="l-selected" id="legendSelected"></span><span id="legendText">เลือกอยู่</span></div>
             <div><span style="background:#f59e0b;"></span>รอโอน</div>
             <div><span style="background:#dc2626;"></span>ออนไลน์</div>
@@ -286,7 +229,7 @@
     
     <!-- Modal แก้ไขที่นั่งเดียว -->
     <div class="modal" id="actionModal">
-        <h3 id="modalSeatId" style="color:#ffb74d;"></h3>
+        <h3 id="modalSeatId"></h3>
         <div class="input-group"><label>ชื่อลูกค้า</label><input type="text" id="custName" placeholder="กรอกชื่อลูกค้า"></div>
         <div class="input-group"><label>เบอร์โทรศัพท์ (10 หลัก)</label><input type="tel" id="custPhone" placeholder="กรอกเบอร์โทร 10 หลัก" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
         <div class="action-btns">
@@ -294,15 +237,15 @@
             <button style="background: #3b82f6; color: white;" onclick="updateSingleStatus('WalkIn')"><span class="material-icons">directions_walk</span> บันทึก Walk-in (สีฟ้า)</button>
             <button style="background: #f97316; color: white;" onclick="updateSingleStatus('Free')"><span class="material-icons">redeem</span> บันทึก แจกฟรี (สีส้ม)</button>
             <button style="background: #f59e0b; color: black;" onclick="updateSingleStatus('Pending')"><span class="material-icons">schedule</span> บันทึก รอโอน (สีเหลือง)</button>
-            <button style="background: var(--seat-avail-bg); color: var(--text-main);" onclick="updateSingleStatus('Available')"><span class="material-icons">cancel</span> ยกเลิกจอง (ว่าง)</button>
-            <button style="background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border);" onclick="closeModal()">ปิดหน้าต่าง</button>
+            <button style="background: #374151; color: white;" onclick="updateSingleStatus('Available')"><span class="material-icons">cancel</span> ยกเลิกจอง (ว่าง)</button>
+            <button style="background: transparent; color: #9ca3af; border: 1px solid rgba(255,255,255,0.2);" onclick="closeModal()">ปิดหน้าต่าง</button>
         </div>
     </div>
 
     <!-- Modal จองหลายที่นั่ง -->
     <div class="modal" id="bulkBookModal">
         <h3 style="color:#22c55e; margin-bottom:10px;"><span class="material-icons">shopping_cart_checkout</span> ดำเนินการจองที่นั่ง</h3>
-        <div style="font-size:12px; color:var(--text-muted); margin-bottom:15px; text-align:center;" id="bulkSeatsList"></div>
+        <div style="font-size:12px; color:#9ca3af; margin-bottom:15px; text-align:center;" id="bulkSeatsList"></div>
         <div class="input-group"><label>ชื่อลูกค้า (ถ้าแจกฟรี ไม่ต้องใส่)</label><input type="text" id="bulkCustName" placeholder="กรอกชื่อลูกค้า"></div>
         <div class="input-group"><label>เบอร์โทรศัพท์ (ถ้าแจกฟรี ไม่ต้องใส่)</label><input type="tel" id="bulkCustPhone" placeholder="ตัวอย่าง: 0812345678" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
         <div class="action-btns">
@@ -310,7 +253,7 @@
             <button style="background: #3b82f6; color: white;" onclick="submitBulkBooking('WalkIn')"><span class="material-icons">directions_walk</span> ลูกค้า Walk-in (สีฟ้า)</button>
             <button style="background: #f97316; color: white;" onclick="submitBulkBooking('Free')"><span class="material-icons">redeem</span> กิจกรรมแจกฟรี (สีส้ม)</button>
             <button style="background: #f59e0b; color: black;" onclick="submitBulkBooking('Pending')"><span class="material-icons">schedule</span> รอโอน (สีเหลือง)</button>
-            <button style="background: transparent; color: var(--text-muted); border: 1px solid var(--glass-border);" onclick="closeModal()">ยกเลิก</button>
+            <button style="background: transparent; color: #9ca3af; border: 1px solid rgba(255,255,255,0.2);" onclick="closeModal()">ยกเลิก</button>
         </div>
     </div>
 
@@ -318,32 +261,32 @@
     <div class="modal" id="infoModal">
         <h3 id="infoModalTitle" style="color: #4ade80;">ผลการค้นหา</h3>
         <div id="infoResultMsg" style="margin: 15px 0; font-size: 15px; line-height: 1.6; text-align: center;"></div>
-        <button style="width: 100%; background: var(--seat-avail-bg); color: var(--text-main); border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="closeModal()">ปิดหน้าต่าง</button>
+        <button style="width: 100%; background: #374151; color: white; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; font-family: 'Prompt';" onclick="closeModal()">ปิดหน้าต่าง</button>
     </div>
 
     <!-- Modal ภาพรวมการจองทั้งหมด -->
     <div class="modal" id="summaryModal">
         <h3 style="color: #ffb74d; margin-bottom:10px;"><span class="material-icons">analytics</span> ภาพรวมการจองทั้งหมด</h3>
-        <div class="popup-panel" style="margin-top:10px; font-size: 13px;">
+        <div style="text-align:left; background:rgba(17,24,39,0.5); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); margin-top:10px; font-size: 13px;">
             
-            <div style="color:#ffb74d; font-weight:bold; margin-bottom:6px; font-size:14px;">โซน VIP <span class="popup-label" style="font-weight:normal; font-size:12px;">(ทั้งหมด <span id="sumVipTotal">0</span>)</span></div>
-            <div class="popup-row"><span class="popup-label">- ออนไลน์ (🔴):</span> <span class="popup-value" id="sumVipBooked">0</span></div>
-            <div class="popup-row"><span class="popup-label">- Walk-in (🔵):</span> <span class="popup-value" id="sumVipWalkIn">0</span></div>
-            <div class="popup-row" style="margin-bottom:12px;"><span class="popup-label">- แจกฟรี (🟠):</span> <span class="popup-value" id="sumVipFree">0</span></div>
+            <div style="color:#ffb74d; font-weight:bold; margin-bottom:6px; font-size:14px;">โซน VIP <span style="color:#9ca3af; font-weight:normal; font-size:12px;">(ทั้งหมด <span id="sumVipTotal">0</span>)</span></div>
+            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:4px;"><span>- ออนไลน์ (🔴):</span> <span style="color:white; font-weight:bold;" id="sumVipBooked">0</span></div>
+            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:4px;"><span>- Walk-in (🔵):</span> <span style="color:white; font-weight:bold;" id="sumVipWalkIn">0</span></div>
+            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:12px;"><span>- แจกฟรี (🟠):</span> <span style="color:white; font-weight:bold;" id="sumVipFree">0</span></div>
             
-            <div style="color:#ffb74d; font-weight:bold; margin-bottom:6px; font-size:14px;">โซนธรรมดา <span class="popup-label" style="font-weight:normal; font-size:12px;">(ทั้งหมด <span id="sumNormTotal">0</span>)</span></div>
-            <div class="popup-row"><span class="popup-label">- ออนไลน์ (🔴):</span> <span class="popup-value" id="sumNormBooked">0</span></div>
-            <div class="popup-row"><span class="popup-label">- Walk-in (🔵):</span> <span class="popup-value" id="sumNormWalkIn">0</span></div>
-            <div class="popup-row" style="margin-bottom:12px;"><span class="popup-label">- แจกฟรี (🟠):</span> <span class="popup-value" id="sumNormFree">0</span></div>
+            <div style="color:#ffb74d; font-weight:bold; margin-bottom:6px; font-size:14px;">โซนธรรมดา <span style="color:#9ca3af; font-weight:normal; font-size:12px;">(ทั้งหมด <span id="sumNormTotal">0</span>)</span></div>
+            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:4px;"><span>- ออนไลน์ (🔴):</span> <span style="color:white; font-weight:bold;" id="sumNormBooked">0</span></div>
+            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:4px;"><span>- Walk-in (🔵):</span> <span style="color:white; font-weight:bold;" id="sumNormWalkIn">0</span></div>
+            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:12px;"><span>- แจกฟรี (🟠):</span> <span style="color:white; font-weight:bold;" id="sumNormFree">0</span></div>
             
-            <hr class="popup-divider">
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:12px 0;">
             
-            <div class="popup-row"><span class="popup-label">รายรับออนไลน์:</span> <span class="popup-value" id="sumRevBooked">0 บาท</span></div>
-            <div class="popup-row"><span class="popup-label">รายรับ Walk-in:</span> <span class="popup-value" id="sumRevWalkIn">0 บาท</span></div>
-            <div class="popup-row" style="margin-top: 10px; margin-bottom:0;"><span style="color:#4ade80; font-weight:bold; font-size:16px;">ยอดสุทธิรวม:</span> <span style="color:#4ade80; font-weight:bold; font-size:16px;" id="sumRevTotal">0 บาท</span></div>
+            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:6px;"><span>รายรับออนไลน์:</span> <span style="color:white;" id="sumRevBooked">0 บาท</span></div>
+            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:6px;"><span>รายรับ Walk-in:</span> <span style="color:white;" id="sumRevWalkIn">0 บาท</span></div>
+            <div style="color:#4ade80; font-weight:bold; font-size:16px; display: flex; justify-content: space-between; margin-top: 10px;"><span>ยอดสุทธิรวม:</span> <span id="sumRevTotal">0 บาท</span></div>
         </div>
         <div class="action-btns" style="margin-top:15px;">
-            <button style="background: var(--seat-avail-bg); color: var(--text-main); box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="closeModal()">ปิดหน้าต่าง</button>
+            <button style="background: #374151; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; font-family: 'Prompt';" onclick="closeModal()">ปิดหน้าต่าง</button>
         </div>
     </div>
 
@@ -366,27 +309,6 @@
             "ZONE G": "4 / 1", "ZONE H": "4 / 2", "ZONE I": "4 / 3", "ZONE J": "4 / 4", "ZONE K": "4 / 5",
             "ZONE L": "5 / 1", "ZONE M": "5 / 2", "ZONE N": "5 / 3", "ZONE O": "5 / 4", "ZONE P": "5 / 5"
         };
-
-        // Initialize Theme (ระบบจะจำธีมเดิมที่คุณใช้ไว้)
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.add('light-mode');
-            const iconElement = document.getElementById('themeIcon');
-            if(iconElement) iconElement.innerText = 'dark_mode';
-        }
-
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('themeIcon');
-            if (body.classList.contains('light-mode')) {
-                body.classList.remove('light-mode');
-                icon.innerText = 'light_mode';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.add('light-mode');
-                icon.innerText = 'dark_mode';
-                localStorage.setItem('theme', 'light');
-            }
-        }
 
         document.getElementById('searchContainer').style.display = "flex";
 
@@ -416,11 +338,16 @@
             }
         }
 
+        // โค้ดส่วนดักจับแถวว่าง (ป้องกันหน้าโหลดค้าง)
         function processData(data) {
             seatDataMap = {};
             zoneData = {};
             
+            if (!data || !Array.isArray(data)) return;
+
             data.forEach(row => {
+                if (!row || !row[0]) return; // ดักจับแถวที่ว่างเปล่าใน Google Sheets
+                
                 const id = row[0].toString().trim(); 
                 if(!id) return;
                 
@@ -449,6 +376,8 @@
                     let selectionChanged = false;
 
                     result.data.forEach(row => {
+                        if (!row || !row[0]) return;
+                        
                         const id = row[0].toString().trim(); 
                         if(!id) return;
                         
@@ -702,7 +631,7 @@
                 if(!zoneMap[z]) zoneMap[z] = [];
                 zoneMap[z].push(num);
             });
-            let seatStr = Object.keys(zoneMap).map(z => `<b>${z}</b>:${zoneMap[z].join(', ')}`).join('<br>');
+            let seatStr = Object.keys(zoneMap).map(z => `<b>${z}</b>: ${zoneMap[z].join(', ')}`).join('<br>');
 
             const modalTitle = document.getElementById('infoModalTitle');
             const resultMsg = document.getElementById('infoResultMsg');
@@ -711,11 +640,11 @@
             modalTitle.style.color = "#4ade80";
             
             resultMsg.innerHTML = `
-                <div class="popup-panel">
-                    <div class="popup-row"><span class="popup-label">ชื่อผู้จอง:</span> <span class="popup-value">${name}</span></div>
-                    <div class="popup-row" style="margin-bottom:0;"><span class="popup-label">เบอร์โทร:</span> <span class="popup-value">${phone}</span></div>
-                    <hr class="popup-divider">
-                    <div class="popup-label" style="text-align:left;">ที่นั่ง:<br><span style="color:#ffb74d; font-weight:bold; line-height:1.6; display:block; margin-top:5px; font-size:16px;">${seatStr}</span></div>
+                <div style="text-align:left; background:rgba(17, 24, 39, 0.5); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); font-size:14px;">
+                    <div style="margin-bottom:8px; color:#9ca3af;">ชื่อผู้จอง: <span style="color:white; font-weight:bold; float:right;">${name}</span></div>
+                    <div style="margin-bottom:12px; color:#9ca3af;">เบอร์โทร: <span style="color:white; font-weight:bold; float:right;">${phone}</span></div>
+                    <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:12px 0;">
+                    <div style="color:#9ca3af;">ที่นั่ง:<br><span style="color:#ffb74d; font-weight:bold; line-height:1.6; display:block; margin-top:5px; font-size:16px;">${seatStr}</span></div>
                 </div>
             `;
             openModalWithAnim('infoModal');
@@ -777,7 +706,7 @@
             modalTitle.style.color = "#ffb74d";
             
             if (info.status === 'Available') {
-                resultMsg.innerHTML = `<div style="font-size:20px; font-weight:bold; color:var(--text-main);">${seatId}</div><div style="color:#4ade80; margin-top:10px; font-weight:bold;"><span class="material-icons">check_circle</span> สถานะ: ว่าง</div>`;
+                resultMsg.innerHTML = `<div style="font-size:20px; font-weight:bold;">${seatId}</div><div style="color:#4ade80; margin-top:10px; font-weight:bold;"><span class="material-icons">check_circle</span> สถานะ: ว่าง</div>`;
             } else {
                 let statusText = "จองออนไลน์";
                 let statusColor = "#dc2626";
@@ -786,4 +715,220 @@
                 else if(info.status === 'Free') { statusText = "แจกฟรี"; statusColor = "#f97316"; }
 
                 resultMsg.innerHTML = 
-                    `<div style="font-size:20px; margin-bottom:15px; font-weight:bold; color:#ffb74d;">${seatId}
+                    `<div style="font-size:20px; margin-bottom:15px; font-weight:bold; color:#ffb74d;">${seatId}</div>
+                     <div style="text-align:left; background:rgba(17, 24, 39, 0.5); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+                        <div style="margin-bottom:8px; color:#9ca3af; display:flex; justify-content:space-between;"><span>สถานะ:</span> <b style="color:${statusColor};">${statusText}</b></div>
+                        <div style="margin-bottom:8px; color:#9ca3af; display:flex; justify-content:space-between;"><span>ชื่อลูกค้า:</span> <span style="color:white; font-weight:bold;">${info.customerName || "-"}</span></div>
+                        <div style="color:#9ca3af; display:flex; justify-content:space-between;"><span>เบอร์โทร:</span> <span style="color:white; font-weight:bold;">${info.phone || "-"}</span></div>
+                     </div>`;
+            }
+            openModalWithAnim('infoModal');
+        }
+
+        function searchSeat() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if(!query) {
+                alert("กรุณากรอกชื่อหรือเบอร์โทรที่ต้องการค้นหา");
+                return;
+            }
+
+            let foundSeats = [];
+            let foundName = "";
+            let foundPhone = "";
+
+            Object.keys(seatDataMap).forEach(seatId => {
+                const info = seatDataMap[seatId];
+                if (info.status !== 'Available') {
+                    const cName = (info.customerName || "").toLowerCase();
+                    const cPhone = (info.phone || "").toLowerCase();
+                    
+                    if (cName.includes(query) || cPhone.includes(query)) {
+                        foundSeats.push(seatId);
+                        if(!foundName) foundName = info.customerName; 
+                        if(!foundPhone) foundPhone = info.phone; 
+                    }
+                }
+            });
+
+            const modalTitle = document.getElementById('infoModalTitle');
+            const resultMsg = document.getElementById('infoResultMsg');
+            
+            if (foundSeats.length > 0) {
+                modalTitle.innerHTML = `<span class="material-icons">search</span> พบข้อมูล`;
+                modalTitle.style.color = "#4ade80";
+                resultMsg.innerHTML = 
+                    `<div style="margin-bottom:10px; font-size:16px;">การจองของคุณ <b style="color:white;">${foundName}</b></div>
+                     <div style="margin-bottom:15px; color:#9ca3af; font-size:14px;">📞 ${foundPhone || "-"}</div>
+                     <div style="background:rgba(17, 24, 39, 0.5); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+                        <div style="color:#9ca3af; margin-bottom:5px;">ที่นั่งทั้งหมด:</div>
+                        <div style="color:#4ade80; font-size:16px; font-weight:bold;">${foundSeats.join(', ')}</div>
+                     </div>`;
+            } else {
+                modalTitle.innerHTML = `<span class="material-icons">error_outline</span> ไม่พบข้อมูล`;
+                modalTitle.style.color = "#f87171";
+                resultMsg.innerHTML = `<span style="color:#f87171;">ไม่พบข้อมูลการจองที่ตรงกับคำค้นหา</span>`;
+            }
+            openModalWithAnim('infoModal');
+        }
+
+        function showSummaryModal() {
+            let vipTotal = 0, vipBooked = 0, vipWalkIn = 0, vipFree = 0;
+            let normTotal = 0, normBooked = 0, normWalkIn = 0, normFree = 0;
+
+            Object.keys(seatDataMap).forEach(seatId => {
+                const info = seatDataMap[seatId];
+                const zonePrefix = seatId.split('-')[0].trim();
+                if (!layoutGrid[zonePrefix]) return;
+
+                if (seatId.includes('VIP')) {
+                    vipTotal++;
+                    if (info.status === 'Booked') vipBooked++;
+                    else if (info.status === 'WalkIn') vipWalkIn++;
+                    else if (info.status === 'Free') vipFree++;
+                } else {
+                    normTotal++;
+                    if (info.status === 'Booked') normBooked++;
+                    else if (info.status === 'WalkIn') normWalkIn++;
+                    else if (info.status === 'Free') normFree++;
+                }
+            });
+
+            const revBooked = (vipBooked * 899) + (normBooked * 399);
+            const revWalkIn = (vipWalkIn * 899) + (normWalkIn * 399);
+            const revTotal = revBooked + revWalkIn;
+
+            document.getElementById('sumVipTotal').innerText = vipTotal;
+            document.getElementById('sumVipBooked').innerText = vipBooked;
+            document.getElementById('sumVipWalkIn').innerText = vipWalkIn;
+            document.getElementById('sumVipFree').innerText = vipFree;
+
+            document.getElementById('sumNormTotal').innerText = normTotal;
+            document.getElementById('sumNormBooked').innerText = normBooked;
+            document.getElementById('sumNormWalkIn').innerText = normWalkIn;
+            document.getElementById('sumNormFree').innerText = normFree;
+
+            document.getElementById('sumRevBooked').innerText = `${revBooked.toLocaleString()} บาท`;
+            document.getElementById('sumRevWalkIn').innerText = `${revWalkIn.toLocaleString()} บาท`;
+            document.getElementById('sumRevTotal').innerText = `${revTotal.toLocaleString()} บาท`;
+            
+            openModalWithAnim('summaryModal');
+        }
+
+        function closeModal() {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(m => { m.classList.remove('show'); m.style.display = 'none'; });
+            const backdrop = document.getElementById('modalBackdrop');
+            backdrop.classList.remove('show');
+            backdrop.style.display = 'none';
+        }
+
+        function handleCapture() {
+            const searchBox = document.getElementById('searchContainer');
+            if(searchBox) searchBox.style.display = "none";
+
+            const isOverviewVisible = document.getElementById('view-overview').style.display !== 'none';
+            if (isOverviewVisible) {
+                captureOverviewMap();
+            } else {
+                captureSingleZoneMap();
+            }
+        }
+
+        function captureOverviewMap() {
+            const btn = document.getElementById('btnCapture');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-icons">hourglass_top</span> กำลังแคป...';
+            
+            const layout = document.getElementById('overviewLayout');
+            
+            const cloneWrapper = document.createElement('div');
+            cloneWrapper.style.position = 'absolute';
+            cloneWrapper.style.top = '0';
+            cloneWrapper.style.left = '-9999px'; 
+            cloneWrapper.style.width = 'max-content'; 
+            cloneWrapper.style.background = '#0f1115';
+            cloneWrapper.style.padding = '30px';
+            cloneWrapper.style.zIndex = '-1';
+            
+            const clone = layout.cloneNode(true);
+            cloneWrapper.appendChild(clone);
+            document.body.appendChild(cloneWrapper);
+
+            const exactWidth = clone.scrollWidth + 60;
+
+            html2canvas(cloneWrapper, { 
+                backgroundColor: "#0f1115",
+                scale: 2.5,
+                windowWidth: exactWidth 
+            }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'Overview_Seating_Map.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                
+                document.body.removeChild(cloneWrapper);
+                btn.innerHTML = originalText;
+                document.getElementById('searchContainer').style.display = "flex"; 
+            }).catch(e => {
+                document.body.removeChild(cloneWrapper);
+                btn.innerHTML = originalText;
+                document.getElementById('searchContainer').style.display = "flex";
+                alert("เกิดข้อผิดพลาดในการบันทึกภาพ");
+            });
+        }
+
+        function captureSingleZoneMap() {
+            const btn = document.getElementById('btnCapture');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-icons">hourglass_top</span> กำลังแคป...';
+            
+            const zoneContainer = document.getElementById('zoneSeatsGrid');
+            
+            const cloneWrapper = document.createElement('div');
+            cloneWrapper.style.position = 'absolute';
+            cloneWrapper.style.top = '0';
+            cloneWrapper.style.left = '-9999px'; 
+            cloneWrapper.style.width = 'max-content'; 
+            cloneWrapper.style.background = '#0f1115';
+            cloneWrapper.style.padding = '40px';
+            cloneWrapper.style.zIndex = '-1';
+            
+            const titleHeader = document.createElement('h2');
+            titleHeader.innerText = currentViewedZone;
+            titleHeader.style.color = '#ffb74d';
+            titleHeader.style.textAlign = 'center';
+            titleHeader.style.fontFamily = "'Prompt', sans-serif";
+            titleHeader.style.marginBottom = '25px';
+            titleHeader.style.fontSize = '24px';
+            cloneWrapper.appendChild(titleHeader);
+
+            const clone = zoneContainer.cloneNode(true);
+            clone.style.margin = '0 auto';
+            cloneWrapper.appendChild(clone);
+            document.body.appendChild(cloneWrapper);
+
+            const exactWidth = clone.scrollWidth + 80;
+
+            html2canvas(cloneWrapper, { 
+                backgroundColor: "#0f1115",
+                scale: 2.5,
+                windowWidth: exactWidth 
+            }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = `${currentViewedZone}_Map.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                
+                document.body.removeChild(cloneWrapper);
+                btn.innerHTML = originalText;
+            }).catch(e => {
+                document.body.removeChild(cloneWrapper);
+                btn.innerHTML = originalText;
+                alert("เกิดข้อผิดพลาดในการบันทึกภาพโซน");
+            });
+        }
+
+        loadSeats();
+    </script>
+</body>
+</html>
