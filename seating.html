@@ -101,7 +101,7 @@
         .zone-box:active { background: #2d3748; transform: scale(0.98); }
         .zone-box.vip { border: 1px solid #941724; background: #221013; box-shadow: 0 4px 10px rgba(148, 23, 36, 0.2);}
         
-        .zone-box-title { text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 8px; color: #fff; background: linear-gradient(90deg, #b91c1c, #991b1b); padding: 4px; border-radius: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
+        .zone-box-title { text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 8px; color: #fff; background: linear-gradient(90deg, #b91c1c, #991b1b); padding: 4px; border-radius: 4px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); transition: 0.3s;}
         .zone-box-title.normal { background: linear-gradient(90deg, #374151, #1f2937); }
         
         .mini-seats-grid { display: grid; gap: 2px; width: 100%; container-type: inline-size; }
@@ -111,6 +111,7 @@
         .mini-seat { 
             width: 100%; aspect-ratio: 1; border-radius: 1px; line-height: 1; font-weight: 500; 
             display: flex; justify-content: center; align-items: center; box-sizing: border-box; overflow: hidden;
+            transition: 0.3s;
         }
 
         .grid-mini-10 .mini-seat { font-size: clamp(6px, 4.5cqw, 16px); }
@@ -134,7 +135,7 @@
         }
         .seat:active { transform: translateY(2px) scale(0.95); box-shadow: inset 0 2px 4px rgba(0,0,0,0.4); }
         
-        .status-Available { background: #374151; color: #d1d5db; transition: background 0.3s, color 0.3s; }
+        .status-Available { background: #374151; color: #d1d5db; transition: background 0.3s, color 0.3s, border 0.3s, box-shadow 0.3s; }
         .status-Pending { background: #f59e0b; color: #000; text-shadow: 0 1px 1px rgba(255,255,255,0.4);}
         .status-Booked { background: #dc2626; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
         .status-WalkIn { background: #3b82f6; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
@@ -145,7 +146,7 @@
            🌟 DAY MODE (โหมดสว่าง) 🌟
         --------------------------------- */
         body.day-mode { background: #f9fafb; color: #111827; }
-        body.day-mode .glass-panel { background: rgba(255, 255, 255, 0.9); border-color: rgba(0,0,0,0.05); box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
+        body.day-mode .glass-panel { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,0,0,0.05); box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
         body.day-mode .btn-back { background: rgba(229, 231, 235, 0.9); color: #111827; }
         body.day-mode .btn-theme { background: #e5e7eb; color: #374151; }
         
@@ -157,40 +158,46 @@
         body.day-mode .search-container input:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
         
         body.day-mode .legend div { color: #374151; }
-        body.day-mode .zone-header-bar h2 { color: #ea580c; } /* สีส้มเข้มขึ้นให้อ่านง่ายบนพื้นขาว */
+        body.day-mode .zone-header-bar h2 { color: #ea580c; } 
         
-        /* ปรับสีที่นั่งว่างในโหมดสว่าง ให้เป็นสีเทาอ่อน */
-        body.day-mode .status-Available { background: #e5e7eb; color: #6b7280; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -3px 0 rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.05); }
+        /* [แก้] สีตัวหนังสือ โซนธรรมดาให้เป็นพื้นเทา-อักษรเข้ม และล้าง Text-shadow */
+        body.day-mode .zone-box-title.normal { background: #e5e7eb; color: #1f2937; text-shadow: none; }
+        body.day-mode .zone-box-title { text-shadow: none; }
+        
+        /* [แก้] เก้าอี้ว่างในหน้า Day Mode เป็นพื้นขาว ขอบเทา เลขเทาเข้ม */
+        body.day-mode .status-Available { background: #ffffff; color: #4b5563; border: 1px solid #d1d5db; box-shadow: none; }
         body.day-mode .seat:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        body.day-mode .status-Pending, body.day-mode .status-Booked, body.day-mode .status-WalkIn, body.day-mode .status-Free, body.day-mode .status-Selected { text-shadow: none; }
         
-        body.day-mode .modal { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,0,0,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        /* [แก้] Pop-up Modal */
+        body.day-mode .modal { background: rgba(255, 255, 255, 0.98); border-color: rgba(0,0,0,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
         body.day-mode .modal h3 { color: #111827; }
         body.day-mode .input-group label { color: #4b5563; }
-        body.day-mode .input-group input { background: #f3f4f6; color: #111827; border-color: #d1d5db; }
+        body.day-mode .input-group input { background: #ffffff; color: #111827; border-color: #d1d5db; }
         body.day-mode .input-group input:focus { border-color: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); }
+        
+        /* [แก้] คลาสกล่องข้อมูลใน Pop-up (ใช้คลาสแทนการล็อค Style เพื่อให้ Day Mode ใช้งานได้) */
+        .info-card { text-align: left; background: rgba(17, 24, 39, 0.5); padding: 15px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); font-size: 14px; transition: 0.3s; }
+        .info-card hr { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 12px 0; transition: 0.3s; }
+        .text-muted { color: #9ca3af; transition: 0.3s; }
+        .text-bold-white { color: white; font-weight: bold; transition: 0.3s; }
+        
+        /* กล่องข้อมูลในโหมด Day Mode */
+        body.day-mode .info-card { background: #f3f4f6; border-color: #d1d5db; }
+        body.day-mode .info-card hr { border-top-color: #d1d5db; }
+        body.day-mode .text-muted { color: #4b5563; }
+        body.day-mode .text-bold-white { color: #111827; }
         
         /* --------------------------------- */
         
-        @keyframes popIn {
-            0% { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
-            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes popIn { 0% { opacity: 0; transform: translate(-50%, -45%) scale(0.95); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .modal { 
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            background: rgba(31, 41, 55, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            padding: 24px; border-radius: 16px; z-index: 100; width: 85%; max-width: 360px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1);
-        }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(31, 41, 55, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 24px; border-radius: 16px; z-index: 100; width: 85%; max-width: 360px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
         .modal.show { animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        
         .modal h3 { margin-top: 0; color: #f3f4f6; text-align: center; font-size: 18px; margin-bottom: 20px;}
         .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; font-size: 13px; color: #9ca3af; margin-bottom: 6px; }
+        .input-group label { display: block; font-size: 13px; margin-bottom: 6px; }
         .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(17, 24, 39, 0.8); color: white; box-sizing: border-box; font-size: 15px; font-family: 'Prompt', sans-serif; transition: 0.2s;}
         .input-group input:focus { outline: none; border-color: #ffb74d; box-shadow: 0 0 0 2px rgba(255, 183, 77, 0.2);}
         
@@ -206,7 +213,6 @@
     <div class="header glass-panel">
         <button class="btn-back" onclick="showOverview()"><span class="material-icons">arrow_back</span> ออกระบบ</button>
         <div class="header-actions">
-            <!-- ปุ่มสลับ Day/Night Mode -->
             <button class="btn-theme" id="btnTheme" onclick="toggleTheme()"><span class="material-icons">light_mode</span> สว่าง</button>
             <button class="btn-summary" id="btnSummary" onclick="showSummaryModal()"><span class="material-icons">analytics</span> ภาพรวม</button>
             <button class="btn-capture" id="btnCapture" onclick="handleCapture()"><span class="material-icons">camera_alt</span> แคปผัง</button>
@@ -250,8 +256,8 @@
 
     <div class="footer glass-panel">
         <div class="legend">
-            <div><span class="status-Available" style="border: 1px solid rgba(0,0,0,0.1)"></span>ว่าง</div>
-            <div id="legendSelectedContainer" style="display:none;"><span class="l-selected" id="legendSelected"></span><span id="legendText">เลือกอยู่</span></div>
+            <div><span class="status-Available"></span>ว่าง</div>
+            <div id="legendSelectedContainer" style="display:none;"><span class="l-selected" id="legendSelected"></span><span id="legendText" class="text-muted">เลือกอยู่</span></div>
             <div><span style="background:#f59e0b;"></span>รอโอน</div>
             <div><span style="background:#dc2626;"></span>ออนไลน์</div>
             <div><span style="background:#3b82f6;"></span>Walk-in</div>
@@ -264,30 +270,30 @@
     <!-- Modal แก้ไขที่นั่งเดียว -->
     <div class="modal" id="actionModal">
         <h3 id="modalSeatId"></h3>
-        <div class="input-group"><label>ชื่อลูกค้า</label><input type="text" id="custName" placeholder="กรอกชื่อลูกค้า"></div>
-        <div class="input-group"><label>เบอร์โทรศัพท์ (10 หลัก)</label><input type="tel" id="custPhone" placeholder="กรอกเบอร์โทร 10 หลัก" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
+        <div class="input-group"><label class="text-muted">ชื่อลูกค้า</label><input type="text" id="custName" placeholder="กรอกชื่อลูกค้า"></div>
+        <div class="input-group"><label class="text-muted">เบอร์โทรศัพท์ (10 หลัก)</label><input type="tel" id="custPhone" placeholder="กรอกเบอร์โทร 10 หลัก" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
         <div class="action-btns">
             <button style="background: #dc2626; color: white;" onclick="updateSingleStatus('Booked')"><span class="material-icons">language</span> บันทึก จองออนไลน์ (สีแดง)</button>
             <button style="background: #3b82f6; color: white;" onclick="updateSingleStatus('WalkIn')"><span class="material-icons">directions_walk</span> บันทึก Walk-in (สีฟ้า)</button>
             <button style="background: #f97316; color: white;" onclick="updateSingleStatus('Free')"><span class="material-icons">redeem</span> บันทึก แจกฟรี (สีส้ม)</button>
             <button style="background: #f59e0b; color: black;" onclick="updateSingleStatus('Pending')"><span class="material-icons">schedule</span> บันทึก รอโอน (สีเหลือง)</button>
             <button style="background: #374151; color: white;" onclick="updateSingleStatus('Available')"><span class="material-icons">cancel</span> ยกเลิกจอง (ว่าง)</button>
-            <button style="background: transparent; color: #9ca3af; border: 1px solid rgba(255,255,255,0.2);" onclick="closeModal()">ปิดหน้าต่าง</button>
+            <button style="background: transparent; border: 1px solid rgba(156, 163, 175, 0.5);" class="text-muted" onclick="closeModal()">ปิดหน้าต่าง</button>
         </div>
     </div>
 
     <!-- Modal จองหลายที่นั่ง -->
     <div class="modal" id="bulkBookModal">
         <h3 style="color:#22c55e; margin-bottom:10px;"><span class="material-icons">shopping_cart_checkout</span> ดำเนินการจองที่นั่ง</h3>
-        <div style="font-size:12px; color:#9ca3af; margin-bottom:15px; text-align:center;" id="bulkSeatsList"></div>
-        <div class="input-group"><label>ชื่อลูกค้า (ถ้าแจกฟรี ไม่ต้องใส่)</label><input type="text" id="bulkCustName" placeholder="กรอกชื่อลูกค้า"></div>
-        <div class="input-group"><label>เบอร์โทรศัพท์ (ถ้าแจกฟรี ไม่ต้องใส่)</label><input type="tel" id="bulkCustPhone" placeholder="ตัวอย่าง: 0812345678" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
+        <div style="font-size:12px; margin-bottom:15px; text-align:center;" class="text-muted" id="bulkSeatsList"></div>
+        <div class="input-group"><label class="text-muted">ชื่อลูกค้า (ถ้าแจกฟรี ไม่ต้องใส่)</label><input type="text" id="bulkCustName" placeholder="กรอกชื่อลูกค้า"></div>
+        <div class="input-group"><label class="text-muted">เบอร์โทรศัพท์ (ถ้าแจกฟรี ไม่ต้องใส่)</label><input type="tel" id="bulkCustPhone" placeholder="ตัวอย่าง: 0812345678" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
         <div class="action-btns">
             <button style="background: #dc2626; color: white;" onclick="submitBulkBooking('Booked')"><span class="material-icons">language</span> จองออนไลน์ (สีแดง)</button>
             <button style="background: #3b82f6; color: white;" onclick="submitBulkBooking('WalkIn')"><span class="material-icons">directions_walk</span> ลูกค้า Walk-in (สีฟ้า)</button>
             <button style="background: #f97316; color: white;" onclick="submitBulkBooking('Free')"><span class="material-icons">redeem</span> กิจกรรมแจกฟรี (สีส้ม)</button>
             <button style="background: #f59e0b; color: black;" onclick="submitBulkBooking('Pending')"><span class="material-icons">schedule</span> รอโอน (สีเหลือง)</button>
-            <button style="background: transparent; color: #9ca3af; border: 1px solid rgba(255,255,255,0.2);" onclick="closeModal()">ยกเลิก</button>
+            <button style="background: transparent; border: 1px solid rgba(156, 163, 175, 0.5);" class="text-muted" onclick="closeModal()">ยกเลิก</button>
         </div>
     </div>
 
@@ -295,28 +301,29 @@
     <div class="modal" id="infoModal">
         <h3 id="infoModalTitle" style="color: #4ade80;">ผลการค้นหา</h3>
         <div id="infoResultMsg" style="margin: 15px 0; font-size: 15px; line-height: 1.6; text-align: center;"></div>
-        <button style="width: 100%; background: #374151; color: white; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" onclick="closeModal()">ปิดหน้าต่าง</button>
+        <button style="width: 100%; background: #374151; color: white; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; font-family: 'Prompt';" onclick="closeModal()">ปิดหน้าต่าง</button>
     </div>
 
     <!-- Modal ภาพรวมการจองทั้งหมด -->
     <div class="modal" id="summaryModal">
         <h3 style="color: #ffb74d; margin-bottom:10px;"><span class="material-icons">analytics</span> ภาพรวมการจองทั้งหมด</h3>
-        <div style="text-align:left; background:rgba(17,24,39,0.5); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); margin-top:10px; font-size: 13px;">
+        <!-- เปลี่ยนการล็อคสี มาใช้ Class .info-card แทน -->
+        <div class="info-card" style="margin-top:10px; font-size: 13px;">
             
-            <div style="color:#ffb74d; font-weight:bold; margin-bottom:6px; font-size:14px;">โซน VIP <span style="color:#9ca3af; font-weight:normal; font-size:12px;">(ทั้งหมด <span id="sumVipTotal">0</span>)</span></div>
-            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:4px;"><span>- ออนไลน์ (🔴):</span> <span style="color:white; font-weight:bold;" id="sumVipBooked">0</span></div>
-            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:4px;"><span>- Walk-in (🔵):</span> <span style="color:white; font-weight:bold;" id="sumVipWalkIn">0</span></div>
-            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:12px;"><span>- แจกฟรี (🟠):</span> <span style="color:white; font-weight:bold;" id="sumVipFree">0</span></div>
+            <div style="color:#ffb74d; font-weight:bold; margin-bottom:6px; font-size:14px;">โซน VIP <span class="text-muted" style="font-weight:normal; font-size:12px;">(ทั้งหมด <span id="sumVipTotal">0</span>)</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- ออนไลน์ (🔴):</span> <span class="text-bold-white" id="sumVipBooked">0</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- Walk-in (🔵):</span> <span class="text-bold-white" id="sumVipWalkIn">0</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:12px;" class="text-muted"><span>- แจกฟรี (🟠):</span> <span class="text-bold-white" id="sumVipFree">0</span></div>
             
-            <div style="color:#ffb74d; font-weight:bold; margin-bottom:6px; font-size:14px;">โซนธรรมดา <span style="color:#9ca3af; font-weight:normal; font-size:12px;">(ทั้งหมด <span id="sumNormTotal">0</span>)</span></div>
-            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:4px;"><span>- ออนไลน์ (🔴):</span> <span style="color:white; font-weight:bold;" id="sumNormBooked">0</span></div>
-            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:4px;"><span>- Walk-in (🔵):</span> <span style="color:white; font-weight:bold;" id="sumNormWalkIn">0</span></div>
-            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:12px;"><span>- แจกฟรี (🟠):</span> <span style="color:white; font-weight:bold;" id="sumNormFree">0</span></div>
+            <div style="color:#ffb74d; font-weight:bold; margin-bottom:6px; font-size:14px;">โซนธรรมดา <span class="text-muted" style="font-weight:normal; font-size:12px;">(ทั้งหมด <span id="sumNormTotal">0</span>)</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- ออนไลน์ (🔴):</span> <span class="text-bold-white" id="sumNormBooked">0</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- Walk-in (🔵):</span> <span class="text-bold-white" id="sumNormWalkIn">0</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:12px;" class="text-muted"><span>- แจกฟรี (🟠):</span> <span class="text-bold-white" id="sumNormFree">0</span></div>
             
-            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:12px 0;">
+            <hr>
             
-            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:6px;"><span>รายรับออนไลน์:</span> <span style="color:white;" id="sumRevBooked">0 บาท</span></div>
-            <div style="display: flex; justify-content: space-between; color:#9ca3af; margin-bottom:6px;"><span>รายรับ Walk-in:</span> <span style="color:white;" id="sumRevWalkIn">0 บาท</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:6px;" class="text-muted"><span>รายรับออนไลน์:</span> <span class="text-bold-white" id="sumRevBooked">0 บาท</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:6px;" class="text-muted"><span>รายรับ Walk-in:</span> <span class="text-bold-white" id="sumRevWalkIn">0 บาท</span></div>
             <div style="color:#4ade80; font-weight:bold; font-size:16px; display: flex; justify-content: space-between; margin-top: 10px;"><span>ยอดสุทธิรวม:</span> <span id="sumRevTotal">0 บาท</span></div>
         </div>
         <div class="action-btns" style="margin-top:15px;">
@@ -666,6 +673,7 @@
             showSuccessModal(cName, cPhone, bookedSeatsList);
         }
 
+        // --- อัปเดต HTML ของ Pop-up ให้ใช้ Class แทนการล็อคสี ---
         function showSuccessModal(name, phone, seatsArr) {
             let zoneMap = {};
             seatsArr.forEach(s => {
@@ -684,11 +692,11 @@
             modalTitle.style.color = "#4ade80";
             
             resultMsg.innerHTML = `
-                <div style="text-align:left; background:rgba(17, 24, 39, 0.5); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); font-size:14px;">
-                    <div style="margin-bottom:8px; color:#9ca3af;">ชื่อผู้จอง: <span style="color:white; font-weight:bold; float:right;">${name}</span></div>
-                    <div style="margin-bottom:12px; color:#9ca3af;">เบอร์โทร: <span style="color:white; font-weight:bold; float:right;">${phone}</span></div>
-                    <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:12px 0;">
-                    <div style="color:#9ca3af;">ที่นั่ง:<br><span style="color:#ffb74d; font-weight:bold; line-height:1.6; display:block; margin-top:5px; font-size:16px;">${seatStr}</span></div>
+                <div class="info-card">
+                    <div style="margin-bottom:8px; display:flex; justify-content:space-between;" class="text-muted"><span>ชื่อผู้จอง:</span> <span class="text-bold-white">${name}</span></div>
+                    <div style="margin-bottom:12px; display:flex; justify-content:space-between;" class="text-muted"><span>เบอร์โทร:</span> <span class="text-bold-white">${phone}</span></div>
+                    <hr>
+                    <div class="text-muted">ที่นั่ง:<br><span style="color:#ffb74d; font-weight:bold; line-height:1.6; display:block; margin-top:5px; font-size:16px;">${seatStr}</span></div>
                 </div>
             `;
             openModalWithAnim('infoModal');
@@ -760,10 +768,10 @@
 
                 resultMsg.innerHTML = 
                     `<div style="font-size:20px; margin-bottom:15px; font-weight:bold; color:#ffb74d;">${seatId}</div>
-                     <div style="text-align:left; background:rgba(17, 24, 39, 0.5); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
-                        <div style="margin-bottom:8px; color:#9ca3af; display:flex; justify-content:space-between;"><span>สถานะ:</span> <b style="color:${statusColor};">${statusText}</b></div>
-                        <div style="margin-bottom:8px; color:#9ca3af; display:flex; justify-content:space-between;"><span>ชื่อลูกค้า:</span> <span style="color:white; font-weight:bold;">${info.customerName || "-"}</span></div>
-                        <div style="color:#9ca3af; display:flex; justify-content:space-between;"><span>เบอร์โทร:</span> <span style="color:white; font-weight:bold;">${info.phone || "-"}</span></div>
+                     <div class="info-card">
+                        <div style="margin-bottom:8px; display:flex; justify-content:space-between;" class="text-muted"><span>สถานะ:</span> <b style="color:${statusColor};">${statusText}</b></div>
+                        <div style="margin-bottom:8px; display:flex; justify-content:space-between;" class="text-muted"><span>ชื่อลูกค้า:</span> <span class="text-bold-white">${info.customerName || "-"}</span></div>
+                        <div style="display:flex; justify-content:space-between;" class="text-muted"><span>เบอร์โทร:</span> <span class="text-bold-white">${info.phone || "-"}</span></div>
                      </div>`;
             }
             openModalWithAnim('infoModal');
@@ -801,10 +809,10 @@
                 modalTitle.innerHTML = `<span class="material-icons">search</span> พบข้อมูล`;
                 modalTitle.style.color = "#4ade80";
                 resultMsg.innerHTML = 
-                    `<div style="margin-bottom:10px; font-size:16px;">การจองของคุณ <b style="color:white;">${foundName}</b></div>
-                     <div style="margin-bottom:15px; color:#9ca3af; font-size:14px;">📞 ${foundPhone || "-"}</div>
-                     <div style="background:rgba(17, 24, 39, 0.5); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
-                        <div style="color:#9ca3af; margin-bottom:5px;">ที่นั่งทั้งหมด:</div>
+                    `<div style="margin-bottom:10px; font-size:16px;">การจองของคุณ <b class="text-bold-white">${foundName}</b></div>
+                     <div style="margin-bottom:15px; font-size:14px;" class="text-muted">📞 ${foundPhone || "-"}</div>
+                     <div class="info-card">
+                        <div class="text-muted" style="margin-bottom:5px;">ที่นั่งทั้งหมด:</div>
                         <div style="color:#4ade80; font-size:16px; font-weight:bold;">${foundSeats.join(', ')}</div>
                      </div>`;
             } else {
@@ -890,13 +898,12 @@
             cloneWrapper.style.top = '0';
             cloneWrapper.style.left = '-9999px'; 
             cloneWrapper.style.width = 'max-content'; 
-            // เช็คว่าปัจจุบันเป็น Day Mode หรือ Night Mode แล้วใช้สีพื้นหลังให้ตรงกันตอนแคป
+            
             const isCurrentDayMode = document.body.classList.contains('day-mode');
             cloneWrapper.style.background = isCurrentDayMode ? '#f9fafb' : '#0f1115';
             cloneWrapper.style.padding = '30px';
             cloneWrapper.style.zIndex = '-1';
             
-            // ต้องจำลอง class ให้เหมือนบอดี้เดิม เพื่อให้ CSS ทำงานถูกต้อง
             if (isCurrentDayMode) {
                 cloneWrapper.classList.add('day-mode');
             }
@@ -952,7 +959,6 @@
             
             const titleHeader = document.createElement('h2');
             titleHeader.innerText = currentViewedZone;
-            // สลับสีข้อความตามโหมดเวลาแคปรูปโซนเดี่ยว
             titleHeader.style.color = isCurrentDayMode ? '#ea580c' : '#ffb74d';
             titleHeader.style.textAlign = 'center';
             titleHeader.style.fontFamily = "'Prompt', sans-serif";
