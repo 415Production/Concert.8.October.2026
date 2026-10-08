@@ -139,6 +139,7 @@
         .status-Pending { background: #f59e0b; color: #000; text-shadow: 0 1px 1px rgba(255,255,255,0.4);}
         .status-Booked { background: #dc2626; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
         .status-WalkIn { background: #3b82f6; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
+        .status-WalkInEventDay { background: #8b5cf6; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);} /* สีม่วงสำหรับ Walk-in วันงาน */
         .status-Free { background: #f97316; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
         .status-Selected { background: #22c55e !important; color: #fff !important; text-shadow: 0 1px 2px rgba(0,0,0,0.5);}
         
@@ -160,29 +161,24 @@
         body.day-mode .legend div { color: #374151; }
         body.day-mode .zone-header-bar h2 { color: #ea580c; } 
         
-        /* [แก้] สีตัวหนังสือ โซนธรรมดาให้เป็นพื้นเทา-อักษรเข้ม และล้าง Text-shadow */
         body.day-mode .zone-box-title.normal { background: #e5e7eb; color: #1f2937; text-shadow: none; }
         body.day-mode .zone-box-title { text-shadow: none; }
         
-        /* [แก้] เก้าอี้ว่างในหน้า Day Mode เป็นพื้นขาว ขอบเทา เลขเทาเข้ม */
         body.day-mode .status-Available { background: #ffffff; color: #4b5563; border: 1px solid #d1d5db; box-shadow: none; }
         body.day-mode .seat:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        body.day-mode .status-Pending, body.day-mode .status-Booked, body.day-mode .status-WalkIn, body.day-mode .status-Free, body.day-mode .status-Selected { text-shadow: none; }
+        body.day-mode .status-Pending, body.day-mode .status-Booked, body.day-mode .status-WalkIn, body.day-mode .status-WalkInEventDay, body.day-mode .status-Free, body.day-mode .status-Selected { text-shadow: none; }
         
-        /* [แก้] Pop-up Modal */
         body.day-mode .modal { background: rgba(255, 255, 255, 0.98); border-color: rgba(0,0,0,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
         body.day-mode .modal h3 { color: #111827; }
         body.day-mode .input-group label { color: #4b5563; }
         body.day-mode .input-group input { background: #ffffff; color: #111827; border-color: #d1d5db; }
         body.day-mode .input-group input:focus { border-color: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2); }
         
-        /* [แก้] คลาสกล่องข้อมูลใน Pop-up (ใช้คลาสแทนการล็อค Style เพื่อให้ Day Mode ใช้งานได้) */
         .info-card { text-align: left; background: rgba(17, 24, 39, 0.5); padding: 15px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); font-size: 14px; transition: 0.3s; }
         .info-card hr { border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 12px 0; transition: 0.3s; }
         .text-muted { color: #9ca3af; transition: 0.3s; }
         .text-bold-white { color: white; font-weight: bold; transition: 0.3s; }
         
-        /* กล่องข้อมูลในโหมด Day Mode */
         body.day-mode .info-card { background: #f3f4f6; border-color: #d1d5db; }
         body.day-mode .info-card hr { border-top-color: #d1d5db; }
         body.day-mode .text-muted { color: #4b5563; }
@@ -193,7 +189,7 @@
         @keyframes popIn { 0% { opacity: 0; transform: translate(-50%, -45%) scale(0.95); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(31, 41, 55, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 24px; border-radius: 16px; z-index: 100; width: 85%; max-width: 360px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(31, 41, 55, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 24px; border-radius: 16px; z-index: 100; width: 85%; max-width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); max-height: 90vh; overflow-y: auto;}
         .modal.show { animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .modal h3 { margin-top: 0; color: #f3f4f6; text-align: center; font-size: 18px; margin-bottom: 20px;}
         .input-group { margin-bottom: 15px; text-align: left; }
@@ -256,11 +252,12 @@
 
     <div class="footer glass-panel">
         <div class="legend">
-            <div><span class="status-Available"></span>ว่าง</div>
+            <div><span class="status-Available" style="border: 1px solid rgba(0,0,0,0.1)"></span>ว่าง</div>
             <div id="legendSelectedContainer" style="display:none;"><span class="l-selected" id="legendSelected"></span><span id="legendText" class="text-muted">เลือกอยู่</span></div>
             <div><span style="background:#f59e0b;"></span>รอโอน</div>
             <div><span style="background:#dc2626;"></span>ออนไลน์</div>
             <div><span style="background:#3b82f6;"></span>Walk-in</div>
+            <div><span style="background:#8b5cf6;"></span>Walk-in(วันงาน)</div>
             <div><span style="background:#f97316;"></span>ฟรี</div>
         </div>
     </div>
@@ -270,11 +267,12 @@
     <!-- Modal แก้ไขที่นั่งเดียว -->
     <div class="modal" id="actionModal">
         <h3 id="modalSeatId"></h3>
-        <div class="input-group"><label class="text-muted">ชื่อลูกค้า</label><input type="text" id="custName" placeholder="กรอกชื่อลูกค้า"></div>
-        <div class="input-group"><label class="text-muted">เบอร์โทรศัพท์ (10 หลัก)</label><input type="tel" id="custPhone" placeholder="กรอกเบอร์โทร 10 หลัก" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
+        <div class="input-group"><label class="text-muted">ชื่อลูกค้า (แจกฟรี / Walk-in วันงาน ไม่ต้องใส่)</label><input type="text" id="custName" placeholder="กรอกชื่อลูกค้า"></div>
+        <div class="input-group"><label class="text-muted">เบอร์โทรศัพท์ (ถ้าต้องใส่ บังคับ 10 หลัก)</label><input type="tel" id="custPhone" placeholder="กรอกเบอร์โทร 10 หลัก" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
         <div class="action-btns">
             <button style="background: #dc2626; color: white;" onclick="updateSingleStatus('Booked')"><span class="material-icons">language</span> บันทึก จองออนไลน์ (สีแดง)</button>
-            <button style="background: #3b82f6; color: white;" onclick="updateSingleStatus('WalkIn')"><span class="material-icons">directions_walk</span> บันทึก Walk-in (สีฟ้า)</button>
+            <button style="background: #3b82f6; color: white;" onclick="updateSingleStatus('WalkIn')"><span class="material-icons">directions_walk</span> บันทึก Walk-in ล่วงหน้า (สีฟ้า)</button>
+            <button style="background: #8b5cf6; color: white;" onclick="updateSingleStatus('WalkInEventDay')"><span class="material-icons">event_seat</span> บันทึก Walk-in วันงาน (สีม่วง)</button>
             <button style="background: #f97316; color: white;" onclick="updateSingleStatus('Free')"><span class="material-icons">redeem</span> บันทึก แจกฟรี (สีส้ม)</button>
             <button style="background: #f59e0b; color: black;" onclick="updateSingleStatus('Pending')"><span class="material-icons">schedule</span> บันทึก รอโอน (สีเหลือง)</button>
             <button style="background: #374151; color: white;" onclick="updateSingleStatus('Available')"><span class="material-icons">cancel</span> ยกเลิกจอง (ว่าง)</button>
@@ -286,11 +284,12 @@
     <div class="modal" id="bulkBookModal">
         <h3 style="color:#22c55e; margin-bottom:10px;"><span class="material-icons">shopping_cart_checkout</span> ดำเนินการจองที่นั่ง</h3>
         <div style="font-size:12px; margin-bottom:15px; text-align:center;" class="text-muted" id="bulkSeatsList"></div>
-        <div class="input-group"><label class="text-muted">ชื่อลูกค้า (ถ้าแจกฟรี ไม่ต้องใส่)</label><input type="text" id="bulkCustName" placeholder="กรอกชื่อลูกค้า"></div>
-        <div class="input-group"><label class="text-muted">เบอร์โทรศัพท์ (ถ้าแจกฟรี ไม่ต้องใส่)</label><input type="tel" id="bulkCustPhone" placeholder="ตัวอย่าง: 0812345678" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
+        <div class="input-group"><label class="text-muted">ชื่อลูกค้า (แจกฟรี / Walk-in วันงาน ไม่ต้องใส่)</label><input type="text" id="bulkCustName" placeholder="กรอกชื่อลูกค้า"></div>
+        <div class="input-group"><label class="text-muted">เบอร์โทรศัพท์ (ถ้าต้องใส่ บังคับ 10 หลัก)</label><input type="tel" id="bulkCustPhone" placeholder="ตัวอย่าง: 0812345678" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"></div>
         <div class="action-btns">
             <button style="background: #dc2626; color: white;" onclick="submitBulkBooking('Booked')"><span class="material-icons">language</span> จองออนไลน์ (สีแดง)</button>
-            <button style="background: #3b82f6; color: white;" onclick="submitBulkBooking('WalkIn')"><span class="material-icons">directions_walk</span> ลูกค้า Walk-in (สีฟ้า)</button>
+            <button style="background: #3b82f6; color: white;" onclick="submitBulkBooking('WalkIn')"><span class="material-icons">directions_walk</span> ลูกค้า Walk-in ล่วงหน้า (สีฟ้า)</button>
+            <button style="background: #8b5cf6; color: white;" onclick="submitBulkBooking('WalkInEventDay')"><span class="material-icons">event_seat</span> ลูกค้า Walk-in วันงาน (สีม่วง)</button>
             <button style="background: #f97316; color: white;" onclick="submitBulkBooking('Free')"><span class="material-icons">redeem</span> กิจกรรมแจกฟรี (สีส้ม)</button>
             <button style="background: #f59e0b; color: black;" onclick="submitBulkBooking('Pending')"><span class="material-icons">schedule</span> รอโอน (สีเหลือง)</button>
             <button style="background: transparent; border: 1px solid rgba(156, 163, 175, 0.5);" class="text-muted" onclick="closeModal()">ยกเลิก</button>
@@ -307,23 +306,25 @@
     <!-- Modal ภาพรวมการจองทั้งหมด -->
     <div class="modal" id="summaryModal">
         <h3 style="color: #ffb74d; margin-bottom:10px;"><span class="material-icons">analytics</span> ภาพรวมการจองทั้งหมด</h3>
-        <!-- เปลี่ยนการล็อคสี มาใช้ Class .info-card แทน -->
         <div class="info-card" style="margin-top:10px; font-size: 13px;">
             
             <div style="color:#ffb74d; font-weight:bold; margin-bottom:6px; font-size:14px;">โซน VIP <span class="text-muted" style="font-weight:normal; font-size:12px;">(ทั้งหมด <span id="sumVipTotal">0</span>)</span></div>
             <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- ออนไลน์ (🔴):</span> <span class="text-bold-white" id="sumVipBooked">0</span></div>
-            <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- Walk-in (🔵):</span> <span class="text-bold-white" id="sumVipWalkIn">0</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- Walk-in ล่วงหน้า (🔵):</span> <span class="text-bold-white" id="sumVipWalkIn">0</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- Walk-in วันงาน (🟣):</span> <span class="text-bold-white" id="sumVipWalkInEvent">0</span></div>
             <div style="display: flex; justify-content: space-between; margin-bottom:12px;" class="text-muted"><span>- แจกฟรี (🟠):</span> <span class="text-bold-white" id="sumVipFree">0</span></div>
             
             <div style="color:#ffb74d; font-weight:bold; margin-bottom:6px; font-size:14px;">โซนธรรมดา <span class="text-muted" style="font-weight:normal; font-size:12px;">(ทั้งหมด <span id="sumNormTotal">0</span>)</span></div>
             <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- ออนไลน์ (🔴):</span> <span class="text-bold-white" id="sumNormBooked">0</span></div>
-            <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- Walk-in (🔵):</span> <span class="text-bold-white" id="sumNormWalkIn">0</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- Walk-in ล่วงหน้า (🔵):</span> <span class="text-bold-white" id="sumNormWalkIn">0</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:4px;" class="text-muted"><span>- Walk-in วันงาน (🟣):</span> <span class="text-bold-white" id="sumNormWalkInEvent">0</span></div>
             <div style="display: flex; justify-content: space-between; margin-bottom:12px;" class="text-muted"><span>- แจกฟรี (🟠):</span> <span class="text-bold-white" id="sumNormFree">0</span></div>
             
             <hr>
             
             <div style="display: flex; justify-content: space-between; margin-bottom:6px;" class="text-muted"><span>รายรับออนไลน์:</span> <span class="text-bold-white" id="sumRevBooked">0 บาท</span></div>
-            <div style="display: flex; justify-content: space-between; margin-bottom:6px;" class="text-muted"><span>รายรับ Walk-in:</span> <span class="text-bold-white" id="sumRevWalkIn">0 บาท</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:6px;" class="text-muted"><span>รายรับ Walk-in ล่วงหน้า:</span> <span class="text-bold-white" id="sumRevWalkIn">0 บาท</span></div>
+            <div style="display: flex; justify-content: space-between; margin-bottom:6px;" class="text-muted"><span>รายรับ Walk-in วันงาน:</span> <span class="text-bold-white" id="sumRevWalkInEvent">0 บาท</span></div>
             <div style="color:#4ade80; font-weight:bold; font-size:16px; display: flex; justify-content: space-between; margin-top: 10px;"><span>ยอดสุทธิรวม:</span> <span id="sumRevTotal">0 บาท</span></div>
         </div>
         <div class="action-btns" style="margin-top:15px;">
@@ -358,7 +359,6 @@
             document.getElementById('legendSelectedContainer').style.display = "flex";
         }
 
-        // --- ระบบ Theme (Day / Night Mode) ---
         let isDayMode = false;
         function toggleTheme() {
             isDayMode = !isDayMode;
@@ -465,7 +465,7 @@
                         updateFloatingBtn();
                     }
                 }
-            } catch (e) { }
+            } catch (e) {}
         }
         
         setInterval(syncDataBackground, 15000);
@@ -616,7 +616,7 @@
             let cName = document.getElementById('bulkCustName').value.trim();
             let cPhone = document.getElementById('bulkCustPhone').value.trim();
 
-            if (newStatus !== 'Free') {
+            if (newStatus !== 'Free' && newStatus !== 'WalkInEventDay') {
                 if (!cName) {
                     alert("กรุณากรอกชื่อลูกค้า");
                     return;
@@ -626,7 +626,8 @@
                     return;
                 }
             } else {
-                cName = cName || "กิจกรรมแจกฟรี";
+                if (newStatus === 'Free') cName = cName || "กิจกรรมแจกฟรี";
+                else if (newStatus === 'WalkInEventDay') cName = cName || "Walk-in วันงาน";
                 cPhone = cPhone || "-";
             }
 
@@ -673,7 +674,6 @@
             showSuccessModal(cName, cPhone, bookedSeatsList);
         }
 
-        // --- อัปเดต HTML ของ Pop-up ให้ใช้ Class แทนการล็อคสี ---
         function showSuccessModal(name, phone, seatsArr) {
             let zoneMap = {};
             seatsArr.forEach(s => {
@@ -714,13 +714,16 @@
             let cName = document.getElementById('custName').value.trim();
             let cPhone = document.getElementById('custPhone').value.trim();
 
-            if (newStatus !== 'Available' && newStatus !== 'Free' && !/^0\d{9}$/.test(cPhone)) {
+            if (newStatus !== 'Available' && newStatus !== 'Free' && newStatus !== 'WalkInEventDay' && !/^0\d{9}$/.test(cPhone)) {
                 alert("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง\n(ตัวเลข 10 หลัก ขึ้นต้นด้วย 0)");
                 return;
             }
 
             if (newStatus === 'Free') {
                 cName = cName || "กิจกรรมแจกฟรี";
+                cPhone = cPhone || "-";
+            } else if (newStatus === 'WalkInEventDay') {
+                cName = cName || "Walk-in วันงาน";
                 cPhone = cPhone || "-";
             } else if (newStatus === 'Available') {
                 cName = "";
@@ -763,7 +766,8 @@
                 let statusText = "จองออนไลน์";
                 let statusColor = "#dc2626";
                 if(info.status === 'Pending') { statusText = "รอโอน"; statusColor = "#f59e0b"; }
-                else if(info.status === 'WalkIn') { statusText = "Walk-in"; statusColor = "#3b82f6"; }
+                else if(info.status === 'WalkIn') { statusText = "Walk-in ล่วงหน้า"; statusColor = "#3b82f6"; }
+                else if(info.status === 'WalkInEventDay') { statusText = "Walk-in วันงาน"; statusColor = "#8b5cf6"; }
                 else if(info.status === 'Free') { statusText = "แจกฟรี"; statusColor = "#f97316"; }
 
                 resultMsg.innerHTML = 
@@ -824,8 +828,8 @@
         }
 
         function showSummaryModal() {
-            let vipTotal = 0, vipBooked = 0, vipWalkIn = 0, vipFree = 0;
-            let normTotal = 0, normBooked = 0, normWalkIn = 0, normFree = 0;
+            let vipTotal = 0, vipBooked = 0, vipWalkIn = 0, vipWalkInEvent = 0, vipFree = 0;
+            let normTotal = 0, normBooked = 0, normWalkIn = 0, normWalkInEvent = 0, normFree = 0;
 
             Object.keys(seatDataMap).forEach(seatId => {
                 const info = seatDataMap[seatId];
@@ -836,31 +840,37 @@
                     vipTotal++;
                     if (info.status === 'Booked') vipBooked++;
                     else if (info.status === 'WalkIn') vipWalkIn++;
+                    else if (info.status === 'WalkInEventDay') vipWalkInEvent++;
                     else if (info.status === 'Free') vipFree++;
                 } else {
                     normTotal++;
                     if (info.status === 'Booked') normBooked++;
                     else if (info.status === 'WalkIn') normWalkIn++;
+                    else if (info.status === 'WalkInEventDay') normWalkInEvent++;
                     else if (info.status === 'Free') normFree++;
                 }
             });
 
             const revBooked = (vipBooked * 899) + (normBooked * 399);
             const revWalkIn = (vipWalkIn * 899) + (normWalkIn * 399);
-            const revTotal = revBooked + revWalkIn;
+            const revWalkInEvent = (vipWalkInEvent * 899) + (normWalkInEvent * 399);
+            const revTotal = revBooked + revWalkIn + revWalkInEvent;
 
             document.getElementById('sumVipTotal').innerText = vipTotal;
             document.getElementById('sumVipBooked').innerText = vipBooked;
             document.getElementById('sumVipWalkIn').innerText = vipWalkIn;
+            document.getElementById('sumVipWalkInEvent').innerText = vipWalkInEvent;
             document.getElementById('sumVipFree').innerText = vipFree;
 
             document.getElementById('sumNormTotal').innerText = normTotal;
             document.getElementById('sumNormBooked').innerText = normBooked;
             document.getElementById('sumNormWalkIn').innerText = normWalkIn;
+            document.getElementById('sumNormWalkInEvent').innerText = normWalkInEvent;
             document.getElementById('sumNormFree').innerText = normFree;
 
             document.getElementById('sumRevBooked').innerText = `${revBooked.toLocaleString()} บาท`;
             document.getElementById('sumRevWalkIn').innerText = `${revWalkIn.toLocaleString()} บาท`;
+            document.getElementById('sumRevWalkInEvent').innerText = `${revWalkInEvent.toLocaleString()} บาท`;
             document.getElementById('sumRevTotal').innerText = `${revTotal.toLocaleString()} บาท`;
             
             openModalWithAnim('summaryModal');
